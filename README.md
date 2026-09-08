@@ -79,4 +79,4 @@ During a run, your profile is part of the conversation with Claude, which means 
 
 ## Status
 
-Phase 0, in progress. The schema, the validator, and the skill scaffolds are in place. Broker manifests are not written yet, and no broker run has happened.
+Phase 0, in progress. The schema, the validator, and the skill scaffolds are in place, and the first broker manifests are being added one at a time, each written from a capture of that broker's public opt-out page. Run `npm run validate` for the count. No opt-out has been filed with a real broker yet.

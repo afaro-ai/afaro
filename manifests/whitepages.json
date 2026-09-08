@@ -1,0 +1,57 @@
+{
+  "id": "whitepages",
+  "name": "Whitepages",
+  "home_url": "https://www.whitepages.com/",
+  "search_url_template": "https://www.whitepages.com/header-search/name?s_name={{full_name}}&s_loc={{current_address.city}}, {{current_address.state}}",
+  "optout_url": "https://www.whitepages.com/suppression-requests",
+  "method": "search_then_form",
+  "profile_fields_required": ["full_name", "current_address.city", "current_address.state"],
+  "steps": [
+    {
+      "type": "navigate",
+      "url": "https://www.whitepages.com/header-search/name?s_name={{full_name}}&s_loc={{current_address.city}}, {{current_address.state}}",
+      "note": "The opt-out page asks for the URL of the profile, so the listing is found first. This is the search the site's own people search in the page header submits, and it takes a name and a location."
+    },
+    {
+      "type": "find_listing",
+      "match_on": ["full_name", "current_address.city"],
+      "on_not_found": "stop"
+    },
+    {
+      "type": "navigate",
+      "url": "https://www.whitepages.com/suppression-requests"
+    },
+    {
+      "type": "fill_field",
+      "selector": {
+        "label": "Copy and paste the URL of your profile",
+        "css": "#suppression-requests-person-url"
+      },
+      "value_from_listing": "url",
+      "note": "The one field on the page. Its visible text is the instruction inside the box."
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "This sends the listing URL to Whitepages and opens step 2 of 5. The page this manifest was written from is step 1, so from here you are working the remaining steps on screen yourself. Check the URL, then say yes to continue."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "Next" }
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "The listing no longer appears in the site's own people search for this name and location. The page says a person can opt out and have their listing removed from the Whitepages website."
+  },
+  "recheck_after_days": 14,
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": "Step 1 asks for the URL of the profile and nothing else. What the remaining steps ask for is not on the public page."
+  },
+  "notes": "Written from the opt-out page captured on verified_on, which prints STEP 1 OF 5 and holds one field and a Next button. The other four steps sit behind a real profile URL and were not visible, so they are not described here and nothing about them is assumed. The manifest ends where the page ends: it finds the listing, fills its URL, gates, and clicks Next, and the person carries the flow the rest of the way on screen. recheck_after_days is 14 because the page states no processing window; it is a waiting period, not a figure from the page.",
+  "source_url": "https://www.whitepages.com/suppression-requests",
+  "verified_on": "2026-09-08",
+  "source_capture": "captures/whitepages-optout.jpg"
+}
