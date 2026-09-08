@@ -93,6 +93,14 @@
     "source_capture": {
       "description": "Path to the committed screenshot of source_url, relative to the manifests directory. The validator fails if the file is absent.",
       "$ref": "#/$defs/capture_path"
+    },
+    "person_finishes_on_site": {
+      "description": "True when the steps stop before the broker's flow does, because the rest of that flow is not on the public opt-out page. The orchestrator reports the broker as handed to the person, not as submitted, and schedules no recheck until the person says the flow was finished. Absent means the steps carry the request to the end.",
+      "type": "boolean"
+    },
+    "recheck_after_days_from_page": {
+      "description": "False when the page states no processing window and recheck_after_days is a waiting period chosen by the author. Absent or true means the number is the broker's own, copied from the captured page.",
+      "type": "boolean"
     }
   },
   "$defs": {

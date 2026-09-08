@@ -85,6 +85,18 @@ const cases = [
     expect: 'steps read emails, which is not in profile_fields_required'
   },
   {
+    name: 'a field filled after the submit gate fails',
+    dir: 'tests/fixtures/fill-after-gate',
+    exitCode: 1,
+    expect: 'fills a field after the submit gate'
+  },
+  {
+    name: 'a fill after the gate does not hide an early send',
+    dir: 'tests/fixtures/fill-after-gate',
+    exitCode: 1,
+    expect: 'before the submit gate, so the form can go without approval'
+  },
+  {
     name: 'a fill from the listing with no find_listing before it fails',
     dir: 'tests/fixtures/listing-value-without-find-listing',
     exitCode: 1,

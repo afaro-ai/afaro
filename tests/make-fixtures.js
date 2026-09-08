@@ -108,6 +108,24 @@ const cases = [
     }
   },
   {
+    // The bypass the click-before-gate fixture covers, wrapped in a second
+    // trick: a fill placed after the gate. The old check took the last fill
+    // anywhere in the list, so a fill after the gate left an empty window
+    // between them and the early send went unseen. Both problems are reported.
+    dir: 'fill-after-gate',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps.splice(gate, 0, { type: 'click', selector: { label: 'Submit request' } });
+      const moved = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps.splice(moved + 1, 0, {
+        type: 'fill_field',
+        selector: { label: 'Email address' },
+        value_from: 'emails'
+      });
+    }
+  },
+  {
     // A step that fills from the listing, with the step that finds the listing
     // taken away. Nothing produces the URL it would type.
     dir: 'listing-value-without-find-listing',

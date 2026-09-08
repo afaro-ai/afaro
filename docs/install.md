@@ -76,7 +76,7 @@ Reference: [How to create custom skills](https://support.claude.com/en/articles/
 
 Your profile is one small file with the details brokers list about you. It lives on your computer in a folder of its own.
 
-1. Make a new folder **outside the Afaro folder**, at the top of a drive or in your Documents. Name it `afaro-local` if you want a name to copy. On the machine this was tested on it is `F:\afaro-local`.
+1. Make a new folder **outside the Afaro folder**, at the top of a drive or in your Documents. Name it `afaro-local` if you want a name to copy.
 2. Find `profile.example.json` in the Afaro folder. Copy it into your new folder and name the copy `profile.json`.
 3. Open it in any text editor and replace the example details with your own.
 
@@ -125,7 +125,7 @@ Read this part before you start.
 1. Open Cowork in the Claude app and start a session with Claude in Chrome as the browser.
 2. Attach your two folders, as in step 6.
 3. Say: **run an Afaro exposure scan**.
-4. Claude opens each broker's own search page and tells you which ones list you. It does not send anything in this step.
+4. Claude opens each broker's own search page and tells you which ones list you. The only thing that leaves your browser in this step is the search itself, your name and usually a city, the same words you would type into that site's own search box. No request is filed and no form is sent.
 5. When you are ready, say: **run the Afaro opt-outs for the brokers that found me**.
 
 From then on Claude works one broker at a time and stops at every point where you are needed. You will see the filled-in form before anything is sent, and it waits for you to say yes.
@@ -136,7 +136,9 @@ It also stops if a site shows a puzzle to prove you are human, puts up a block, 
 
 ## Step 9. What to expect afterwards
 
-Removals take time. Each broker states its own window, usually one to six weeks, and Afaro tracks it for you.
+Removals take time. Some brokers state how long they take, from a day or two to several weeks, and Afaro tracks that. Others say nothing about it, and Afaro waits a set period before checking and tells you the broker never gave a number.
+
+Some brokers hand part of the job back to you. Their opt-out runs through several screens, and only the first is on the page Afaro was built from. Claude fills in what it can, stops, and tells you what is left to do in the browser. Those are not counted as filed until you say you finished them.
 
 Some removals do not work the first time. Some listings come back later, because brokers rebuild their records from public sources. Afaro rechecks on a schedule and tells you what it finds. Nobody can promise a listing stays gone.
 

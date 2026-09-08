@@ -26,6 +26,15 @@ No step, field, selector, or note may describe anything that is not visible on t
 - Every profile field the steps read is named in `profile_fields_required`.
 - A step that fills a field from the listing has a `find_listing` step before it, because the listing URL does not exist until one has been found.
 
+## Two fields for what a page did not say
+
+A capture only proves what a page shows. These two record where a manifest had to go past it, so the skills do not present a choice of the author's as the broker's own.
+
+- `recheck_after_days_from_page: false` means the page states no processing window and the number is a waiting period the author chose. `afaro-removal-verify` then says the broker gave no window instead of quoting the number as theirs.
+- `person_finishes_on_site: true` means the steps stop before the broker's flow does, because the rest of that flow is not on the public opt-out page. `afaro-orchestrator` reports the broker as handed over rather than submitted, and no recheck is counted until the person says they finished.
+
+Leave both out when neither applies. Absent means the number came from the page and the steps carry the request to the end.
+
 ## Captures
 
 `captures/` holds one image per manifest. Keep them readable. A capture is the evidence that the manifest describes a real public page on a real date, so a cropped image that cuts off the form is not enough.

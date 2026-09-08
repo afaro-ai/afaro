@@ -10,7 +10,7 @@
     {
       "type": "navigate",
       "url": "https://www.spokeo.com/search?q={{full_name}}",
-      "note": "The opt-out page asks for the URL of the profile, so the listing is found first. This is the search the site's own box in the page header submits, and it takes a name."
+      "note": "The opt-out page asks for the URL of the profile, so the listing is found first. This is the search the site's own box in the page header submits, and it takes a name. The box is visible on the capture; the query string behind it was read from that form's own markup on verified_on."
     },
     {
       "type": "find_listing",
@@ -65,7 +65,7 @@
     "kinds": [],
     "note": "The page asks for the listing URL and an email address, and nothing else."
   },
-  "notes": "Written from the opt-out page captured on verified_on. Four things that page states and a run depends on. Each listing has its own URL and is opted out one at a time, so a person with several listings runs this once per listing. The request is processed in 24-48 hours. The process completes only when the person clicks the link in the confirmation email. Information may reappear later without notice, and the page asks people to check again for new listings. The page also carries the site's own search box in its header, which is the search this manifest uses.",
+  "notes": "Written from the opt-out page captured on verified_on. Four things that page states and a run depends on. Each listing has its own URL and is opted out one at a time, so a person with several listings runs this once per listing. A request should be processed in 24-48 hours, which the page makes conditional on the nature of the request and the amount of data. The process completes only when the person clicks the link in the confirmation email. Information may reappear later without notice, and the page asks people to check again for new listings. What the capture shows and what it does not: the labels, the fields, the checkbox, the button, and the site's own search box are all on the image; the css fallbacks in the selectors and the search query string were read from the page's own markup on the same visit, and the image holds no browser address bar, so source_url and optout_url record the address that was open rather than something legible on it.",
   "source_url": "https://www.spokeo.com/optout",
   "verified_on": "2026-09-08",
   "source_capture": "captures/spokeo-optout.jpg"

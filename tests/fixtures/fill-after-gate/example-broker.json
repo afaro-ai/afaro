@@ -1,0 +1,91 @@
+{
+  "id": "example-broker",
+  "name": "Example Broker",
+  "home_url": "https://example.com/",
+  "search_url_template": "https://example.com/search?name={{full_name}}&state={{current_address.state}}",
+  "optout_url": "https://example.com/opt-out",
+  "method": "search_then_form",
+  "profile_fields_required": [
+    "full_name",
+    "current_address.state",
+    "current_address.city",
+    "emails"
+  ],
+  "steps": [
+    {
+      "type": "navigate",
+      "url": "https://example.com/search?name={{full_name}}&state={{current_address.state}}",
+      "note": "Test fixture. Not a real broker."
+    },
+    {
+      "type": "find_listing",
+      "match_on": [
+        "full_name",
+        "current_address.city"
+      ],
+      "on_not_found": "stop"
+    },
+    {
+      "type": "navigate",
+      "url": "https://example.com/opt-out"
+    },
+    {
+      "type": "fill_field",
+      "selector": {
+        "label": "Profile URL",
+        "css": "#profile-url"
+      },
+      "value_from_listing": "url"
+    },
+    {
+      "type": "fill_field",
+      "selector": {
+        "label": "Email address"
+      },
+      "value_from": "emails"
+    },
+    {
+      "type": "click",
+      "selector": {
+        "label": "Submit request"
+      }
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "Review the form, then confirm here to send the removal request."
+    },
+    {
+      "type": "fill_field",
+      "selector": {
+        "label": "Email address"
+      },
+      "value_from": "emails"
+    },
+    {
+      "type": "click",
+      "selector": {
+        "label": "Submit request"
+      }
+    },
+    {
+      "type": "wait_for_email_confirm",
+      "expect_from": "noreply@example.com",
+      "timeout_minutes": 60
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "The search for this name in this state returns no matching listing."
+  },
+  "recheck_after_days": 14,
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": ""
+  },
+  "notes": "Fixture used by the validator tests. Example Broker does not exist.",
+  "source_url": "https://example.com/opt-out",
+  "verified_on": "2026-09-08",
+  "source_capture": "captures/example-broker-optout.png"
+}

@@ -153,14 +153,29 @@ function checkGates(manifest) {
 
   const gateIndex = submitGates[0].index;
 
+  // Nothing is filled after the person has approved. What they approved is the
+  // set of values they were shown, and a field filled afterwards is a value
+  // they never saw. This also closes a hole in the check below: with a fill
+  // after the gate, the last fill would sit past the gate and the window
+  // between them would be empty, so an early send would go unnoticed.
+  const lateFill = steps.findIndex(
+    (step, index) => isStep(step) && index > gateIndex && step.type === 'fill_field'
+  );
+  if (lateFill !== -1) {
+    problems.push(
+      `step ${lateFill} fills a field after the submit gate, so the person approved values that are not the ones sent`
+    );
+  }
+
   // Once the last field has been filled, nothing may be clicked or navigated
   // to until the person has approved. Clicks before that point move through
   // the form. A click after it is the send. Checking only the last click would
   // let a manifest send on an earlier click and put a harmless one after the
-  // gate.
+  // gate. The search stops at the gate so a fill placed after it cannot push
+  // the window shut.
   let lastFillIndex = -1;
   steps.forEach((step, index) => {
-    if (isStep(step) && step.type === 'fill_field') lastFillIndex = index;
+    if (isStep(step) && index < gateIndex && step.type === 'fill_field') lastFillIndex = index;
   });
 
   const earlySend = steps.findIndex(

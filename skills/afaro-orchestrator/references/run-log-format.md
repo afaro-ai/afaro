@@ -4,7 +4,7 @@ The run log exists so a person can see what happened and so the gate set can be 
 
 ## Where it goes
 
-`logs/` inside the profile folder, next to `profile.json`. That folder sits outside the repository, and on the machine this was first run on it is `F:\afaro-local\logs\`. Create it if it is not there. One file per run, named `afaro-run-YYYY-MM-DD-HHMM.log`. The repository ignores `logs/` so a stray copy inside the working tree still stays untracked.
+`logs/` inside the profile folder, next to `profile.json`. That folder sits outside the repository, wherever the person put it. Create `logs/` if it is not there. One file per run, named `afaro-run-YYYY-MM-DD-HHMM.log`. The repository ignores `logs/` so a stray copy inside the working tree still stays untracked.
 
 When the profile came as an attachment to the conversation rather than in an attached folder, there is no profile folder and so no log location. Say that at the start of the run, keep the same lines in the same format, and give the person the whole log in the chat at the end. Do not write it anywhere inside the repository instead.
 

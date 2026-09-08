@@ -67,8 +67,8 @@ Afaro holds four rules that do not bend.
    3. Walk `steps` in order. See `references/step-types.md` for what each type means.
    4. At every `human_gate`, stop, print the `prompt`, and wait. Resume only after the person answers.
    5. Append one redacted line per step to the run log. See `references/run-log-format.md`.
-6. After the last broker, print a summary: submitted, stopped, skipped, and why.
-7. Tell the person when each broker is due for a recheck, using `recheck_after_days`, and point them at `afaro-removal-verify`.
+6. After the last broker, print a summary: submitted, handed over, stopped, skipped, and why. A broker whose manifest carries `person_finishes_on_site: true` is never reported as submitted, however far its steps got. Its steps end before the broker's flow does, so it is handed over, with what the person still has to do on the broker's site.
+7. Tell the person when each broker is due for a recheck, using `recheck_after_days`, and point them at `afaro-removal-verify`. Two things that number does not always mean. When the manifest carries `recheck_after_days_from_page: false`, the page states no window and the number is a waiting period, so say that rather than attributing it to the broker. When the manifest carries `person_finishes_on_site: true`, nothing was filed by this run, so give no due date and say the count starts when the person finishes the flow.
 
 ---
 
