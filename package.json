@@ -1,0 +1,18 @@
+{
+  "name": "afaro-data-removal",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Afaro is a local-first personal-data removal engine. This package holds the manifest validator only.",
+  "type": "commonjs",
+  "scripts": {
+    "validate": "node scripts/validate.js",
+    "test": "node tests/validate.test.js"
+  },
+  "devDependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

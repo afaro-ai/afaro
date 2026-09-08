@@ -1,0 +1,48 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Validator self-checks
+        run: npm test
+
+      - name: Validate every manifest
+        run: npm run validate
+
+      - name: Fixtures match the manifest they derive from
+        run: |
+          node tests/make-fixtures.js
+          if ! git diff --quiet -- tests/fixtures; then
+            echo "Fixtures are out of date. Run: node tests/make-fixtures.js"
+            git diff --stat -- tests/fixtures
+            exit 1
+          fi
+          echo "Fixtures are current."
+
+      - name: No profile file and no run log is tracked
+        run: |
+          bad=$(git ls-files | grep -E '(^|/)profile(\..+)?\.json$|\.log$' | grep -vE '(^|/)profile\.example\.json$' || true)
+          if [ -n "$bad" ]; then
+            echo "These must not be tracked:"
+            echo "$bad"
+            exit 1
+          fi
+          echo "No tracked profile files or run logs."

@@ -1,0 +1,308 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/afaro-ai/afaro/schema/optout.schema.json",
+  "title": "Afaro data removal broker opt-out manifest",
+  "description": "Describes one broker's public opt-out flow as data. A manifest never contains executable code. Every manifest records the public page it was built from, the date it was read, and a committed capture of that page.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "home_url",
+    "search_url_template",
+    "optout_url",
+    "method",
+    "profile_fields_required",
+    "steps",
+    "verification",
+    "recheck_after_days",
+    "id_requirements",
+    "notes",
+    "source_url",
+    "verified_on",
+    "source_capture"
+  ],
+  "properties": {
+    "id": {
+      "description": "Stable slug for this broker. Used in run logs and in the manifest filename.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "maxLength": 64
+    },
+    "name": {
+      "description": "Broker brand name as it appears on the site. Brands only, never parent companies.",
+      "type": "string",
+      "minLength": 1
+    },
+    "home_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "search_url_template": {
+      "description": "The broker's public search interface, with profile placeholders in double braces. This is the same URL a person gets by using the site's own search box.",
+      "type": "string",
+      "pattern": "^https://"
+    },
+    "optout_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "method": {
+      "description": "How the opt-out is filed. manual means the broker requires an account, a payment, a notarized document, or a government ID, and Afaro does not automate it.",
+      "type": "string",
+      "enum": ["form", "email", "search_then_form", "manual"]
+    },
+    "profile_fields_required": {
+      "description": "Profile field paths this manifest reads, for example full_name or current_address.city. The orchestrator stops if any is missing rather than inventing a value.",
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/profile_field_path" }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/step" }
+    },
+    "verification": { "$ref": "#/$defs/verification" },
+    "recheck_after_days": {
+      "description": "The broker's stated processing window, in days, as written on the captured page. removal-verify waits this long before rechecking.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 365
+    },
+    "id_requirements": { "$ref": "#/$defs/id_requirements" },
+    "notes": {
+      "description": "Anything the person needs to know that is visible on the captured page. Empty string when there is nothing to say.",
+      "type": "string"
+    },
+    "source_url": {
+      "description": "The broker's public opt-out page this manifest was built from.",
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "verified_on": {
+      "description": "The date source_url was read and captured, YYYY-MM-DD.",
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "source_capture": {
+      "description": "Path to the committed screenshot of source_url, relative to the manifests directory. The validator fails if the file is absent.",
+      "$ref": "#/$defs/capture_path"
+    }
+  },
+  "$defs": {
+    "profile_field_path": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*(\\[\\])?$",
+      "maxLength": 128
+    },
+    "capture_path": {
+      "type": "string",
+      "pattern": "^captures/[A-Za-z0-9][A-Za-z0-9._-]*\\.(png|jpg|jpeg|webp)$",
+      "maxLength": 256
+    },
+    "selector": {
+      "description": "How to find the control on the page. Prefer the visible label. A CSS selector is a fallback that is expected to drift.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label"],
+      "properties": {
+        "label": {
+          "description": "The visible text on the captured page. Must appear in the capture.",
+          "type": "string",
+          "minLength": 1
+        },
+        "css": { "type": "string", "minLength": 1 }
+      }
+    },
+    "verification": {
+      "description": "How to tell later whether the listing is gone.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "success_when"],
+      "properties": {
+        "method": { "type": "string", "enum": ["search", "email", "status_page"] },
+        "url_template": {
+          "description": "Required when method is status_page. Profile placeholders in double braces.",
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "success_when": {
+          "description": "Plain description of what a removed listing looks like, taken from the captured page or from the search result page.",
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "method": { "const": "status_page" } },
+            "required": ["method"]
+          },
+          "then": {
+            "properties": { "url_template": true },
+            "required": ["url_template"]
+          }
+        }
+      ]
+    },
+    "id_requirements": {
+      "description": "What the broker demands beyond the form. Any kind listed here makes this broker method manual.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "kinds", "note"],
+      "properties": {
+        "required": { "type": "boolean" },
+        "kinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["government_id", "notarized_affidavit", "account_creation", "payment"]
+          }
+        },
+        "note": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "required": { "const": true } },
+            "required": ["required"]
+          },
+          "then": { "properties": { "kinds": { "type": "array", "minItems": 1 } } }
+        },
+        {
+          "if": {
+            "properties": { "required": { "const": false } },
+            "required": ["required"]
+          },
+          "then": { "properties": { "kinds": { "type": "array", "maxItems": 0 } } }
+        }
+      ]
+    },
+    "step": {
+      "type": "object",
+      "oneOf": [
+        { "$ref": "#/$defs/step_navigate" },
+        { "$ref": "#/$defs/step_find_listing" },
+        { "$ref": "#/$defs/step_fill_field" },
+        { "$ref": "#/$defs/step_click" },
+        { "$ref": "#/$defs/step_wait_for_email_confirm" },
+        { "$ref": "#/$defs/step_read_email_confirm" },
+        { "$ref": "#/$defs/step_human_gate" }
+      ]
+    },
+    "step_navigate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "url"],
+      "properties": {
+        "type": { "const": "navigate" },
+        "url": { "type": "string", "pattern": "^https://" },
+        "note": { "type": "string" }
+      }
+    },
+    "step_find_listing": {
+      "description": "Identify the person's own listing in the broker's public search results. Never a direct result-endpoint URL.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "match_on", "on_not_found"],
+      "properties": {
+        "type": { "const": "find_listing" },
+        "match_on": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/profile_field_path" }
+        },
+        "on_not_found": { "type": "string", "enum": ["stop", "continue"] },
+        "note": { "type": "string" }
+      }
+    },
+    "step_fill_field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "selector"],
+      "oneOf": [
+        { "properties": { "value_from": true }, "required": ["value_from"] },
+        { "properties": { "value_literal": true }, "required": ["value_literal"] }
+      ],
+      "properties": {
+        "type": { "const": "fill_field" },
+        "selector": { "$ref": "#/$defs/selector" },
+        "value_from": {
+          "description": "Profile field path. The orchestrator stops if the field is missing.",
+          "$ref": "#/$defs/profile_field_path"
+        },
+        "value_literal": {
+          "description": "A fixed value the form needs, for example a reason code offered by the page itself.",
+          "type": "string"
+        },
+        "note": { "type": "string" }
+      }
+    },
+    "step_click": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "selector"],
+      "properties": {
+        "type": { "const": "click" },
+        "selector": { "$ref": "#/$defs/selector" },
+        "note": { "type": "string" }
+      }
+    },
+    "step_wait_for_email_confirm": {
+      "description": "The broker says it sends a confirmation email. The person opens it themselves.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "expect_from", "timeout_minutes"],
+      "properties": {
+        "type": { "const": "wait_for_email_confirm" },
+        "expect_from": { "type": "string", "minLength": 1 },
+        "timeout_minutes": { "type": "integer", "minimum": 1, "maximum": 1440 },
+        "note": { "type": "string" }
+      }
+    },
+    "step_read_email_confirm": {
+      "description": "Phase 1. Read the broker's confirmation email from the person's own connected mailbox and open the link. Defined here so Phase 1 adds behavior, not schema.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "expect_from", "link_text", "timeout_minutes"],
+      "properties": {
+        "type": { "const": "read_email_confirm" },
+        "expect_from": { "type": "string", "minLength": 1 },
+        "link_text": {
+          "description": "The visible text of the confirmation link, as described on the captured page.",
+          "type": "string",
+          "minLength": 1
+        },
+        "timeout_minutes": { "type": "integer", "minimum": 1, "maximum": 1440 },
+        "note": { "type": "string" }
+      }
+    },
+    "step_human_gate": {
+      "description": "Hand the step to the person. reason submit is the guided-mode approval before anything is sent. The other four are steps no mode passes on its own.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "reason", "prompt"],
+      "properties": {
+        "type": { "const": "human_gate" },
+        "reason": {
+          "type": "string",
+          "enum": ["captcha", "bot_wall", "id_upload", "phone_verify", "submit"]
+        },
+        "prompt": {
+          "description": "What the person is being asked to do, in plain words.",
+          "type": "string",
+          "minLength": 1
+        },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}
