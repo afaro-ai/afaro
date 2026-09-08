@@ -2,8 +2,11 @@ name: validate
 
 on:
   push:
-    branches: ["**"]
+    branches: [main]
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   manifests:
@@ -24,10 +27,22 @@ jobs:
       - name: Validate every manifest
         run: npm run validate
 
-      - name: No profile data in tracked files
+      - name: Fixtures match the manifest they derive from
         run: |
-          if git ls-files | grep -E '(^|/)profile\.json$|(^|/)profile\..+\.json$' | grep -v '^profile\.example\.json$'; then
-            echo "A profile file is tracked. Remove it."
+          node tests/make-fixtures.js
+          if ! git diff --quiet -- tests/fixtures; then
+            echo "Fixtures are out of date. Run: node tests/make-fixtures.js"
+            git diff --stat -- tests/fixtures
             exit 1
           fi
-          echo "No tracked profile files."
+          echo "Fixtures are current."
+
+      - name: No profile file and no run log is tracked
+        run: |
+          bad=$(git ls-files | grep -E '(^|/)profile(\..+)?\.json$|\.log$' | grep -vE '(^|/)profile\.example\.json$' || true)
+          if [ -n "$bad" ]; then
+            echo "These must not be tracked:"
+            echo "$bad"
+            exit 1
+          fi
+          echo "No tracked profile files or run logs."

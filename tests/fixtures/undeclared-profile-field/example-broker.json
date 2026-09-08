@@ -8,8 +8,7 @@
   "profile_fields_required": [
     "full_name",
     "current_address.state",
-    "current_address.city",
-    "emails"
+    "current_address.city"
   ],
   "steps": [
     {
@@ -43,6 +42,11 @@
         "label": "Email address"
       },
       "value_from": "emails"
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "Review the form, then confirm here to send the removal request."
     },
     {
       "type": "click",

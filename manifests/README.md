@@ -2,7 +2,7 @@
 
 One JSON file per broker, named `<id>.json`, validated against `../schema/optout.schema.json`. Captures live in `captures/`.
 
-This directory is empty in pass 1. The first batch is written in pass 2.
+This directory is empty for now. Manifests are added one broker at a time, each with its capture.
 
 ## The authoring rule
 
@@ -23,10 +23,6 @@ No step, field, selector, or note may describe anything that is not visible on t
 - `verified_on` is not in the future.
 - A manifest that can send anything carries a `human_gate` step with reason `submit`, and the last `click` step comes after it.
 - A broker requiring an ID, a notarized document, an account, or a payment has `method: manual` and no `fill_field` or `click` steps. Afaro does not automate those brokers.
-
-## Ordering
-
-The first batch is the ten non-LTVCO brokers named in the project brief. They are verified live and merged before any second-batch manifest is created. The second batch is authored last, in a separate commit, using the same schema and the same workflow, with no special handling and no extra comments.
 
 ## Captures
 

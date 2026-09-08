@@ -90,7 +90,15 @@ function checkProvenance(manifest, fileName, dir) {
   }
 
   if (typeof manifest.verified_on === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(manifest.verified_on)) {
-    const today = new Date().toISOString().slice(0, 10);
+    // Local date, not UTC. verified_on is the day the author read the page
+    // where they were sitting, so a UTC comparison flags or misses by a day
+    // depending on which side of the line they are on.
+    const now = new Date();
+    const today = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, '0'),
+      String(now.getDate()).padStart(2, '0')
+    ].join('-');
     if (manifest.verified_on > today) {
       problems.push(`verified_on is in the future: ${manifest.verified_on}`);
     }
@@ -130,20 +138,85 @@ function checkGates(manifest) {
     return problems;
   }
 
-  const submitGateIndex = steps.findIndex(
-    (step) => isStep(step) && step.type === 'human_gate' && step.reason === 'submit'
-  );
-  if (submitGateIndex === -1) {
+  const submitGates = steps
+    .map((step, index) => ({ step, index }))
+    .filter(({ step }) => isStep(step) && step.type === 'human_gate' && step.reason === 'submit');
+
+  if (submitGates.length === 0) {
     problems.push('no human_gate step with reason submit, so there is a send path with no approval');
     return problems;
   }
+  if (submitGates.length > 1) {
+    problems.push(`${submitGates.length} human_gate steps with reason submit, so it is unclear which send the person approves`);
+    return problems;
+  }
 
-  let lastClickIndex = -1;
+  const gateIndex = submitGates[0].index;
+
+  // Once the last field has been filled, nothing may be clicked or navigated
+  // to until the person has approved. Clicks before that point move through
+  // the form. A click after it is the send. Checking only the last click would
+  // let a manifest send on an earlier click and put a harmless one after the
+  // gate.
+  let lastFillIndex = -1;
   steps.forEach((step, index) => {
-    if (isStep(step) && step.type === 'click') lastClickIndex = index;
+    if (isStep(step) && step.type === 'fill_field') lastFillIndex = index;
   });
-  if (lastClickIndex !== -1 && lastClickIndex < submitGateIndex) {
-    problems.push('the last click step comes before the submit gate');
+
+  const earlySend = steps.findIndex(
+    (step, index) =>
+      isStep(step) &&
+      index > lastFillIndex &&
+      index < gateIndex &&
+      (step.type === 'click' || step.type === 'navigate')
+  );
+  if (earlySend !== -1) {
+    problems.push(
+      `step ${earlySend} is a ${steps[earlySend].type} after the last filled field and before the submit gate, so the form can go without approval`
+    );
+  }
+
+  // A form that nothing clicks after the gate never sends. An email broker is
+  // the exception: the person sends the message themselves.
+  if (manifest.method !== 'email') {
+    const sendsAfterGate = steps.some(
+      (step, index) => isStep(step) && index > gateIndex && step.type === 'click'
+    );
+    if (!sendsAfterGate) {
+      problems.push('no click step after the submit gate, so nothing sends the form');
+    }
+  }
+
+  return problems;
+}
+
+// The orchestrator checks profile_fields_required before it starts a broker, so
+// that list has to name every field the steps go on to read. A field the steps
+// use but the list omits turns into a stop halfway through a form.
+function checkProfileFields(manifest) {
+  const problems = [];
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+  const declared = new Set(
+    Array.isArray(manifest.profile_fields_required) ? manifest.profile_fields_required : []
+  );
+
+  const used = new Set();
+  for (const step of steps) {
+    if (!step || typeof step !== 'object') continue;
+    if (step.type === 'fill_field' && typeof step.value_from === 'string') {
+      used.add(step.value_from);
+    }
+    if (step.type === 'find_listing' && Array.isArray(step.match_on)) {
+      for (const field of step.match_on) {
+        if (typeof field === 'string') used.add(field);
+      }
+    }
+  }
+
+  for (const field of [...used].sort()) {
+    if (!declared.has(field)) {
+      problems.push(`steps read ${field}, which is not in profile_fields_required`);
+    }
   }
 
   return problems;
@@ -167,6 +240,7 @@ function validateFile(validate, dir, fileName) {
   }
   problems.push(...checkProvenance(manifest, fileName, dir));
   problems.push(...checkGates(manifest));
+  problems.push(...checkProfileFields(manifest));
   return problems;
 }
 

@@ -8,6 +8,7 @@
   "profile_fields_required": [
     "full_name",
     "current_address.state",
+    "current_address.city",
     "emails"
   ],
   "steps": [

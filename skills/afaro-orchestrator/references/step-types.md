@@ -36,7 +36,9 @@ If the field cannot be found, stop. Do not fill the nearest similar field.
 
 Fields: `selector`, optional `note`.
 
-Click the control with that visible label. In guided mode a `submit` gate always precedes the click that sends the form, and the validator refuses any manifest where it does not.
+Click the control with that visible label.
+
+Clicks before the submit gate move through the form. The click that sends it comes after the gate. The validator holds that shape: once the last `fill_field` has run, no `click` and no `navigate` may appear until the submit gate has passed, and a manifest that is not `method: email` must click something after the gate.
 
 ## wait_for_email_confirm
 

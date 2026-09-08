@@ -59,6 +59,30 @@ const cases = [
     dir: 'tests/fixtures/no-submit-gate',
     exitCode: 1,
     expect: 'no human_gate step with reason submit'
+  },
+  {
+    name: 'a click after the last filled field but before the gate fails',
+    dir: 'tests/fixtures/click-before-gate',
+    exitCode: 1,
+    expect: 'before the submit gate, so the form can go without approval'
+  },
+  {
+    name: 'a manifest with nothing to click after the gate fails',
+    dir: 'tests/fixtures/no-send-after-gate',
+    exitCode: 1,
+    expect: 'no click step after the submit gate'
+  },
+  {
+    name: 'a manual broker that still clicks and fills fails',
+    dir: 'tests/fixtures/manual-with-click',
+    exitCode: 1,
+    expect: 'method manual must not contain fill_field or click steps'
+  },
+  {
+    name: 'a field the steps read but do not declare fails',
+    dir: 'tests/fixtures/undeclared-profile-field',
+    exitCode: 1,
+    expect: 'steps read emails, which is not in profile_fields_required'
   }
 ];
 

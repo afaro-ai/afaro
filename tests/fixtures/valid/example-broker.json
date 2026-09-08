@@ -5,7 +5,12 @@
   "search_url_template": "https://example.com/search?name={{full_name}}&state={{current_address.state}}",
   "optout_url": "https://example.com/opt-out",
   "method": "search_then_form",
-  "profile_fields_required": ["full_name", "current_address.state", "emails"],
+  "profile_fields_required": [
+    "full_name",
+    "current_address.state",
+    "current_address.city",
+    "emails"
+  ],
   "steps": [
     {
       "type": "navigate",

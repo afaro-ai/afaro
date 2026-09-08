@@ -20,7 +20,7 @@ The first four are not passed by any mode. There is no setting that turns them o
 
 **supervised** is Phase 1. It passes `submit` without stopping and queues the other four for the person. It also allows `read_email_confirm` against a mailbox the person connected themselves.
 
-Supervised mode is defined in the schema and in this file so that Phase 1 adds behavior rather than reshaping the manifests. It is not implemented. If a profile asks for it, stop and say so. Do not approximate it by asking for approval once and treating that as approval for the rest of the run.
+Supervised mode is settled here, and the manifest schema already carries the `read_email_confirm` step and the five gate reasons that supervised mode depends on, so Phase 1 adds behavior rather than reshaping manifests. It is not implemented. `mode` itself is a profile setting, not a manifest field, and there is no profile schema yet. If a profile asks for it, stop and say so. Do not approximate it by asking for approval once and treating that as approval for the rest of the run.
 
 ## Why the gate set is small
 

@@ -51,9 +51,26 @@
       }
     },
     {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "Review the form, then confirm here to send the removal request."
+    },
+    {
+      "type": "click",
+      "selector": {
+        "label": "Submit request"
+      }
+    },
+    {
       "type": "wait_for_email_confirm",
       "expect_from": "noreply@example.com",
       "timeout_minutes": 60
+    },
+    {
+      "type": "click",
+      "selector": {
+        "label": "Done"
+      }
     }
   ],
   "verification": {
