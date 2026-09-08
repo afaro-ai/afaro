@@ -1,0 +1,19 @@
+# Personal profile data. Never tracked.
+profile.json
+profile.*.json
+!profile.example.json
+
+# Local run output. Redacted logs still stay out of git.
+logs/
+out/
+
+# Secrets
+.env
+.env.*
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
