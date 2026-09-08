@@ -73,7 +73,7 @@ A loopback URL is allowed in that manifest and refused everywhere else, which th
 
 ## Your profile
 
-Copy `profile.example.json` to a location outside this repository, fill in your own details, and give the orchestrator that path when it asks. The repository ignores `profile.json` and `profile.*.json` so a copy left in the working tree stays untracked.
+Copy `profile.example.json` into a folder of its own outside this repository and fill in your own details. That folder holds `profile.json` and the `logs/` directory the orchestrator writes to, and nothing else. Attach it and this repository as workspace folders at the start of a session; the orchestrator looks for `profile.json` in the attached folders before it asks for anything. The repository ignores `profile.json` and `profile.*.json` so a copy left in the working tree stays untracked.
 
 During a run, your profile is part of the conversation with Claude, which means it passes through Anthropic's API. Afaro stores nothing and sends nothing anywhere else. `docs/install.md` says this in plain words for a first-time reader.
 

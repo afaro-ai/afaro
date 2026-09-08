@@ -47,11 +47,13 @@ From the repository root, PowerShell:
 
 ```powershell
 Get-ChildItem skills -Directory | ForEach-Object {
-  Compress-Archive -Path $_.FullName -DestinationPath "$($_.Name).zip" -Force
+  tar -a -c -f "$($_.Name).zip" -C skills $_.Name
 }
 ```
 
 That writes five zips into the repository root. They are ignored by git. Upload each one, then toggle all five on.
+
+Use `tar`, not `Compress-Archive`. `Compress-Archive` writes the entry paths inside the zip with backslashes and the skill uploader rejects the file. This was found on the first run of this runbook.
 
 Confirm all five appear: `afaro-orchestrator`, `afaro-exposure-scan`, `afaro-removal-verify`, `afaro-followup`, `afaro-drop-submit`.
 
@@ -59,7 +61,9 @@ Confirm all five appear: `afaro-orchestrator`, `afaro-exposure-scan`, `afaro-rem
 
 ## Step 2. Serve the smoke page
 
-In a terminal, from the repository root:
+First open `http://127.0.0.1:8787/optout-form.html` in Chrome. If the page is already there, a server is already running on that port, from an earlier sitting or from someone else on the machine. Use the one that is running and skip the rest of this step. Starting a second one leaves you watching a page that a different process is serving.
+
+If the page does not load, start it. In a terminal, from the repository root:
 
 ```
 npm install

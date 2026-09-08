@@ -2,7 +2,7 @@
 
 This guide is for someone who has not installed anything like this before. It takes about twenty minutes. You do not need to know how to code.
 
-Everything below was checked against Anthropic's own documentation on 2026-09-08. Apps change. If a menu is not where this guide says, look for the nearest thing with the same name and tell whoever gave you this guide.
+Everything below was checked against Anthropic's own documentation on 2026-09-08, and the setup was run end to end on a Windows machine on the same day. Apps change. If a menu is not where this guide says, look for the nearest thing with the same name and tell whoever gave you this guide.
 
 ---
 
@@ -10,11 +10,11 @@ Everything below was checked against Anthropic's own documentation on 2026-09-08
 
 Three things.
 
-1. **A paid Claude plan.** Pro, Max, Team, or Enterprise. Afaro needs the Claude in Chrome extension, and that extension is only available on paid plans.
-2. **Google Chrome.** Not Edge, not Brave, not Safari, and not a phone. The extension only runs in Chrome on a computer.
+1. **A Claude Pro or Max plan.** Afaro runs in Cowork and needs Claude's computer use, which is what lets Claude work in a browser for you. Computer use in Cowork is on Pro and Max only. Team and Enterprise do not have it at this time, so those plans cannot run Afaro even though they can install the extension.
+2. **Google Chrome, with the Claude in Chrome extension installed and signed in to your Claude account.** Not Edge, not Brave, not Safari, and not a phone. The extension only runs in Chrome on a computer, and it does nothing until you sign in to it.
 3. **About twenty minutes**, once, plus a few minutes each time you run a removal later.
 
-You do not need to buy anything else. Afaro is free and there is no account to make.
+You do not need to buy anything else. Afaro is free and there is no Afaro account to make.
 
 ---
 
@@ -23,7 +23,7 @@ You do not need to buy anything else. Afaro is free and there is no account to m
 1. Open Chrome.
 2. Go to the Chrome Web Store and search for Claude in Chrome.
 3. Click **Add to Chrome**.
-4. Sign in with your Claude account.
+4. **Sign in with your Claude account.** The extension cannot do anything for you until you do.
 5. Pin the extension so you can see it, and accept the permissions it asks for.
 
 This extension is what lets Claude click and type on a web page for you, in your own browser, while you watch.
@@ -37,9 +37,7 @@ Reference: [Getting started with Claude in Chrome](https://support.claude.com/en
 Afaro's skills need Claude's code execution and file creation setting turned on.
 
 1. Open Claude's settings.
-2. Find the setting for creating and editing files, and turn it on.
-
-If you are on a Team or Enterprise plan and cannot find it, your organization's owner controls it.
+2. Go to **Capabilities** and turn on code execution and file creation.
 
 Reference: [Create and edit files with Claude](https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude).
 
@@ -47,15 +45,26 @@ Reference: [Create and edit files with Claude](https://support.claude.com/en/art
 
 ## Step 4. Add the Afaro skills
 
-Afaro is five skills. You add each one the same way.
+Afaro is five skills. Each one is uploaded as its own zip file, and the skill folder has to sit at the very top of the zip.
 
-1. Download the Afaro files to your computer.
-2. For each folder inside `skills/`, make a zip file of that folder. The folder itself has to be at the top of the zip, not inside another folder.
-3. In Claude's settings, find **Skills**, then **Add**, and upload the zip.
+1. Download the Afaro files to your computer. This guide calls that the Afaro folder.
+2. Open PowerShell in the Afaro folder and run these five lines. They write five zip files into the folder.
+
+   ```powershell
+   tar -a -c -f "afaro-orchestrator.zip" -C skills afaro-orchestrator
+   tar -a -c -f "afaro-exposure-scan.zip" -C skills afaro-exposure-scan
+   tar -a -c -f "afaro-removal-verify.zip" -C skills afaro-removal-verify
+   tar -a -c -f "afaro-followup.zip" -C skills afaro-followup
+   tar -a -c -f "afaro-drop-submit.zip" -C skills afaro-drop-submit
+   ```
+
+3. In Claude, go to **Customize**, then **Skills**, then the **+** button, then **+ Create skill**, then **Upload a skill**, and upload one zip.
 4. Turn the skill on.
 5. Repeat for the other four.
 
-The five are `afaro-orchestrator`, `afaro-exposure-scan`, `afaro-removal-verify`, `afaro-followup`, and `afaro-drop-submit`.
+Use `tar` as written above. Do not use PowerShell's `Compress-Archive` for this. It writes the folder paths inside the zip with backslashes, and the uploader rejects the file.
+
+Confirm all five are listed and switched on: `afaro-orchestrator`, `afaro-exposure-scan`, `afaro-removal-verify`, `afaro-followup`, `afaro-drop-submit`.
 
 One thing worth knowing: skills you add in the Claude app are yours alone, and they do not carry over to other places Claude runs. If you use Claude somewhere else too, you would add them there separately.
 
@@ -63,15 +72,19 @@ Reference: [How to create custom skills](https://support.claude.com/en/articles/
 
 ---
 
-## Step 5. Make your profile
+## Step 5. Make your profile folder
 
-Your profile is one small file with the details brokers list about you. It lives on your computer, in a folder you pick. It is the only place your information is written down.
+Your profile is one small file with the details brokers list about you. It lives on your computer in a folder of its own.
 
-1. Find `profile.example.json` in the Afaro files.
-2. Copy it somewhere you will remember, such as your Documents folder, and name the copy `profile.json`.
+1. Make a new folder **outside the Afaro folder**, at the top of a drive or in your Documents. Name it `afaro-local` if you want a name to copy. On the machine this was tested on it is `F:\afaro-local`.
+2. Find `profile.example.json` in the Afaro folder. Copy it into your new folder and name the copy `profile.json`.
 3. Open it in any text editor and replace the example details with your own.
 
-What goes in it: your full name, any other names you have gone by, your date of birth, your current address, addresses you have lived at before, your phone numbers, your email addresses, the state you live in, and the relatives brokers tend to list next to you.
+Keep that folder for your profile only. `profile.json` is the one file you put there. Afaro makes a `logs` folder inside it for its own record of each run, and nothing else belongs in it.
+
+Why it sits outside the Afaro folder: the Afaro folder is a copy of a public project, and your details never go into it, not even by accident.
+
+What goes in the profile: your full name, any other names you have gone by, your date of birth, your current address, addresses you have lived at before, your phone numbers, your email addresses, the state you live in, and the relatives brokers tend to list next to you.
 
 Why previous addresses and relatives: that is how the brokers connect their records, and how you tell which listing is yours.
 
@@ -79,22 +92,39 @@ Leave `"mode": "guided"` as it is. Guided means Claude stops and asks you before
 
 ---
 
-## Step 6. Know what happens to your data
+## Step 6. Attach your two folders at the start of every session
+
+Claude can only read folders you hand it. It cannot pick one for itself, so this is on you, every session, before you say anything else.
+
+At the start of a session, attach **two** workspace folders through the folder picker:
+
+1. Your profile folder, the one holding `profile.json`.
+2. The Afaro folder, so Claude can read the broker files it works from.
+
+Attach both. With only one of them, a run stops partway to ask for the other.
+
+**If you cannot attach folders**, there is a fallback: attach `profile.json` to the conversation itself, the way you would attach a file to any message. Runs work this way. The one thing you lose is the run log. With no folder to write into, Claude has nowhere to save it, so it gives you the log in the chat, and it is gone once you close the conversation. Attaching the folders is the better way round.
+
+Reference: [Desktop and filesystem access](https://claude.com/docs/third-party/claude-desktop/local-access).
+
+---
+
+## Step 7. Know what happens to your data
 
 Read this part before you start.
 
 - Your profile file stays on your computer. Afaro has no server, no account, and nowhere to send it.
 - When you run a removal, Claude reads your profile as part of the conversation, and that conversation goes to Anthropic's systems the way any Claude conversation does. That is how Claude works, and it is true of anything you type into Claude.
-- Afaro's own records of a run hold only the broker's name, the step, whether it worked, and the time. They never hold your name, address, phone number, or anything else about you.
+- Afaro's own record of a run holds only the broker's name, the step, whether it worked, and the time. It never holds your name, address, phone number, or anything else about you.
 - Nobody else's information belongs in your profile. Afaro removes listings for the person using it. A family member runs their own copy with their own file.
 
 ---
 
-## Step 7. Your first run
+## Step 8. Your first run
 
-1. Open Chrome and start a Claude conversation with the extension active.
-2. Say: **run an Afaro exposure scan**.
-3. Claude asks where your profile is. Tell it, or attach the file to the conversation.
+1. Open Cowork in the Claude app and start a session with Claude in Chrome as the browser.
+2. Attach your two folders, as in step 6.
+3. Say: **run an Afaro exposure scan**.
 4. Claude opens each broker's own search page and tells you which ones list you. It does not send anything in this step.
 5. When you are ready, say: **run the Afaro opt-outs for the brokers that found me**.
 
@@ -104,7 +134,7 @@ It also stops if a site shows a puzzle to prove you are human, puts up a block, 
 
 ---
 
-## Step 8. What to expect afterwards
+## Step 9. What to expect afterwards
 
 Removals take time. Each broker states its own window, usually one to six weeks, and Afaro tracks it for you.
 
@@ -116,7 +146,9 @@ Some brokers will not take a request through a form at all. They want a photo of
 
 ## If something goes wrong
 
+- **Claude does not seem to know about Afaro.** Check the five skills are switched on in settings, and that you are in a Cowork session with Claude in Chrome as the browser.
+- **Claude asks you to attach a folder partway through a run.** One of the two folders in step 6 was not attached. Attach it and start the run again.
 - **Claude says it cannot find a field on a form.** The broker changed the page. That is expected over time. Tell whoever maintains your copy of Afaro which broker it was.
 - **A site blocks the browser.** Afaro stops there on purpose. You can go to that site yourself and use its opt-out form by hand.
-- **Claude does not seem to know about Afaro.** Check the skills are switched on in settings, and that you are in a conversation with the Chrome extension active.
 - **You are not sure whether something was sent.** Ask Claude to show the run summary. It lists every broker and what happened.
+- **You cannot find your run log.** It is in the `logs` folder inside your profile folder, one file per run. If you used the fallback in step 6 and attached the profile file instead of the folder, there is no log on disk and the log was in the chat.
