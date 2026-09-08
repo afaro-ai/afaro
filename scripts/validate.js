@@ -225,6 +225,31 @@ function checkLoopback(manifest, dir) {
   return problems;
 }
 
+// A fill_field can take its value from the listing rather than from the
+// profile, which is how a broker that keys its opt-out to one listing URL gets
+// filled. That value only exists once a listing has been identified, so the
+// step that produces it has to come first.
+function checkListingValues(manifest) {
+  const problems = [];
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+  let seenFindListing = false;
+
+  steps.forEach((step, index) => {
+    if (!step || typeof step !== 'object') return;
+    if (step.type === 'find_listing') {
+      seenFindListing = true;
+      return;
+    }
+    if (step.type === 'fill_field' && typeof step.value_from_listing === 'string' && !seenFindListing) {
+      problems.push(
+        `step ${index} fills from the listing, but no find_listing step comes before it, so there is no listing to read`
+      );
+    }
+  });
+
+  return problems;
+}
+
 // The orchestrator checks profile_fields_required before it starts a broker, so
 // that list has to name every field the steps go on to read. A field the steps
 // use but the list omits turns into a stop halfway through a form.
@@ -275,6 +300,7 @@ function validateFile(validate, dir, fileName) {
   }
   problems.push(...checkProvenance(manifest, fileName, dir));
   problems.push(...checkGates(manifest));
+  problems.push(...checkListingValues(manifest));
   problems.push(...checkProfileFields(manifest));
   problems.push(...checkLoopback(manifest, dir));
   return problems;

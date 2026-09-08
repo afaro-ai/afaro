@@ -85,6 +85,12 @@ const cases = [
     expect: 'steps read emails, which is not in profile_fields_required'
   },
   {
+    name: 'a fill from the listing with no find_listing before it fails',
+    dir: 'tests/fixtures/listing-value-without-find-listing',
+    exitCode: 1,
+    expect: 'no find_listing step comes before it'
+  },
+  {
     name: 'a loopback URL outside the smoke manifest fails',
     dir: 'tests/fixtures/loopback-outside-smoke',
     exitCode: 1,

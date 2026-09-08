@@ -18,14 +18,6 @@
       "note": "Test fixture. Not a real broker."
     },
     {
-      "type": "find_listing",
-      "match_on": [
-        "full_name",
-        "current_address.city"
-      ],
-      "on_not_found": "stop"
-    },
-    {
       "type": "navigate",
       "url": "https://example.com/opt-out"
     },
@@ -45,12 +37,6 @@
       "value_from": "emails"
     },
     {
-      "type": "click",
-      "selector": {
-        "label": "Submit request"
-      }
-    },
-    {
       "type": "human_gate",
       "reason": "submit",
       "prompt": "Review the form, then confirm here to send the removal request."
@@ -65,12 +51,6 @@
       "type": "wait_for_email_confirm",
       "expect_from": "noreply@example.com",
       "timeout_minutes": 60
-    },
-    {
-      "type": "click",
-      "selector": {
-        "label": "Done"
-      }
     }
   ],
   "verification": {

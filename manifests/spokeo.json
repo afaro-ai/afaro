@@ -1,0 +1,72 @@
+{
+  "id": "spokeo",
+  "name": "Spokeo",
+  "home_url": "https://www.spokeo.com/",
+  "search_url_template": "https://www.spokeo.com/search?q={{full_name}}",
+  "optout_url": "https://www.spokeo.com/optout",
+  "method": "search_then_form",
+  "profile_fields_required": ["full_name", "current_address.city", "emails"],
+  "steps": [
+    {
+      "type": "navigate",
+      "url": "https://www.spokeo.com/search?q={{full_name}}",
+      "note": "The opt-out page asks for the URL of the profile, so the listing is found first. This is the search the site's own box in the page header submits, and it takes a name."
+    },
+    {
+      "type": "find_listing",
+      "match_on": ["full_name", "current_address.city"],
+      "on_not_found": "stop",
+      "note": "The opt-out page states that a person may have several listings, that each one has its own URL, and that each is opted out individually. This step identifies one listing, not the person."
+    },
+    {
+      "type": "navigate",
+      "url": "https://www.spokeo.com/optout"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "URL", "css": "form.optout_container input[name=\"url\"]" },
+      "value_from_listing": "url",
+      "note": "The page asks for the URL of the profile and gives the format: https://www.spokeo.com/Smith-Sample/Houston/TX/p12345678"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "EMAIL ADDRESS", "css": "form.optout_container input[name=\"email\"]" },
+      "value_from": "emails"
+    },
+    {
+      "type": "human_gate",
+      "reason": "captcha",
+      "prompt": "Spokeo shows an I am not a robot checkbox between the email field and the OPT OUT button. Tick it yourself, then say when it is done.",
+      "note": "Handed over, never worked around. Nothing here solves it."
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "The listing URL and the email address are filled in and the checkbox is ticked. Check both values, then say yes to send the opt-out request."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "OPT OUT", "css": "form.optout_container button[type=\"submit\"]" }
+    },
+    {
+      "type": "wait_for_email_confirm",
+      "expect_from": "Spokeo",
+      "timeout_minutes": 60,
+      "note": "The page says a confirmation email follows and that the link in it has to be clicked to complete the process. It does not name the sending address or say how long the email takes, so match on the sender name and read the timeout as a ceiling on waiting rather than a figure from the page."
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "The listing URL that was opted out no longer returns that listing. The page states each listing has its own URL, so a listing found at a different URL is another listing rather than a failed removal."
+  },
+  "recheck_after_days": 2,
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": "The page asks for the listing URL and an email address, and nothing else."
+  },
+  "notes": "Written from the opt-out page captured on verified_on. Four things that page states and a run depends on. Each listing has its own URL and is opted out one at a time, so a person with several listings runs this once per listing. The request is processed in 24-48 hours. The process completes only when the person clicks the link in the confirmation email. Information may reappear later without notice, and the page asks people to check again for new listings. The page also carries the site's own search box in its header, which is the search this manifest uses.",
+  "source_url": "https://www.spokeo.com/optout",
+  "verified_on": "2026-09-08",
+  "source_capture": "captures/spokeo-optout.jpg"
+}

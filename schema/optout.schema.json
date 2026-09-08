@@ -235,7 +235,8 @@
       "required": ["type", "selector"],
       "oneOf": [
         { "properties": { "value_from": true }, "required": ["value_from"] },
-        { "properties": { "value_literal": true }, "required": ["value_literal"] }
+        { "properties": { "value_literal": true }, "required": ["value_literal"] },
+        { "properties": { "value_from_listing": true }, "required": ["value_from_listing"] }
       ],
       "properties": {
         "type": { "const": "fill_field" },
@@ -247,6 +248,11 @@
         "value_literal": {
           "description": "A fixed value the form needs, for example a reason code offered by the page itself.",
           "type": "string"
+        },
+        "value_from_listing": {
+          "description": "Take the value from the listing an earlier find_listing step identified, not from the profile. url is that listing's address as the browser shows it. Brokers that key an opt-out to one listing ask for exactly this, and no profile can hold it. The validator refuses this without a find_listing step before it.",
+          "type": "string",
+          "enum": ["url"]
         },
         "note": { "type": "string" }
       }

@@ -2,7 +2,7 @@
 
 One JSON file per broker, named `<id>.json`, validated against `../schema/optout.schema.json`. Captures live in `captures/`.
 
-This directory is empty for now. Manifests are added one broker at a time, each with its capture.
+Manifests are added one broker at a time, each with its capture committed before the manifest is written. The count of brokers is whatever this directory holds; nothing hardcodes a list.
 
 ## The authoring rule
 
@@ -23,6 +23,8 @@ No step, field, selector, or note may describe anything that is not visible on t
 - `verified_on` is not in the future.
 - A manifest that can send anything carries a `human_gate` step with reason `submit`, and the last `click` step comes after it.
 - A broker requiring an ID, a notarized document, an account, or a payment has `method: manual` and no `fill_field` or `click` steps. Afaro does not automate those brokers.
+- Every profile field the steps read is named in `profile_fields_required`.
+- A step that fills a field from the listing has a `find_listing` step before it, because the listing URL does not exist until one has been found.
 
 ## Captures
 

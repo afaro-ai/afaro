@@ -106,6 +106,15 @@ const cases = [
     change: (m) => {
       m.profile_fields_required = m.profile_fields_required.filter((f) => f !== 'emails');
     }
+  },
+  {
+    // A step that fills from the listing, with the step that finds the listing
+    // taken away. Nothing produces the URL it would type.
+    dir: 'listing-value-without-find-listing',
+    capture: true,
+    change: (m) => {
+      m.steps = m.steps.filter((s) => s.type !== 'find_listing');
+    }
   }
 ];
 

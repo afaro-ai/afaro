@@ -22,13 +22,17 @@ Read the search results the browser is showing and decide whether one of them is
 
 Never open a result by constructing its URL. Click it the way a person would.
 
+Keep the address of the listing you settled on. Brokers that opt out one listing at a time ask for that URL on their form, and `fill_field` reads it back through `value_from_listing`.
+
 ## fill_field
 
-Fields: `selector`, then exactly one of `value_from` or `value_literal`, optional `note`.
+Fields: `selector`, then exactly one of `value_from`, `value_literal`, or `value_from_listing`, optional `note`.
 
 `selector.label` is the visible label on the page as it appeared on `verified_on`. Find the control by that label first. `selector.css` is a fallback and is expected to drift.
 
 `value_from` is a profile field path. `value_literal` is a fixed value the page itself offers, such as a reason code in a dropdown.
+
+`value_from_listing` is `url`, the address of the listing the earlier `find_listing` step identified, as the browser shows it. It exists because a broker that keys its opt-out to one listing asks for that URL and no profile holds it. The validator refuses a manifest that fills from the listing without a `find_listing` step before it. Never type a description of a value into a form: if the URL is not known, stop.
 
 If the field cannot be found, stop. Do not fill the nearest similar field.
 

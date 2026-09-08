@@ -34,7 +34,7 @@
         "label": "Profile URL",
         "css": "#profile-url"
       },
-      "value_literal": "the listing URL found above"
+      "value_from_listing": "url"
     },
     {
       "type": "fill_field",
