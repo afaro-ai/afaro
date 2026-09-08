@@ -25,7 +25,7 @@
     {
       "type": "fill_field",
       "selector": { "label": "URL", "css": "form.optout_container input[name=\"url\"]" },
-      "value_from_listing": "url",
+      "from_listing": "url",
       "note": "The page asks for the URL of the profile and gives the format: https://www.spokeo.com/Smith-Sample/Houston/TX/p12345678"
     },
     {

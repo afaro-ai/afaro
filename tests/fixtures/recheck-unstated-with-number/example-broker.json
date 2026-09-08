@@ -45,22 +45,9 @@
       "value_from": "emails"
     },
     {
-      "type": "click",
-      "selector": {
-        "label": "Submit request"
-      }
-    },
-    {
       "type": "human_gate",
       "reason": "submit",
       "prompt": "Review the form, then confirm here to send the removal request."
-    },
-    {
-      "type": "fill_field",
-      "selector": {
-        "label": "Email address"
-      },
-      "value_from": "emails"
     },
     {
       "type": "click",
@@ -87,5 +74,6 @@
   "notes": "Fixture used by the validator tests. Example Broker does not exist.",
   "source_url": "https://example.com/opt-out",
   "verified_on": "2026-09-08",
-  "source_capture": "captures/example-broker-optout.png"
+  "source_capture": "captures/example-broker-optout.png",
+  "recheck_stated": false
 }

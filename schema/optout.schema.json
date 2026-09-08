@@ -68,8 +68,8 @@
     },
     "verification": { "$ref": "#/$defs/verification" },
     "recheck_after_days": {
-      "description": "The broker's stated processing window, in days, as written on the captured page. removal-verify waits this long before rechecking.",
-      "type": "integer",
+      "description": "The broker's stated processing window, in days, as written on the captured page. removal-verify waits this long before rechecking. null when the page states no window, which pairs with recheck_stated false and leaves the wait to the orchestrator's default.",
+      "type": ["integer", "null"],
       "minimum": 1,
       "maximum": 365
     },
@@ -94,12 +94,8 @@
       "description": "Path to the committed screenshot of source_url, relative to the manifests directory. The validator fails if the file is absent.",
       "$ref": "#/$defs/capture_path"
     },
-    "person_finishes_on_site": {
-      "description": "True when the steps stop before the broker's flow does, because the rest of that flow is not on the public opt-out page. The orchestrator reports the broker as handed to the person, not as submitted, and schedules no recheck until the person says the flow was finished. Absent means the steps carry the request to the end.",
-      "type": "boolean"
-    },
-    "recheck_after_days_from_page": {
-      "description": "False when the page states no processing window and recheck_after_days is a waiting period chosen by the author. Absent or true means the number is the broker's own, copied from the captured page.",
+    "recheck_stated": {
+      "description": "False when the captured page states no processing window. recheck_after_days is then null and the orchestrator falls back to its own default, saying the broker stated none. Absent or true means the number is the broker's own, copied from the captured page.",
       "type": "boolean"
     }
   },
@@ -207,8 +203,29 @@
         { "$ref": "#/$defs/step_click" },
         { "$ref": "#/$defs/step_wait_for_email_confirm" },
         { "$ref": "#/$defs/step_read_email_confirm" },
-        { "$ref": "#/$defs/step_human_gate" }
+        { "$ref": "#/$defs/step_human_gate" },
+        { "$ref": "#/$defs/step_handoff" }
       ]
+    },
+    "step_handoff": {
+      "description": "The manifest stops here and the broker's flow does not. The person carries it the rest of the way in their own browser. Terminal: it is the last step, there is at most one, and the outcome for this broker is handed off at that step, never submitted. No recheck clock starts.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "reason", "prompt"],
+      "properties": {
+        "type": { "const": "handoff" },
+        "reason": {
+          "description": "page_not_captured: the rest of the flow was not on the public page this manifest was written from. requires_listing_url: the flow cannot go on without a listing URL that is not available. requires_email_link: the flow completes in a link the broker emails.",
+          "type": "string",
+          "enum": ["page_not_captured", "requires_listing_url", "requires_email_link"]
+        },
+        "prompt": {
+          "description": "What is left for the person to do, in plain words.",
+          "type": "string",
+          "minLength": 1
+        },
+        "note": { "type": "string" }
+      }
     },
     "step_navigate": {
       "type": "object",
@@ -244,7 +261,7 @@
       "oneOf": [
         { "properties": { "value_from": true }, "required": ["value_from"] },
         { "properties": { "value_literal": true }, "required": ["value_literal"] },
-        { "properties": { "value_from_listing": true }, "required": ["value_from_listing"] }
+        { "properties": { "from_listing": true }, "required": ["from_listing"] }
       ],
       "properties": {
         "type": { "const": "fill_field" },
@@ -257,8 +274,8 @@
           "description": "A fixed value the form needs, for example a reason code offered by the page itself.",
           "type": "string"
         },
-        "value_from_listing": {
-          "description": "Take the value from the listing an earlier find_listing step identified, not from the profile. url is that listing's address as the browser shows it. Brokers that key an opt-out to one listing ask for exactly this, and no profile can hold it. The validator refuses this without a find_listing step before it.",
+        "from_listing": {
+          "description": "Take the value from the listing an earlier find_listing step identified. The value never comes from the profile and never appears in a run log. url is that listing's address as the browser shows it; further attributes of the find_listing result are added here when a captured page asks for one. The validator refuses this without a find_listing step before it.",
           "type": "string",
           "enum": ["url"]
         },

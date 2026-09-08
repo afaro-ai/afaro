@@ -37,9 +37,9 @@ If there is no record of a submission for a broker, say so rather than assuming 
 
 **The window is the broker's own number where the broker states one.** `recheck_after_days` is copied from the broker's public page. Waiting it out is the whole point of this skill. Do not shorten it because the person is impatient, and say plainly that some brokers take longer than they state.
 
-Some pages state no window at all. Those manifests carry `recheck_after_days_from_page: false`, and their number is a waiting period the manifest author chose. Never present that number to the person as the broker's own. Say the broker states no window and this is how long the recheck waits.
+Some pages state no window at all. Those manifests carry `recheck_stated: false` and a null `recheck_after_days`. Wait 30 days, and say plainly that the broker stated no window and 30 is Afaro's number. Never present it as the broker's own.
 
-**A broker the person had to finish themselves is not a filed request yet.** A manifest carrying `person_finishes_on_site: true` stops before the broker's flow does. Do not start its window from the run that reached that point. Ask the person whether they finished the flow and when, and count from the day they say, or leave the broker out of the due list until they answer.
+**A broker that ended on a handoff is not a filed request.** A manifest whose last step is `handoff` stops before the broker's flow does, and the run that reached it filed nothing. Do not start a window from that run. Ask the person whether they finished the flow and on what day, and count from the day they give. Until they answer, the broker is not on the due list.
 
 **Verification follows the manifest.** `verification.method` is `search`, `email`, or `status_page`, and `verification.success_when` says in plain words what a removed listing looks like.
 

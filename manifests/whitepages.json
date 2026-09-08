@@ -27,7 +27,7 @@
         "label": "Copy and paste the URL of your profile",
         "css": "#suppression-requests-person-url"
       },
-      "value_from_listing": "url",
+      "from_listing": "url",
       "note": "The one field on the page. Its visible text is the instruction inside the box."
     },
     {
@@ -38,21 +38,26 @@
     {
       "type": "click",
       "selector": { "label": "Next" }
+    },
+    {
+      "type": "handoff",
+      "reason": "page_not_captured",
+      "prompt": "Whitepages is now on step 2 of 5. The remaining steps were not on the public opt-out page this manifest was written from, so finish them in the browser yourself. Tell me what each one asked for, and say when the request is filed.",
+      "note": "Nothing about steps 2 to 5 is assumed here. What they ask for is recorded the first time a person walks them."
     }
   ],
   "verification": {
     "method": "search",
     "success_when": "The listing no longer appears in the site's own people search for this name and location. The page says a person can opt out and have their listing removed from the Whitepages website."
   },
-  "recheck_after_days": 14,
-  "recheck_after_days_from_page": false,
-  "person_finishes_on_site": true,
+  "recheck_after_days": null,
+  "recheck_stated": false,
   "id_requirements": {
     "required": false,
     "kinds": [],
     "note": "Step 1 asks for the URL of the profile and nothing else. What the remaining steps ask for is not on the public page."
   },
-  "notes": "Written from the opt-out page captured on verified_on, which prints STEP 1 OF 5 and holds one field and a Next button. The other four steps sit behind a real profile URL and were not visible, so they are not described here and nothing about them is assumed. The manifest ends where the page ends: it finds the listing, fills its URL, gates, and clicks Next, and the person carries the flow the rest of the way on screen, which is what person_finishes_on_site records. recheck_after_days is 14 because the page states no processing window, which is what recheck_after_days_from_page records; it is a waiting period, not a figure from the page. What the capture shows and what it does not: the heading, the step marker, the sentence, the field, the button, and the site's own people search are all on the image; the css fallback in the selector and the search query string were read from the page's own markup on the same visit, and the image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it.",
+  "notes": "Written from the opt-out page captured on verified_on, which prints STEP 1 OF 5 and holds one field and a Next button. The other four steps sit behind a real profile URL and were not visible, so they are not described here and nothing about them is assumed. The manifest ends where the page ends: it finds the listing, fills its URL, gates, clicks Next, and hands off. recheck_after_days is null and recheck_stated is false because the page states no processing window, so the wait is the orchestrator's default rather than a figure of anyone's dressed up as the broker's. What the capture shows and what it does not: the heading, the step marker, the sentence, the field, the button, and the site's own people search are all on the image; the css fallback in the selector and the search query string were read from the page's own markup on the same visit, and the image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it.",
   "source_url": "https://www.whitepages.com/suppression-requests",
   "verified_on": "2026-09-08",
   "source_capture": "captures/whitepages-optout.jpg"

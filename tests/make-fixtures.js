@@ -112,6 +112,7 @@ const cases = [
     // trick: a fill placed after the gate. The old check took the last fill
     // anywhere in the list, so a fill after the gate left an empty window
     // between them and the early send went unseen. Both problems are reported.
+    // Stays permanently, by ruling, alongside click-before-gate.
     dir: 'fill-after-gate',
     capture: true,
     change: (m) => {
@@ -132,6 +133,37 @@ const cases = [
     capture: true,
     change: (m) => {
       m.steps = m.steps.filter((s) => s.type !== 'find_listing');
+    }
+  },
+  {
+    // A handoff with work after it. A handoff is where the manifest stops,
+    // so a step after one is a step nobody is watching Afaro take.
+    dir: 'handoff-not-terminal',
+    capture: true,
+    change: (m) => {
+      m.steps.push({
+        type: 'handoff',
+        reason: 'page_not_captured',
+        prompt: 'Finish the remaining steps in the browser.'
+      });
+      m.steps.push({ type: 'click', selector: { label: 'Done' } });
+    }
+  },
+  {
+    // No window on the page and nothing saying so. The number would read as
+    // the broker's own.
+    dir: 'recheck-null-without-flag',
+    capture: true,
+    change: (m) => {
+      m.recheck_after_days = null;
+    }
+  },
+  {
+    // The reverse: the page states no window, and a number sits there anyway.
+    dir: 'recheck-unstated-with-number',
+    capture: true,
+    change: (m) => {
+      m.recheck_stated = false;
     }
   }
 ];

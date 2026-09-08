@@ -103,6 +103,24 @@ const cases = [
     expect: 'no find_listing step comes before it'
   },
   {
+    name: 'a step after a handoff fails',
+    dir: 'tests/fixtures/handoff-not-terminal',
+    exitCode: 1,
+    expect: 'a handoff is where the manifest ends'
+  },
+  {
+    name: 'a null recheck window with nothing saying the page stated none fails',
+    dir: 'tests/fixtures/recheck-null-without-flag',
+    exitCode: 1,
+    expect: 'recheck_after_days is null, so recheck_stated must be false'
+  },
+  {
+    name: 'an unstated recheck window carrying a number anyway fails',
+    dir: 'tests/fixtures/recheck-unstated-with-number',
+    exitCode: 1,
+    expect: 'recheck_stated is false, so recheck_after_days must be null'
+  },
+  {
     name: 'a loopback URL outside the smoke manifest fails',
     dir: 'tests/fixtures/loopback-outside-smoke',
     exitCode: 1,

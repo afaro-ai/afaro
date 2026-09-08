@@ -255,12 +255,53 @@ function checkListingValues(manifest) {
       seenFindListing = true;
       return;
     }
-    if (step.type === 'fill_field' && typeof step.value_from_listing === 'string' && !seenFindListing) {
+    if (step.type === 'fill_field' && typeof step.from_listing === 'string' && !seenFindListing) {
       problems.push(
         `step ${index} fills from the listing, but no find_listing step comes before it, so there is no listing to read`
       );
     }
   });
+
+  return problems;
+}
+
+// handoff says the manifest stops before the broker's flow does. It is the
+// last thing that happens, because anything after it would be a step the
+// person is no longer watching Afaro take.
+function checkHandoff(manifest) {
+  const problems = [];
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+  const handoffs = steps
+    .map((step, index) => ({ step, index }))
+    .filter(({ step }) => step && typeof step === 'object' && step.type === 'handoff');
+
+  if (handoffs.length > 1) {
+    problems.push(`${handoffs.length} handoff steps, so it is unclear where the manifest stops`);
+    return problems;
+  }
+  if (handoffs.length === 1 && handoffs[0].index !== steps.length - 1) {
+    problems.push(
+      `step ${handoffs[0].index} is a handoff with ${steps.length - 1 - handoffs[0].index} step(s) after it, and a handoff is where the manifest ends`
+    );
+  }
+
+  return problems;
+}
+
+// A broker that states no processing window has no number to copy. The pair
+// says so out loud rather than leaving a figure of the author's looking like
+// the broker's own.
+function checkRecheckWindow(manifest) {
+  const problems = [];
+  const days = manifest.recheck_after_days;
+  const stated = manifest.recheck_stated;
+
+  if (days === null && stated !== false) {
+    problems.push('recheck_after_days is null, so recheck_stated must be false');
+  }
+  if (stated === false && days !== null) {
+    problems.push('recheck_stated is false, so recheck_after_days must be null and the wait left to the orchestrator');
+  }
 
   return problems;
 }
@@ -316,6 +357,8 @@ function validateFile(validate, dir, fileName) {
   problems.push(...checkProvenance(manifest, fileName, dir));
   problems.push(...checkGates(manifest));
   problems.push(...checkListingValues(manifest));
+  problems.push(...checkHandoff(manifest));
+  problems.push(...checkRecheckWindow(manifest));
   problems.push(...checkProfileFields(manifest));
   problems.push(...checkLoopback(manifest, dir));
   return problems;
