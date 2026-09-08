@@ -1,0 +1,29 @@
+{
+  "mode": "guided",
+  "full_name": "Jane Quinn Example",
+  "first_name": "Jane",
+  "middle_name": "Quinn",
+  "last_name": "Example",
+  "aliases": ["Jane Q Example", "Jane Sample"],
+  "date_of_birth": "1980-01-31",
+  "state_of_residence": "CA",
+  "current_address": {
+    "line1": "100 Example Street",
+    "line2": "Apt 4",
+    "city": "Sacramento",
+    "state": "CA",
+    "postal_code": "95814"
+  },
+  "prior_addresses": [
+    {
+      "line1": "22 Sample Road",
+      "line2": "",
+      "city": "Reno",
+      "state": "NV",
+      "postal_code": "89501"
+    }
+  ],
+  "phones": ["555-0100"],
+  "emails": ["jane.example@example.com"],
+  "relatives": ["John Example", "Mary Example"]
+}

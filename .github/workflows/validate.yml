@@ -1,0 +1,33 @@
+name: validate
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  manifests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Validator self-checks
+        run: npm test
+
+      - name: Validate every manifest
+        run: npm run validate
+
+      - name: No profile data in tracked files
+        run: |
+          if git ls-files | grep -E '(^|/)profile\.json$|(^|/)profile\..+\.json$' | grep -v '^profile\.example\.json$'; then
+            echo "A profile file is tracked. Remove it."
+            exit 1
+          fi
+          echo "No tracked profile files."
