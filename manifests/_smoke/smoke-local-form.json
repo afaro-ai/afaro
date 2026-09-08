@@ -1,0 +1,55 @@
+{
+  "id": "smoke-local-form",
+  "name": "Example Directory",
+  "home_url": "http://127.0.0.1:8787/optout-form.html",
+  "search_url_template": "http://127.0.0.1:8787/optout-form.html?name={{full_name}}",
+  "optout_url": "http://127.0.0.1:8787/optout-form.html",
+  "method": "search_then_form",
+  "profile_fields_required": ["full_name", "current_address.city", "emails"],
+  "steps": [
+    {
+      "type": "navigate",
+      "url": "http://127.0.0.1:8787/optout-form.html",
+      "note": "Served from tests/smoke/ by npm run smoke. Nothing on this page leaves the machine."
+    },
+    {
+      "type": "find_listing",
+      "match_on": ["full_name", "current_address.city"],
+      "on_not_found": "stop",
+      "note": "Three results are shown. Only the first matches both the name and the city."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Full name on the listing", "css": "#listing-name" },
+      "value_from": "full_name"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Email address", "css": "#contact-email" },
+      "value_from": "emails"
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "The form is filled. Check both fields, then say yes to submit the smoke request."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "Submit request", "css": "#submit-request" }
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "The page shows a Request received panel with a reference beginning SMOKE."
+  },
+  "recheck_after_days": 14,
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": ""
+  },
+  "notes": "Not a broker. This manifest drives a page checked into this repository so a run can be watched end to end without touching a real site. The page handles its own submission and makes no network request. Serve it with npm run smoke before running this manifest.",
+  "source_url": "http://127.0.0.1:8787/optout-form.html",
+  "verified_on": "2026-09-08",
+  "source_capture": "captures/smoke-local-form-optout.jpg"
+}

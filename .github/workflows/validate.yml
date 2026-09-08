@@ -27,6 +27,9 @@ jobs:
       - name: Validate every manifest
         run: npm run validate
 
+      - name: Validate the smoke manifest
+        run: npm run validate:smoke
+
       - name: Fixtures match the manifest they derive from
         run: |
           node tests/make-fixtures.js

@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Example Directory: opt out</title>
+<style>
+  :root { color-scheme: light; }
+  body {
+    margin: 0;
+    padding: 2rem 1.25rem 4rem;
+    font: 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    color: #1a1a1a;
+    background: #fbfbfa;
+  }
+  main { max-width: 44rem; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
+  h2 { font-size: 1.1rem; margin: 2.25rem 0 .75rem; }
+  .lede { color: #555; margin: 0 0 2rem; }
+  .listing {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    padding: .9rem 1rem;
+    margin-bottom: .6rem;
+  }
+  .listing p { margin: .15rem 0; }
+  .listing .who { font-weight: 600; }
+  .listing .where { color: #555; font-size: .92rem; }
+  form { border: 1px solid #ddd; border-radius: 8px; background: #fff; padding: 1.25rem; }
+  label { display: block; font-weight: 600; margin: 1rem 0 .3rem; }
+  label:first-of-type { margin-top: 0; }
+  input[type="text"], input[type="email"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: .55rem .65rem;
+    font: inherit;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    background: #fff;
+  }
+  button {
+    margin-top: 1.4rem;
+    padding: .6rem 1.1rem;
+    font: inherit;
+    font-weight: 600;
+    color: #fff;
+    background: #1a1a1a;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  #confirmation {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid #7a9;
+    border-left-width: 4px;
+    border-radius: 6px;
+    background: #f2faf5;
+  }
+  #confirmation h2 { margin-top: 0; }
+  .note { color: #666; font-size: .88rem; margin-top: 2.5rem; }
+</style>
+</head>
+<body>
+<main>
+
+  <h1>Example Directory</h1>
+  <p class="lede">A fake people-search page. It exists only to test that Afaro walks a manifest in order and stops at the gate. Nothing here leaves your computer.</p>
+
+  <h2>Search results for "Jane Quinn Example"</h2>
+
+  <div class="listing">
+    <p class="who">Jane Quinn Example, 46</p>
+    <p class="where">Sacramento, CA</p>
+    <p class="where">Related: John Example, Mary Example</p>
+  </div>
+
+  <div class="listing">
+    <p class="who">Janet Q. Example, 61</p>
+    <p class="where">Portland, OR</p>
+  </div>
+
+  <div class="listing">
+    <p class="who">Jane Example-Sample, 33</p>
+    <p class="where">Austin, TX</p>
+  </div>
+
+  <h2>Remove a listing</h2>
+
+  <form id="optout" autocomplete="off">
+    <label for="listing-name">Full name on the listing</label>
+    <input type="text" id="listing-name" name="listing-name">
+
+    <label for="contact-email">Email address</label>
+    <input type="email" id="contact-email" name="contact-email">
+
+    <button type="submit" id="submit-request">Submit request</button>
+  </form>
+
+  <div id="confirmation" hidden>
+    <h2>Request received</h2>
+    <p>Reference <span id="reference"></span>. Nothing was sent anywhere. This page handled the submission itself.</p>
+    <p>Removal usually takes up to 14 days.</p>
+  </div>
+
+  <p class="note">Served from tests/smoke/ in the afaro repository. No network requests, no storage, no tracking.</p>
+
+</main>
+
+<script>
+  // The submit handler stays local on purpose. A smoke test that posted
+  // somewhere would be testing the network, not the orchestrator.
+  document.getElementById('optout').addEventListener('submit', function (event) {
+    event.preventDefault();
+    var reference = 'SMOKE-' + Math.random().toString(36).slice(2, 8).toUpperCase();
+    document.getElementById('reference').textContent = reference;
+    document.getElementById('confirmation').hidden = false;
+    console.log('[afaro-smoke] submitted, reference ' + reference);
+  });
+</script>
+
+</body>
+</html>

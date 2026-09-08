@@ -6,7 +6,9 @@
   "type": "commonjs",
   "scripts": {
     "validate": "node scripts/validate.js",
-    "test": "node tests/validate.test.js"
+    "test": "node tests/validate.test.js",
+    "smoke": "node scripts/serve-smoke.js",
+    "validate:smoke": "node scripts/validate.js --dir manifests/_smoke"
   },
   "devDependencies": {
     "ajv": "8.17.1",

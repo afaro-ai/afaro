@@ -37,17 +37,17 @@
     "home_url": {
       "type": "string",
       "format": "uri",
-      "pattern": "^https://"
+      "$ref": "#/$defs/page_url"
     },
     "search_url_template": {
       "description": "The broker's public search interface, with profile placeholders in double braces. This is the same URL a person gets by using the site's own search box.",
       "type": "string",
-      "pattern": "^https://"
+      "$ref": "#/$defs/page_url"
     },
     "optout_url": {
       "type": "string",
       "format": "uri",
-      "pattern": "^https://"
+      "$ref": "#/$defs/page_url"
     },
     "method": {
       "description": "How the opt-out is filed. manual means the broker requires an account, a payment, a notarized document, or a government ID, and Afaro does not automate it.",
@@ -82,7 +82,7 @@
       "description": "The broker's public opt-out page this manifest was built from.",
       "type": "string",
       "format": "uri",
-      "pattern": "^https://"
+      "$ref": "#/$defs/page_url"
     },
     "verified_on": {
       "description": "The date source_url was read and captured, YYYY-MM-DD.",
@@ -96,6 +96,11 @@
     }
   },
   "$defs": {
+    "page_url": {
+      "description": "A public page over https. Loopback over http is allowed only for the checked-in smoke manifest, and the validator refuses it anywhere else.",
+      "type": "string",
+      "pattern": "^(https://|http://(localhost|127\\.0\\.0\\.1)(:[0-9]{1,5})?/)"
+    },
     "profile_field_path": {
       "type": "string",
       "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)*(\\[\\])?$",
@@ -130,7 +135,7 @@
         "url_template": {
           "description": "Required when method is status_page. Profile placeholders in double braces.",
           "type": "string",
-          "pattern": "^https://"
+          "$ref": "#/$defs/page_url"
         },
         "success_when": {
           "description": "Plain description of what a removed listing looks like, taken from the captured page or from the search result page.",
@@ -203,7 +208,7 @@
       "required": ["type", "url"],
       "properties": {
         "type": { "const": "navigate" },
-        "url": { "type": "string", "pattern": "^https://" },
+        "url": { "type": "string", "$ref": "#/$defs/page_url" },
         "note": { "type": "string" }
       }
     },

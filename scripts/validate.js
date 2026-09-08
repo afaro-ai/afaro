@@ -190,6 +190,41 @@ function checkGates(manifest) {
   return problems;
 }
 
+// The schema lets a URL point at loopback so the checked-in smoke manifest can
+// drive a page served from this repository. That exception is only for the
+// smoke manifest: it has to be named smoke-something and live in _smoke. A
+// broker manifest pointing at localhost is not a broker manifest.
+const LOOPBACK = /^http:\/\/(localhost|127\.0\.0\.1)([:/]|$)/;
+
+function checkLoopback(manifest, dir) {
+  const problems = [];
+  const isSmoke =
+    typeof manifest.id === 'string' &&
+    manifest.id.startsWith('smoke-') &&
+    path.basename(path.resolve(dir)) === '_smoke';
+
+  const urls = [
+    ['home_url', manifest.home_url],
+    ['search_url_template', manifest.search_url_template],
+    ['optout_url', manifest.optout_url],
+    ['source_url', manifest.source_url],
+    ['verification.url_template', manifest.verification && manifest.verification.url_template]
+  ];
+  for (const step of Array.isArray(manifest.steps) ? manifest.steps : []) {
+    if (step && typeof step === 'object' && step.type === 'navigate') {
+      urls.push(['a navigate step', step.url]);
+    }
+  }
+
+  for (const [where, value] of urls) {
+    if (typeof value === 'string' && LOOPBACK.test(value) && !isSmoke) {
+      problems.push(`${where} points at loopback, which only the smoke manifest may do`);
+    }
+  }
+
+  return problems;
+}
+
 // The orchestrator checks profile_fields_required before it starts a broker, so
 // that list has to name every field the steps go on to read. A field the steps
 // use but the list omits turns into a stop halfway through a form.
@@ -241,6 +276,7 @@ function validateFile(validate, dir, fileName) {
   problems.push(...checkProvenance(manifest, fileName, dir));
   problems.push(...checkGates(manifest));
   problems.push(...checkProfileFields(manifest));
+  problems.push(...checkLoopback(manifest, dir));
   return problems;
 }
 

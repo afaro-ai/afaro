@@ -43,11 +43,14 @@ These hold in every mode.
 ```
 schema/optout.schema.json   the manifest schema, JSON Schema 2020-12
 scripts/validate.js         the validator, run by CI on every push
+scripts/serve-smoke.js      serves the smoke page on loopback
 manifests/                  one JSON file per broker, with captures/ alongside
+manifests/_smoke/           one manifest that drives a page in this repository
 profile.example.json        the shape of a profile, filled with placeholder values
 skills/                     the five skills
 docs/install.md             setup for a non-technical reader
-tests/                      validator fixtures and checks
+docs/smoke-test.md          the runtime check that comes before any broker
+tests/                      validator fixtures, checks, and the smoke page
 ```
 
 ## Running the validator
@@ -59,6 +62,14 @@ npm test
 ```
 
 `npm run validate` reads every `.json` file in `manifests/`, checks it against the schema, checks its provenance fields, and checks that its capture file is present. It reports a count derived from the directory. It makes no network requests.
+
+## The smoke test
+
+`manifests/_smoke/` holds one manifest that is not a broker. It drives a page checked into `tests/smoke/`, served on loopback by `npm run smoke`, so a whole run can be watched end to end without touching a real site. The page handles its own submission and makes no network request.
+
+A loopback URL is allowed in that manifest and refused everywhere else, which the validator enforces and the fixtures cover.
+
+`docs/smoke-test.md` is the runbook. Run it before any broker manifest is written.
 
 ## Your profile
 

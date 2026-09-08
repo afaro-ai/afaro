@@ -83,6 +83,18 @@ const cases = [
     dir: 'tests/fixtures/undeclared-profile-field',
     exitCode: 1,
     expect: 'steps read emails, which is not in profile_fields_required'
+  },
+  {
+    name: 'a loopback URL outside the smoke manifest fails',
+    dir: 'tests/fixtures/loopback-outside-smoke',
+    exitCode: 1,
+    expect: 'points at loopback, which only the smoke manifest may do'
+  },
+  {
+    name: 'the smoke manifest itself passes',
+    dir: 'manifests/_smoke',
+    exitCode: 0,
+    expect: '1 manifest in manifests/_smoke, 1 valid, 0 failed.'
   }
 ];
 
