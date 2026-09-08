@@ -85,6 +85,22 @@ const cases = [
     }
   },
   {
+    // Loopback belongs to the smoke manifest alone. A broker manifest pointing
+    // at localhost is not a broker manifest.
+    dir: 'loopback-outside-smoke',
+    capture: true,
+    change: (m) => {
+      const local = 'http://127.0.0.1:8787/optout-form.html';
+      m.home_url = local;
+      m.search_url_template = `${local}?name={{full_name}}`;
+      m.optout_url = local;
+      m.source_url = local;
+      for (const step of m.steps) {
+        if (step.type === 'navigate') step.url = local;
+      }
+    }
+  },
+  {
     dir: 'undeclared-profile-field',
     capture: true,
     change: (m) => {
