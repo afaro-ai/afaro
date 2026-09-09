@@ -43,13 +43,14 @@
       "type": "fill_field",
       "selector": { "label": "Email" },
       "value_from": "emails",
-      "note": "No required marker beside this label. On the capture the box already holds the word opt-out, which is not a value anyone typed and not something the page's own text asks for. Where it came from cannot be told from an image; an autofill icon sits in the First Name box on the same capture, so a browser extension is the likely source. Either way the step is the same: clear the box before writing, as every fill does, and read it back afterwards."
+      "note": "No required marker beside this label. The word opt-out sitting in the box on the capture is the field's own placeholder text, not a value anyone typed and not anything a browser put there. An earlier version of this manifest said otherwise on both counts and was wrong."
     },
     {
       "type": "fill_field",
       "selector": { "label": "Phone" },
       "value_from": "phones",
-      "note": "No required marker beside this label."
+      "format": "digits",
+      "note": "No required marker beside this label. The box takes digits and nothing else, and it says so in validation text beside itself when given a number with brackets or dashes in it, which a person's profile normally has. The profile keeps the number readable and this step strips it to digits on the way in. Read the field back afterwards and read the page beside it: if validation text is there, show it to the person and stop."
     },
     {
       "type": "fill_field",
@@ -88,13 +89,15 @@
     {
       "type": "human_gate",
       "reason": "captcha",
-      "prompt": "PeopleFinders puts a reCAPTCHA box reading I'm not a robot above the Submit button. Tick it yourself, then say when it is done.",
-      "note": "Handed over, never worked around. Nothing here solves it."
+      "prompt": "PeopleFinders puts a reCAPTCHA box reading I'm not a robot above the Submit button. It is yours to tick, and the next question folds into this one because the token it issues expires quickly.",
+      "note": "Handed over, never worked around. Nothing here solves it. The submit gate immediately after this one carries gate_mode combined, so the person is asked once rather than twice and the token is still good when the form goes."
     },
     {
       "type": "human_gate",
       "reason": "submit",
-      "prompt": "The form is filled and the robot check is done. The page says you will not be able to change any of it once Submit is pressed, so read the values on screen now. One box is still unticked, and it certifies that you are the person the information is about, or an agent authorized to act for them, and that what is on the form is accurate. Say yes and I will tick that box and press Submit."
+      "gate_mode": "combined",
+      "prompt": "One question, because PeopleFinders' robot check stops being valid if this is asked in two parts. Tick the reCAPTCHA box that reads I'm not a robot. Then read the values on the form: the page says none of them can be changed once Submit is pressed. One box below them is still unticked, and it certifies that you are the person the information is about, or an agent authorized to act for them, and that what is on the form is accurate. When the robot check is ticked and the values are right, say yes, and I will tick that box and press Submit once.",
+      "note": "gate_mode is combined because the reCAPTCHA token expired inside the window between two separate gates on 2026-09-09, so a correct two-gate flow submitted with a dead token."
     },
     {
       "type": "click",
@@ -103,7 +106,8 @@
     },
     {
       "type": "click",
-      "selector": { "label": "Submit" }
+      "selector": { "label": "Submit" },
+      "note": "Once. On 2026-09-09 a run clicked this three times before stopping itself, because the page did not appear to respond and the site then returned its own server error. A submit that produces no page change is the site refusing. Read the page after the click, and if nothing moved, stop and log it rather than clicking again."
     }
   ],
   "verification": {
@@ -124,7 +128,7 @@
     "kinds": [],
     "note": "No account, payment, notarised document, or photo ID appears on the form. The page states in its own words that both routes it offers are free and that no trial or payment is required."
   },
-  "notes": "Written from the opt-out page captured on verified_on, in two images of one page. Five things the page states and a run depends on. The record is located from the information given and removed from PeopleFinders' system within 3 days, which is where recheck_after_days comes from. Omitting information or giving inaccurate information, a made-up date of birth among the examples, only hinders the request. Names go in without special characters such as full stops and hyphens. Information entered is not used for any purpose other than processing the removal. And a record they could not identify from the original request may reappear if new data reaches them, which is the page's own reason for filling in everything asked. Nothing on the form can be changed after Submit is pressed, which the submit gate says out loud. The page offers a second route beside the form, a Right to Opt-out panel with a Next button, and a Free Identity Monitoring product; neither is described here, because the form is the route that files a removal and the other two were not followed. What the captures show and what they do not: every label, the certification text, the reCAPTCHA, and the Submit button are on the first image, and the heading, the search box, and the cookie banner are on the second. No selector here carries a css fallback: the form sits outside any form element in that page's markup and the boxes have no names to fall back to. The Month dropdown was shut, so its list is not named. The Email box on the first image holds the word opt-out, which is neither a value anyone typed nor anything the page's own text asks for; an image cannot say where it came from, and an autofill icon sits in the First Name box on the same capture. A small icon of that kind appears inside one field on this capture and on three others in this directory. It is a browser extension's own control rather than anything the broker drew, and it holds no value. The images hold no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on them. The cookie banner offers only Accept, so it was not answered, and it is hidden in the first image because it is pinned to the bottom of the window and would otherwise lie across the form.",
+  "notes": "Written from the opt-out page captured on verified_on, in two images of one page. Five things the page states and a run depends on. The record is located from the information given and removed from PeopleFinders' system within 3 days, which is where recheck_after_days comes from. Omitting information or giving inaccurate information, a made-up date of birth among the examples, only hinders the request. Names go in without special characters such as full stops and hyphens. Information entered is not used for any purpose other than processing the removal. And a record they could not identify from the original request may reappear if new data reaches them, which is the page's own reason for filling in everything asked. Nothing on the form can be changed after Submit is pressed, which the submit gate says out loud. The page offers a second route beside the form, a Right to Opt-out panel with a Next button, and a Free Identity Monitoring product; neither is described here, because the form is the route that files a removal and the other two were not followed. What the captures show and what they do not: every label, the certification text, the reCAPTCHA, and the Submit button are on the first image, and the heading, the search box, and the cookie banner are on the second. No selector here carries a css fallback: the form sits outside any form element in that page's markup and the boxes have no names to fall back to. The Month dropdown was shut, so its list is not named. The Email box on the first image holds the word opt-out, which is neither a value anyone typed nor anything the page's own text asks for; an image cannot say where it came from, and an autofill icon sits in the First Name box on the same capture. A small icon of that kind appears inside one field on this capture and on three others in this directory. It is a browser extension's own control rather than anything the broker drew, and it holds no value. The images hold no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on them. The cookie banner offers only Accept, so it was not answered, and it is hidden in the first image because it is pinned to the bottom of the window and would otherwise lie across the form. Small icons appear inside two of the boxes on the first image. They are a browser extension's own controls rather than anything the broker drew, and they hold no value. Three things come from a guided run on 2026-09-09 rather than from a capture, and are written here for that reason. The run stopped with nothing filed: the site returned its own server error after the form went, and the clicks the tool made did not appear to fire the button, which is why the submit step now says once and why one click per gate is a rule rather than a preference. The reCAPTCHA token expired between two separate gates, which is why the submit gate is combined. And the site offers a phone line as a way to ask for removal by talking to somebody, which the person calls themselves; the number is not on either capture, so it is not written here.",
   "source_url": "https://www.peoplefinders.com/opt-out",
   "verified_on": "2026-09-09",
   "source_capture": "captures/peoplefinders-optout.jpg"
