@@ -1,6 +1,6 @@
 # Manifest step types
 
-Nine step types exist. A manifest lists them in order under `steps`. Nothing else is executable: a manifest is data, and this file is the only place that says what the data means.
+Ten step types exist. A manifest lists them in order under `steps`. Nothing else is executable: a manifest is data, and this file is the only place that says what the data means.
 
 Profile placeholders appear inside double braces, for example `{{full_name}}` or `{{current_address.state}}`. Resolve them from the profile at the moment the step runs. If a placeholder has no value in the profile, stop.
 
@@ -43,6 +43,8 @@ Fields: `selector`, then exactly one of `value_from`, `value_literal`, or `from_
 
 Fill in three moves, every time: clear the field, write the value, read the field back. If what the field holds afterwards is not what was written, stop and say which field and that the value did not take. Do not write it again and do not carry on.
 
+Read the page as well as the field. A form that rejects a value says so next to it, and it says so straight away rather than at the end. After each fill, look for validation text that has appeared near the field, and if there is any, show it to the person before the next step runs. A value the page has rejected is a stop, not something to work around by reshaping it and trying again.
+
 The reason is not theoretical. On the first live run Chrome had already filled the operator's own email address into a broker's form before the step ran. A step that had trusted what was in the box would have sent a stranger's confirmation link to the wrong inbox. Clearing first is what makes the value the profile's, and reading back is what proves it.
 
 `value_from` is a profile field path. `value_literal` is a fixed value the page itself offers, such as a reason code in a dropdown.
@@ -51,6 +53,8 @@ Two profile rules apply when the value is resolved.
 
 - `emails` resolves to `contact_email` when the profile has one, and to the first entry of `emails` otherwise. In operator mode the contact address is the operator's, so broker replies and confirmation links reach the person who is doing the work.
 - `opt_out_reason` is the person's standing answer to a broker that asks why. It is optional, and a manifest that reads it names it in `profile_fields_required` like any other field.
+
+`format` says how the value is written into the box when the box wants a shape the profile does not keep. `digits` strips everything that is not a digit, which is what a phone field that refuses brackets and dashes needs; `lowercase` lowers the case; `as_is` is the default and the same as leaving it out. The profile keeps the value the way a person writes it, and the step does the shaping, so a phone number stays readable in the one place a person looks at it. The read-back checks the shaped value, not the profile's. `digits` on a value taken from the listing is refused, because a URL with everything but its digits removed is not a URL.
 
 `choices` lists the options the captured page offers, word for word, and appears only when the capture shows them. When it is there, the value filled has to be one of them and the validator refuses anything else. When a page offers a set the capture did not show, the manifest names no value: match the profile's `opt_out_reason` against what the page shows at the time, and if nothing matches, stop and ask the person to choose. Never invent a reason a broker did not offer, and never pick one because it looks closest.
 
@@ -72,11 +76,25 @@ The default is the most privacy-preserving choice on offer, always. Decline wher
 
 It comes first: before anything is filled and before the submit gate. The validator holds it there.
 
+## use_search_box
+
+Fields: `inputs`, optional `url`, optional `submit`, optional `note`.
+
+Search through the box the site shows, rather than through an address. This is the door for a broker whose `search_url_template` has drifted, or was never a page to begin with: open `url` if it is given, type each of `inputs` into the box its selector names, and run the search with `submit` or from the box itself.
+
+It comes first, before anything is filled on a form and before the submit gate, and the validator holds it there. A search is not a submission. It must never become a way to put values on a page and send them before the person has approved anything.
+
+What leaves the browser here is the search itself, the words a person would type into that site's own box. That is the exposure scan's design as the brief has it, and it is the one place data reaches a broker with no gate in front of it. Say so when a run starts with one.
+
 ## click
 
 Fields: `selector`, optional `note`.
 
 Click the control with that visible label.
+
+**One click per gate, and no second attempt.** After a click that a gate approved, read the page. If it did not respond, stop and log it. Do not click again. A submit that produces no page change is the site refusing, not a click that missed, and a second click is a second submission of the same form. Three submits on one form is a retry however it is reached. A manifest cannot ask for a retry either: there is no field for it and the validator refuses one by name.
+
+**After a yes, read the page before acting on it.** A gate is a pause, and a person can act during a pause. Before the click a gate approved, check whether the page has already moved: if the button is gone, or the form has been replaced by a confirmation, the person did it themselves while answering. Log `submitted_by_person` and carry on from where the page actually is. Never repeat what has already been done.
 
 Clicks before a submit gate move through the form. The click that sends comes after the gate. Brokers whose opt-out runs over several pages send something on each page, so a manifest may carry more than one submit gate, and each one approves the values filled since the previous one. The validator holds that shape per segment: once the last `fill_field` before a gate has run, no `click` and no `navigate` may appear until that gate has passed; nothing is filled after the last gate; and a manifest that is not `method: email` clicks something after every gate.
 
@@ -101,6 +119,8 @@ Fields: `reason`, `prompt`, optional `note`.
 Stop. Print `prompt`. Wait for the person.
 
 `reason` is one of `captcha`, `bot_wall`, `id_upload`, `phone_verify`, `submit`. See `gates-and-modes.md` for which mode passes which reason. Guided mode passes none of them.
+
+`gate_mode: combined` on a submit gate folds the captcha gate immediately before it into the same prompt: tick the box, check the values, say go, in one exchange. It exists because some brokers issue a captcha token that expires inside the window between two separate gates, so a correct two-gate flow submits with a dead token and the person is sent round again. It is only valid on a submit gate with a captcha gate directly before it, and the validator holds both conditions. Everything else about the gate is unchanged: it is still a real stop, and silence is still not a yes.
 
 `phone_verify` carries one extra rule. The click that places the call sits behind the gate, never in front of it, because that click makes a phone ring. The validator refuses a click between a `phone_verify` gate and the gate before it. Tell the person the call is placed the moment the button is pressed, and that they answer it and read the code back themselves.
 

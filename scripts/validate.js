@@ -325,6 +325,167 @@ function checkAcceptTerms(manifest) {
   return problems;
 }
 
+// The search door has to be a page a person could be sent to, not the address
+// the page calls behind its own back. A result endpoint is what reads as
+// scraping and what gets a session blocked, and it is the line the name-page
+// carve-out is careful not to cross. The test the ruling gives is whether a
+// search engine would show this URL to a person.
+function endpointProblems(label, value) {
+  const problems = [];
+  if (typeof value !== 'string' || value === '') return problems;
+
+  let url;
+  try {
+    url = new URL(value.replace(/\{\{[^}]*\}\}/g, 'x'));
+  } catch (error) {
+    return problems;
+  }
+  const pathname = url.pathname || '';
+
+  if (/(^|\/)api(\/|$)/i.test(pathname)) {
+    problems.push(`${label} points at an api path, which is an address the page uses and not a page`);
+  }
+  if (/\.(json|xml)$/i.test(pathname)) {
+    problems.push(`${label} ends in a data file rather than a page`);
+  }
+  if (/(^|\/)(srv|ajax|xhr|rpc|endpoint|service)(\/|$)/i.test(pathname)) {
+    problems.push(`${label} points at an internal endpoint rather than a page a person can be sent to`);
+  }
+  if ((pathname === '' || pathname === '/') && url.search) {
+    problems.push(`${label} is a query string with no page behind it`);
+  }
+
+  return problems;
+}
+
+// The name-directory page is the one place a URL may be built from a pattern
+// rather than clicked, and it is allowed only because a capture shows the path
+// a person clicks to reach it. Without that capture the pattern is a lead
+// somebody wrote down, which is what the ruling says it must not be.
+function checkNamePage(manifest, dir) {
+  const problems = [];
+  const page = manifest.name_page;
+  problems.push(...endpointProblems('search_url_template', manifest.search_url_template));
+  if (!page || typeof page !== 'object') return problems;
+
+  problems.push(...endpointProblems('name_page.template', page.template));
+
+  if (typeof page.source_capture === 'string' && page.source_capture !== '') {
+    const capturePath = path.resolve(dir, page.source_capture);
+    if (!capturePath.startsWith(path.resolve(dir) + path.sep)) {
+      problems.push(`name_page.source_capture points outside the manifest directory: ${page.source_capture}`);
+    } else if (!fs.existsSync(capturePath)) {
+      problems.push(`name_page.source_capture file is absent on disk: ${page.source_capture}`);
+    }
+  }
+
+  if (typeof page.verified_on === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(page.verified_on)) {
+    const now = new Date();
+    const today = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, '0'),
+      String(now.getDate()).padStart(2, '0')
+    ].join('-');
+    if (page.verified_on > today) {
+      problems.push(`name_page.verified_on is in the future: ${page.verified_on}`);
+    }
+  }
+
+  return problems;
+}
+
+// One click per gate. A submit that produces no page change is the site
+// refusing, and a second click is a second submission of the same form. A
+// manifest cannot ask for one: there is no field for it, and a manifest that
+// invents one is refused by name rather than by a schema message about extra
+// properties.
+function checkNoRetries(manifest) {
+  const problems = [];
+  const retryish = /^(retry|retries|retry_count|attempts|max_attempts|max_retries|repeat)$/i;
+
+  for (const key of Object.keys(manifest)) {
+    if (retryish.test(key)) {
+      problems.push(`the manifest declares ${key}, and there is one click per gate with no second attempt`);
+    }
+  }
+
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+  steps.forEach((step, index) => {
+    if (!step || typeof step !== 'object') return;
+    for (const key of Object.keys(step)) {
+      if (retryish.test(key)) {
+        problems.push(`step ${index} declares ${key}, and there is one click per gate with no second attempt`);
+      }
+    }
+  });
+
+  return problems;
+}
+
+// A captcha token can expire in the gap between two gates, which turns a
+// correct flow into a failed submission and sends the person round again. A
+// combined gate asks once. It is only honest where the captcha gate is the
+// step immediately before, because that is the pair it folds together.
+function checkCombinedGate(manifest) {
+  const problems = [];
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+
+  steps.forEach((step, index) => {
+    if (!step || typeof step !== 'object' || step.type !== 'human_gate') return;
+    if (step.gate_mode !== 'combined') return;
+
+    if (step.reason !== 'submit') {
+      problems.push(`step ${index} is a combined gate with reason ${step.reason}, and only a submit gate folds a captcha into itself`);
+      return;
+    }
+
+    const before = index > 0 ? steps[index - 1] : null;
+    const precededByCaptcha =
+      before && typeof before === 'object' && before.type === 'human_gate' && before.reason === 'captcha';
+    if (!precededByCaptcha) {
+      problems.push(
+        `step ${index} is a combined gate with no captcha gate immediately before it, so there is nothing to fold in`
+      );
+    }
+  });
+
+  return problems;
+}
+
+// The search box is a search, not a submission. It goes in front of the form
+// the way a consent dialog does, so it can never become a way to put values on
+// a page and send them before the person has approved anything.
+function checkUseSearchBox(manifest) {
+  const problems = [];
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+  const isStep = (step) => step && typeof step === 'object';
+
+  steps.forEach((step, index) => {
+    if (!isStep(step) || step.type !== 'use_search_box') return;
+
+    const earlierFill = steps.findIndex(
+      (other, position) => isStep(other) && position < index && other.type === 'fill_field'
+    );
+    if (earlierFill !== -1) {
+      problems.push(
+        `step ${index} uses the search box after step ${earlierFill} filled a field, and a search comes before the form`
+      );
+    }
+
+    const earlierGate = steps.findIndex(
+      (other, position) =>
+        isStep(other) && position < index && other.type === 'human_gate' && other.reason === 'submit'
+    );
+    if (earlierGate !== -1) {
+      problems.push(
+        `step ${index} uses the search box after the submit gate at step ${earlierGate}, and a search comes before the form`
+      );
+    }
+  });
+
+  return problems;
+}
+
 // A page that offers a fixed set of reasons offers those and no others. When
 // the capture shows the set, the manifest lists it, and the value it fills has
 // to be one of them. This is the check that keeps a reason nobody was offered
@@ -335,6 +496,13 @@ function checkChoices(manifest) {
 
   steps.forEach((step, index) => {
     if (!step || typeof step !== 'object' || step.type !== 'fill_field') return;
+
+    // Stripping a listing address down to its digits destroys it. format is
+    // for a profile value the box wants written a particular way.
+    if (step.format === 'digits' && typeof step.from_listing === 'string') {
+      problems.push(`step ${index} would strip the listing address down to its digits`);
+    }
+
     if (!Array.isArray(step.choices)) return;
     if (typeof step.value_literal !== 'string') return;
     if (!step.choices.includes(step.value_literal)) {
@@ -464,6 +632,11 @@ function checkProfileFields(manifest) {
     if (step.type === 'fill_field' && typeof step.value_from === 'string') {
       used.add(step.value_from);
     }
+    if (step.type === 'use_search_box' && Array.isArray(step.inputs)) {
+      for (const input of step.inputs) {
+        if (input && typeof input.value_from === 'string') used.add(input.value_from);
+      }
+    }
     if (step.type === 'find_listing' && Array.isArray(step.match_on)) {
       for (const field of step.match_on) {
         if (typeof field === 'string') used.add(field);
@@ -501,6 +674,10 @@ function validateFile(validate, dir, fileName) {
   problems.push(...checkPhoneVerify(manifest));
   problems.push(...checkAcceptTerms(manifest));
   problems.push(...checkChoices(manifest));
+  problems.push(...checkNamePage(manifest, dir));
+  problems.push(...checkNoRetries(manifest));
+  problems.push(...checkCombinedGate(manifest));
+  problems.push(...checkUseSearchBox(manifest));
   problems.push(...checkListingValues(manifest));
   problems.push(...checkHandoff(manifest));
   problems.push(...checkRecheckWindow(manifest));

@@ -237,6 +237,95 @@ const cases = [
     }
   },
   {
+    // One click per gate. A manifest cannot ask for a second attempt, and the
+    // refusal names the field rather than muttering about extra properties.
+    dir: 'retry-count',
+    capture: true,
+    change: (m) => {
+      const click = m.steps.find((s) => s.type === 'click');
+      click.retries = 2;
+    }
+  },
+  {
+    // A combined gate with nothing to combine. It folds a captcha gate into
+    // itself, so the captcha gate has to be the step before it.
+    dir: 'combined-without-captcha',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.find((s) => s.type === 'human_gate' && s.reason === 'submit');
+      gate.gate_mode = 'combined';
+    }
+  },
+  {
+    // A name page whose directory path is not on disk. The pattern is then a
+    // lead somebody wrote down, which is the one thing the ruling forbids.
+    dir: 'name-page-absent-capture',
+    capture: true,
+    change: (m) => {
+      m.name_page = {
+        template: 'https://example.com/people/{{name_slug}}/',
+        slug_rules: { name_slug: 'first-last, lowercase, hyphen between' },
+        levels: ['name'],
+        directory_path: ['Name Directory letter', 'surname page'],
+        shows: 'free_listing',
+        consent_modal: false,
+        verified_on: '2026-09-09',
+        source_capture: 'captures/example-broker-directory.png'
+      };
+    }
+  },
+  {
+    // The same block with its capture on disk, which is what a real one looks
+    // like. Here so the shape is known to pass as well as known to fail.
+    dir: 'valid-name-page',
+    capture: true,
+    extraCapture: 'example-broker-directory.png',
+    change: (m) => {
+      m.name_page = {
+        template: 'https://example.com/people/{{name_slug}}/',
+        slug_rules: { name_slug: 'first-last, lowercase, hyphen between' },
+        levels: ['name'],
+        directory_path: ['Name Directory letter', 'surname page'],
+        shows: 'free_listing',
+        consent_modal: false,
+        verified_on: '2026-09-09',
+        source_capture: 'captures/example-broker-directory.png'
+      };
+    }
+  },
+  {
+    // A search door that is an address the page calls behind its own back
+    // rather than a page a person could be sent to.
+    dir: 'search-endpoint-template',
+    capture: true,
+    change: (m) => {
+      m.search_url_template = 'https://example.com/srv/a.go_search?q={{full_name}}';
+    }
+  },
+  {
+    // A search box used after the form has been filled. A search is not a
+    // submission, and it must never become a way to send values early.
+    dir: 'search-box-after-fill',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps.splice(gate, 0, {
+        type: 'use_search_box',
+        inputs: [{ selector: { label: 'Search by name' }, value_from: 'full_name' }]
+      });
+    }
+  },
+  {
+    // digits is for a box that will not take a phone number written the way a
+    // person writes it. Run over a listing address it destroys the address.
+    dir: 'listing-digits-format',
+    capture: true,
+    change: (m) => {
+      const fill = m.steps.find((s) => s.type === 'fill_field' && s.from_listing);
+      fill.format = 'digits';
+    }
+  },
+  {
     // A broker whose page that takes a value was never captured. The steps
     // walk as far as the captures go, type nothing, and hand the flow over.
     // There is no send, so there is nothing to approve and no submit gate.
@@ -329,6 +418,9 @@ for (const testCase of cases) {
   if (testCase.capture) {
     fs.mkdirSync(captures, { recursive: true });
     fs.writeFileSync(path.join(captures, 'example-broker-optout.png'), PNG);
+    if (testCase.extraCapture) {
+      fs.writeFileSync(path.join(captures, testCase.extraCapture), PNG);
+    }
   } else if (fs.existsSync(captures)) {
     fs.rmSync(captures, { recursive: true });
   }
