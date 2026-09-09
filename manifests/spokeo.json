@@ -36,7 +36,7 @@
     {
       "type": "human_gate",
       "reason": "captcha",
-      "prompt": "Spokeo shows an I am not a robot checkbox between the email field and the OPT OUT button. Tick it yourself, then say when it is done.",
+      "prompt": "Spokeo shows a checkbox reading I'm not a robot between the email field and the OPT OUT button. Tick it yourself, then say when it is done.",
       "note": "Handed over, never worked around. Nothing here solves it."
     },
     {

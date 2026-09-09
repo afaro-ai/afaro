@@ -179,7 +179,7 @@ When that block is present, Afaro says so once at the start of the run, names wh
 
 **Starting a run for one person.** Attach their profile folder and the Afaro folder, then say which of them this run is for:
 
-> Run the Afaro opt-outs using the profile for Reed at `<path>\reed.json`. Guided mode.
+> Run the Afaro opt-outs using the profile for Jane at `<path>\profile-jane.json`. Guided mode.
 
 Naming the file in the first message is what stops the wrong profile being picked up when several sit in the same folder. Afaro reads one profile per run and will say whose it read before it starts.
 
