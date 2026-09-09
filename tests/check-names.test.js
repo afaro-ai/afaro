@@ -29,6 +29,28 @@ fs.writeFileSync(listPath, LIST);
 
 const insideRepoList = path.join(REPO_ROOT, 'tests', 'fixtures', 'names-list-in-repo.txt');
 
+// A throwaway repository, so the commit-message sweep can be checked against
+// real commits rather than a stub. Three commits: the last one carries a value
+// from the list in its message, the one before it does not.
+const messageRepo = path.join(tempDir, 'messages');
+function git(...args) {
+  spawnSync('git', ['-c', 'user.email=checks@example.com', '-c', 'user.name=Checks', ...args], {
+    cwd: messageRepo,
+    encoding: 'utf8'
+  });
+}
+fs.mkdirSync(messageRepo);
+git('init', '-q');
+fs.writeFileSync(path.join(messageRepo, 'a.txt'), 'one\n');
+git('add', '-A');
+git('commit', '-q', '-m', 'First commit, nothing in the message');
+fs.writeFileSync(path.join(messageRepo, 'a.txt'), 'two\n');
+git('add', '-A');
+git('commit', '-q', '-m', 'Second commit, still nothing in the message');
+fs.writeFileSync(path.join(messageRepo, 'a.txt'), 'three\n');
+git('add', '-A');
+git('commit', '-q', '-m', 'Third commit, and Quill is in this message');
+
 const cases = [
   {
     name: 'a tree with nothing to find passes, and a bare word does not match inside a longer one',
@@ -77,6 +99,37 @@ const cases = [
     args: ['--dir', 'tests/fixtures/names-clean', '--allow-missing-list'],
     exitCode: 0,
     expect: 'this is not a failure here'
+  },
+  {
+    name: 'one file on its own is swept, which is what the commit-msg hook does',
+    args: ['--list', listPath, '--file', 'tests/fixtures/names-hit/doc.md'],
+    exitCode: 1,
+    expect: 'matches list entry 1'
+  },
+  {
+    name: 'one clean file on its own passes',
+    args: ['--list', listPath, '--file', 'tests/fixtures/names-clean/doc.md'],
+    exitCode: 0,
+    expect: 'Nothing matched.'
+  },
+  {
+    name: 'a commit message carrying a value is found',
+    args: ['--list', listPath, '--dir', messageRepo, '--commits', 'HEAD~1..HEAD'],
+    exitCode: 1,
+    expect: 'line 1: matches list entry 1'
+  },
+  {
+    name: 'a range of clean commit messages passes',
+    args: ['--list', listPath, '--dir', messageRepo, '--commits', 'HEAD~2..HEAD~1'],
+    exitCode: 0,
+    expect: 'Nothing matched.'
+  },
+  {
+    name: 'a commit message match names the commit and never the value',
+    args: ['--list', listPath, '--dir', messageRepo, '--commits', 'HEAD~1..HEAD'],
+    exitCode: 1,
+    expect: 'commit ',
+    refute: ['Quill', 'Marisol', '555']
   },
   {
     name: 'a list kept inside this repository is refused',

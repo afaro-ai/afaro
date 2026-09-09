@@ -78,9 +78,31 @@ A failure names the file and the line and which entry of the list fired, by numb
 
 A bare word is matched on its own boundaries, a value with spaces or punctuation is matched as written, and a value holding seven or more digits is also matched digits-only, so a number written with dots trips a list that writes it with dashes. File names are checked as well as contents.
 
-Images are not swept. A person looks at those, which is the other half of the same job: run the sweep, then open every new capture and check it by eye.
-
 With no list configured the sweep does not run, and it says so and exits 2 rather than reporting a pass. Continuous integration runs it with `--allow-missing-list`, because the list must never reach a build machine; that run prints the same notice and passes, and the real sweep stays the author's job.
+
+### The hooks
+
+```
+npm run hooks:install
+```
+
+That points git at `.githooks/`, which holds two.
+
+`commit-msg` sweeps the message before the commit is written. A commit message is not a tracked file, so `git ls-files` never reaches it, and a message is written in the same sitting as the code it describes, by the same person. The first two values this sweep ever caught were one in a source comment and one in the message of the commit that added it.
+
+`pre-push` sweeps the message of every commit on the branch that the remote has not seen. It catches the ones written before the hooks were installed, the ones amended past them, and anything rebased in from elsewhere.
+
+Both run with `--allow-missing-list`, so somebody without a list can still commit and push. The notice they print is the signal that the sweep did not run.
+
+### What the machine catches, and what a person must
+
+Three edges, worth knowing before trusting any of it.
+
+- **Tracked files and commit messages: the machine.** The sweep and the two hooks cover both, and continuous integration runs the tracked-file pass in its no-list mode.
+- **Pull request bodies: a person.** Nothing here reads them. A pull request body is written outside the repository and can repeat anything, so a read-only review of the body is a required step before a pull request is opened.
+- **Images: a person, always.** No sweep can read a screenshot. Every committed capture is opened and checked by eye, and every capture blanked from a real run is reviewed by a second read-only agent against the unblanked original. That review is required, not advisory.
+
+These three belong in `CONTRIBUTING.md` when that file is written.
 
 ## The smoke test
 

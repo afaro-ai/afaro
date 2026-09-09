@@ -22,7 +22,12 @@
 //   node scripts/check-names.js                     tracked files, list from AFARO_NAME_LIST
 //   node scripts/check-names.js --list <path>       a list somewhere else
 //   node scripts/check-names.js --dir <path>        a directory instead of the tracked set
-//   node scripts/check-names.js --allow-missing-list  say so and pass, for CI
+//   node scripts/check-names.js --file <path>       one file, which is what the commit-msg hook sweeps
+//   node scripts/check-names.js --commits <range>   the message of every commit in a range
+//   node scripts/check-names.js --allow-missing-list  say so and pass, for CI and the hooks
+//
+// With --commits, --dir names the repository to read the commits from rather
+// than a tree to walk. That is only for the self-checks; a hook wants neither.
 //
 // Exit codes:
 //   0  swept, nothing found, or the list was absent and --allow-missing-list was given
@@ -45,6 +50,8 @@ function parseArgs(argv) {
   const args = {
     list: process.env.AFARO_NAME_LIST || null,
     dir: null,
+    file: null,
+    commits: null,
     allowMissingList: false
   };
   for (let i = 0; i < argv.length; i += 1) {
@@ -55,6 +62,14 @@ function parseArgs(argv) {
     } else if (argv[i] === '--dir') {
       args.dir = argv[i + 1];
       if (!args.dir) throw new Error('--dir needs a path');
+      i += 1;
+    } else if (argv[i] === '--file') {
+      args.file = argv[i + 1];
+      if (!args.file) throw new Error('--file needs a path');
+      i += 1;
+    } else if (argv[i] === '--commits') {
+      args.commits = argv[i + 1];
+      if (!args.commits) throw new Error('--commits needs a range');
       i += 1;
     } else if (argv[i] === '--allow-missing-list') {
       args.allowMissingList = true;
@@ -122,13 +137,38 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function trackedFiles() {
+function trackedFiles(workingDir) {
   const output = execFileSync('git', ['ls-files', '-z'], {
-    cwd: REPO_ROOT,
+    cwd: workingDir,
     encoding: 'utf8',
     maxBuffer: 32 * 1024 * 1024
   });
   return output.split('\0').filter((name) => name !== '');
+}
+
+// git ls-files does not reach a commit message, and a message is written in
+// the same sitting as the code it describes, by the same person, in the same
+// frame of mind. The first two values this sweep ever caught were one in a
+// source comment and one in the message of the commit that added it.
+function commitMessages(workingDir, range) {
+  const shas = execFileSync('git', ['rev-list', range], {
+    cwd: workingDir,
+    encoding: 'utf8',
+    maxBuffer: 32 * 1024 * 1024
+  })
+    .split('\n')
+    .map((sha) => sha.trim())
+    .filter((sha) => sha !== '');
+
+  return shas.map((sha) => ({
+    sha,
+    short: sha.slice(0, 8),
+    lines: execFileSync('git', ['log', '-1', '--format=%B', sha], {
+      cwd: workingDir,
+      encoding: 'utf8',
+      maxBuffer: 8 * 1024 * 1024
+    }).split(/\r?\n/)
+  }));
 }
 
 function walk(dir, base, found) {
@@ -198,6 +238,48 @@ function main() {
   }
 
   const matchers = buildMatchers(list.entries);
+  const scanLines = (lines, label, problems) => {
+    lines.forEach((line, index) => {
+      if (line === '') return;
+      const lineDigits = line.replace(/\D/g, '');
+      for (const matcher of matchers) {
+        if (matcher.test(line, lineDigits)) {
+          problems.push(`${label}${index + 1}: matches list entry ${matcher.number}`);
+        }
+      }
+    });
+  };
+
+  if (args.commits) {
+    const workingDir = args.dir ? path.resolve(process.cwd(), args.dir) : REPO_ROOT;
+    let commits;
+    try {
+      commits = commitMessages(workingDir, args.commits);
+    } catch (error) {
+      console.error(`afaro check-names: cannot read commits: ${error.message}`);
+      process.exit(2);
+    }
+    const problems = [];
+    for (const commit of commits) {
+      scanLines(commit.lines, `commit ${commit.short} line `, problems);
+    }
+    console.log(
+      `afaro check-names: ${list.entries.length} entries, ${commits.length} commit message(s) swept in ${args.commits}.`
+    );
+    report(problems);
+  }
+
+  if (args.file) {
+    const fullPath = path.resolve(process.cwd(), args.file);
+    if (!fs.existsSync(fullPath)) {
+      console.error(`afaro check-names: no such file: ${args.file}`);
+      process.exit(2);
+    }
+    const problems = [];
+    scanLines(fs.readFileSync(fullPath, 'utf8').split(/\r?\n/), `${args.file}:`, problems);
+    console.log(`afaro check-names: ${list.entries.length} entries, 1 file swept.`);
+    report(problems);
+  }
 
   let base = REPO_ROOT;
   let files;
@@ -206,7 +288,7 @@ function main() {
       base = path.resolve(process.cwd(), args.dir);
       files = walk(base, base, []);
     } else {
-      files = trackedFiles();
+      files = trackedFiles(REPO_ROOT);
     }
   } catch (error) {
     console.error(`afaro check-names: cannot list files: ${error.message}`);
@@ -235,28 +317,22 @@ function main() {
     }
 
     scanned += 1;
-    const lines = fs.readFileSync(fullPath, 'utf8').split(/\r?\n/);
-    lines.forEach((line, index) => {
-      if (line === '') return;
-      const lineDigits = line.replace(/\D/g, '');
-      for (const matcher of matchers) {
-        if (matcher.test(line, lineDigits)) {
-          problems.push(`${name}:${index + 1}: matches list entry ${matcher.number}`);
-        }
-      }
-    });
+    scanLines(fs.readFileSync(fullPath, 'utf8').split(/\r?\n/), `${name}:`, problems);
   }
 
   const scope = args.dir ? `${args.dir}` : 'the tracked set';
   console.log(
     `afaro check-names: ${list.entries.length} entries, ${scanned} text files swept in ${scope}, ${skipped} binary files left to a person.`
   );
+  report(problems);
+}
 
+// Always the same shape, whatever was swept, and never the value.
+function report(problems) {
   if (problems.length === 0) {
     console.log('Nothing matched.');
     process.exit(0);
   }
-
   console.error(`\n${problems.length} match(es). The value is not printed; look the entry up in your own list.`);
   for (const problem of problems) {
     console.error(`  ${problem}`);

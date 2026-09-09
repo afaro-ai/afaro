@@ -7,6 +7,7 @@
   "scripts": {
     "validate": "node scripts/validate.js",
     "check:names": "node scripts/check-names.js",
+    "hooks:install": "git config core.hooksPath .githooks",
     "test": "node tests/validate.test.js && node tests/check-names.test.js",
     "smoke": "node scripts/serve-smoke.js",
     "validate:smoke": "node scripts/validate.js --dir manifests/_smoke"

@@ -277,9 +277,8 @@ const cases = [
   {
     // The hole the exemption above must not open: a form filled in, a click
     // that sends it, and a handoff after the fact, with nobody asked.
-    // Stays permanently. The ruling named the two exemption fixtures; this is
-    // the one that bounds them, and an exemption with nothing holding its edge
-    // is not an exemption for long.
+    // Stays permanently, by ruling. It is the fixture that gives the two
+    // exemptions their edges, and without it they are unbounded.
     dir: 'send-then-handoff',
     capture: true,
     change: (m) => {
