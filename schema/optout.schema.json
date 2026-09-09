@@ -95,7 +95,7 @@
       "$ref": "#/$defs/capture_path"
     },
     "recheck_stated": {
-      "description": "False when the captured page states no processing window. recheck_after_days is then null and the orchestrator falls back to its own default, saying the broker stated none. Absent or true means the number is the broker's own, copied from the captured page.",
+      "description": "False when the captured page states no processing window. recheck_after_days is then null and the orchestrator falls back to its own default, saying the broker stated none. Absent or true means the number is the broker's own. Where the page that states it is not among the captures, because it appears only after a real submission, the notes say where it was read and that no capture exists yet.",
       "type": "boolean"
     },
     "additional_captures": {

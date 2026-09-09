@@ -5,7 +5,13 @@
   "search_url_template": "https://www.whitepages.com/header-search/name?s_name={{full_name}}&s_loc={{current_address.city}}, {{current_address.state}}",
   "optout_url": "https://www.whitepages.com/suppression-requests",
   "method": "search_then_form",
-  "profile_fields_required": ["full_name", "current_address.city", "current_address.state"],
+  "profile_fields_required": [
+    "full_name",
+    "current_address.city",
+    "current_address.state",
+    "opt_out_reason",
+    "phones"
+  ],
   "steps": [
     {
       "type": "navigate",
@@ -15,7 +21,8 @@
     {
       "type": "find_listing",
       "match_on": ["full_name", "current_address.city"],
-      "on_not_found": "stop"
+      "on_not_found": "stop",
+      "note": "Two result cards can open the same profile. Reduce the matches to distinct profile URLs and run this manifest once per distinct URL."
     },
     {
       "type": "navigate",
@@ -28,36 +35,112 @@
         "css": "#suppression-requests-person-url"
       },
       "from_listing": "url",
-      "note": "The one field on the page. Its visible text is the instruction inside the box."
+      "note": "The one field on step 1. Its visible text is the instruction inside the box."
     },
     {
       "type": "human_gate",
       "reason": "submit",
-      "prompt": "This sends the listing URL to Whitepages and opens step 2 of 5. The page this manifest was written from is step 1, so from here you are working the remaining steps on screen yourself. Check the URL, then say yes to continue."
+      "prompt": "Step 1 of 5. This sends the listing URL to Whitepages and opens step 2. Check the URL in the box, then say yes to send it."
     },
     {
       "type": "click",
       "selector": { "label": "Next" }
     },
     {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "Step 2 of 5 asks Is this the person you want to remove? and shows one listing with a name and an address. Read what is on screen and tell me it is the right person before I click Remove Me. If it is the wrong one, the page has a link under the button that goes back."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "Remove Me" },
+      "note": "Step 2 of 5. The page also carries a link reading This is the wrong person. Take me back, which is the way out when the listing is somebody else's."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Select a reason" },
+      "value_from": "opt_out_reason",
+      "note": "Step 3 of 5, a required dropdown. The capture shows it closed, so the reasons it offers are not on the image and none is named here. Open it, match the profile's opt_out_reason against what it lists, and if nothing matches, ask the person which of the listed reasons they want. The comment box beside it is marked optional and is left empty."
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "Step 3 of 5. The reason you chose is selected and the comment box is empty. This sends the reason to Whitepages. Say yes to continue."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "Next" },
+      "note": "Step 3 of 5. The button is greyed out on the capture until a reason is chosen."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Enter your phone number" },
+      "value_from": "phones",
+      "note": "Step 4 of 5. The page says the number is used to place a verification call and states it will not be used for any other purpose."
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "Step 4 of 5. The phone number in the box is the one about to go to Whitepages. Check it before anything is clicked."
+    },
+    {
+      "type": "human_gate",
+      "reason": "phone_verify",
+      "prompt": "Whitepages verifies by calling that number, and the call goes out the moment the button is pressed. The box I am about to tick reads: By checking this box I affirm that I am the person associated with this phone number, and I would like my information to be removed from Whitepages listings. That has to be true of whoever answers. Say yes when the person whose number this is has the phone in hand, and they will be asked for a code."
+    },
+    {
+      "type": "click",
+      "selector": {
+        "label": "By checking this box I affirm that I am the person associated with this phone number, and I would like my information to be removed from Whitepages listings."
+      },
+      "note": "Step 4 of 5. Ticked only after the gate above, because the person is the one affirming it."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "Call now to verify" },
+      "note": "Step 4 of 5. This places the call. It sits behind the phone_verify gate for that reason."
+    },
+    {
       "type": "handoff",
       "reason": "page_not_captured",
-      "prompt": "Whitepages is now on step 2 of 5. The remaining steps were not on the public opt-out page this manifest was written from, so finish them in the browser yourself. Tell me what each one asked for, and say when the request is filed.",
-      "note": "Nothing about steps 2 to 5 is assumed here. What they ask for is recorded the first time a person walks them."
+      "prompt": "Whitepages is now on step 5 of 5, which shows a code to read to the automated caller and then confirms the request. That page has not been captured, so finish it on screen yourself. Tell me what it said and say when the request is accepted.",
+      "note": "Step 5 is the only one of the five with no capture behind it. Nothing about it is described here. When someone captures it with their values blanked, this handoff is what gets replaced."
     }
   ],
   "verification": {
     "method": "search",
     "success_when": "The listing no longer appears in the site's own people search for this name and location. The page says a person can opt out and have their listing removed from the Whitepages website."
   },
-  "recheck_after_days": null,
-  "recheck_stated": false,
+  "recheck_after_days": 1,
+  "recheck_stated": true,
+  "additional_captures": [
+    {
+      "path": "captures/whitepages-step1.jpg",
+      "of": "Step 1 of 5, the public opt-out page again, seen inside a person's guided run on 2026-09-09 and unchanged from source_capture",
+      "blanked": false
+    },
+    {
+      "path": "captures/whitepages-step2.jpg",
+      "of": "Step 2 of 5, the listing confirmation card, from that same run with the name and address painted out",
+      "blanked": true
+    },
+    {
+      "path": "captures/whitepages-step3.jpg",
+      "of": "Step 3 of 5, the reason dropdown closed and the optional comment box, from that same run",
+      "blanked": false
+    },
+    {
+      "path": "captures/whitepages-step4.jpg",
+      "of": "Step 4 of 5, the phone field, the affirmation checkbox, and the Call now to verify button, from that same run with every box empty",
+      "blanked": false
+    }
+  ],
   "id_requirements": {
     "required": false,
     "kinds": [],
-    "note": "Step 1 asks for the URL of the profile and nothing else. What the remaining steps ask for is not on the public page."
+    "note": "No account, payment, notarised document, or photo ID is asked for on any of the four captured steps. Step 4 does ask for a phone number and places an automated call to it, which is a gate rather than a document."
   },
-  "notes": "Written from the opt-out page captured on verified_on, which prints STEP 1 OF 5 and holds one field and a Next button. The other four steps sit behind a real profile URL and were not visible, so they are not described here and nothing about them is assumed. The manifest ends where the page ends: it finds the listing, fills its URL, gates, clicks Next, and hands off. recheck_after_days is null and recheck_stated is false because the page states no processing window, so the wait is the orchestrator's default rather than a figure of anyone's dressed up as the broker's. What the capture shows and what it does not: the heading, the step marker, the sentence, the field, the button, and the site's own people search are all on the image; the css fallback in the selector and the search query string were read from the page's own markup on the same visit, and the image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it.",
+  "notes": "Written from five captures: the public opt-out page on 2026-09-08, and steps 1 to 4 as they appeared inside a family member's guided run on 2026-09-09. The run captures are listed in additional_captures. Only step 2 held anything of theirs and it is under solid boxes; the other three were captured with every box empty. Steps 2 to 4 carry no css fallbacks in their selectors, because those pages were read as images and their markup was not. Step 5 has no capture and stays a handoff. Three things this manifest says are not on any capture, each stated here rather than dressed up as page text. First, recheck_after_days is 1 with recheck_stated true: the acceptance banner on step 5 states 24 hours, which the person saw in that run and nobody has captured, so the figure is the broker's own and its page is not in this repository yet. Second, a terms and cookie consent dialog stands in front of the site's search results, and one of its controls opened a Premium checkout in a new tab during that run; no accept_terms step is written because the dialog was not captured, and capturing it needs a browser profile that has not seen it. Third, two result cards resolved to one profile URL in that run, which is why find_listing reduces by URL before anything is filled. Four submit gates appear because Whitepages sends something on each of its first four pages, and each gate approves the values filled since the one before it. What the first capture shows and what it does not: the heading, the step marker, the sentence, the field, the button, and the site's own people search are all on the image; the css fallback in the step 1 selector and the search query string were read from that page's own markup on the same visit, and the image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it.",
   "source_url": "https://www.whitepages.com/suppression-requests",
   "verified_on": "2026-09-08",
   "source_capture": "captures/whitepages-optout.jpg"
