@@ -1,0 +1,64 @@
+{
+  "id": "intelius",
+  "name": "Intelius",
+  "home_url": "https://www.intelius.com/",
+  "search_url_template": "https://www.intelius.com/",
+  "optout_url": "https://www.intelius.com/opt-out/",
+  "method": "form",
+  "profile_fields_required": ["emails"],
+  "steps": [
+    {
+      "type": "navigate",
+      "url": "https://www.intelius.com/opt-out/",
+      "note": "On verified_on this address redirected to a suppression centre on another host, which is the page captured here and the page the rest of these steps describe. Intelius' own search box was not captured, so search_url_template is the site's front page and a scan types into the box there the way a person would."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Email Address" },
+      "value_from": "emails",
+      "note": "The one box in Step 1. The page says a verification email with a link to carry on is sent to it, so it has to be an inbox the person can open, and it says the address is used only to facilitate and process the request."
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "The email address is in the box and nothing has been sent. One box is still unticked, and it agrees to the site's terms of use and privacy policy and consents to transactional email about the suppression tool. Agreeing to terms is yours to do, not mine. Check the address, read those two documents if you want to, then say yes and I will tick the box and press Continue."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "I agree to the Terms of Use and Privacy Policy, and consent to receive transactional emails regarding my use of the Suppression Tool." },
+      "note": "Ticked only after the gate above, because agreeing to terms is the person's to do."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "Continue" }
+    },
+    {
+      "type": "handoff",
+      "reason": "requires_email_link",
+      "prompt": "A verification email with a link is on its way to that address. Everything after Step 1 sits behind that link and none of it was captured, so open the link and carry on in the browser yourself. Tell me what each screen asked for and say when the suppression is in place.",
+      "note": "This is where the manifest stops and the flow does not. Nothing has been suppressed at this point; an address has been given and a link asked for."
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "A search by name on Intelius no longer returns a background report for the person. The page is explicit that this is what suppression covers and no more: it applies to the report a name search generates on the sites it names, and it says the name may still appear in phone, address, or email reports found by those criteria, that other sources are unaffected, and that data held about the person as a user of those sites is a separate matter."
+  },
+  "recheck_after_days": null,
+  "recheck_stated": false,
+  "additional_captures": [
+    {
+      "path": "captures/intelius-optout-scope.jpg",
+      "of": "The part of the same page saying what the suppression tool does, what it does not reach, and that it is free, captured in the same visit",
+      "blanked": false
+    }
+  ],
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": "Step 1 asks for an email address and nothing else, and the page states the tool is free. What the screens behind the emailed link ask for is not known, because they were not captured."
+  },
+  "notes": "Written from the page Intelius' opt-out address led to on verified_on, in two images of that page. It states no processing window anywhere on it, so recheck_after_days is null with recheck_stated false and the wait is the orchestrator's own. Four things it does state and a run depends on. Step 1 takes an email address and sends back a verification email with a link to carry on. The address is used only to facilitate and process the request. The tool is free. And it names the limits of what it does: it manages the display of the background report a name search generates on the sites it lists, Intelius among them, and it says in its own words that the name may still turn up in phone, address, or email reports searched by those criteria, that information from other sources is unaffected, and that data held about a person as a user of those sites is dealt with on those sites instead. The page also carries a separate route for judges, law enforcement officers, and other legally protected people, which is by email rather than through this form and is not described here. What the captures show and what they do not: the heading, Step 1, the field label, the checkbox text, the privacy line, and the Continue button are on the first image, and the scope and cost paragraphs are on the second. JavaScript could not be run on this host, so nothing was read from its markup and no selector here carries a css fallback. The images hold no browser address bar, so optout_url records the address that was typed and source_url the address it redirected to. home_url and search_url_template are the brand's own front page, which the second image names in the list of sites the tool covers.",
+  "source_url": "https://suppression.peopleconnect.us/login",
+  "verified_on": "2026-09-09",
+  "source_capture": "captures/intelius-optout.jpg"
+}
