@@ -255,6 +255,39 @@ const cases = [
     }
   },
   {
+    // A form filled in and left on screen for the person to send themselves.
+    // Nothing is clicked after a value goes in, so nothing can have gone.
+    dir: 'fill-then-handoff',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps = m.steps.slice(0, gate).concat([
+        {
+          type: 'handoff',
+          reason: 'page_not_captured',
+          prompt: 'The form is filled in. What the next control does was not captured, so finish it yourself.'
+        }
+      ]);
+    }
+  },
+  {
+    // The hole the exemption above must not open: a form filled in, a click
+    // that sends it, and a handoff after the fact, with nobody asked.
+    dir: 'send-then-handoff',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps = m.steps.slice(0, gate).concat([
+        { type: 'click', selector: { label: 'Submit request' } },
+        {
+          type: 'handoff',
+          reason: 'page_not_captured',
+          prompt: 'The rest of this flow was not captured. Finish it in the browser.'
+        }
+      ]);
+    }
+  },
+  {
     // A broker whose flow runs over two pages, each send approved on its own.
     // This one passes: it is here so the segment rules are known to accept the
     // shape they were widened for.

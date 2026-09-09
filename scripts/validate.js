@@ -160,13 +160,23 @@ function checkGates(manifest) {
   // the previous submit gate, and what its gate approves is the values filled
   // inside that segment. A one-page broker has one segment and reads exactly as
   // it did before more than one gate was allowed.
-  // A manifest that types nothing and ends by handing the flow over has no
-  // send to approve. Radaris is the case: the page that takes a value was not
-  // captured, so the steps walk as far as the captured pages go and stop. The
-  // moment such a manifest fills anything, every rule below applies again.
-  const fillsNothing = !steps.some((step) => isStep(step) && step.type === 'fill_field');
-  const endsInHandoff = steps.length > 0 && isStep(steps[steps.length - 1]) && steps[steps.length - 1].type === 'handoff';
-  if (fillsNothing && endsInHandoff) return problems;
+  // A manifest that hands the flow over without sending anything has no send to
+  // approve. Two shapes reach that: one that types nothing at all, and one that
+  // fills a form and stops with the person looking at it. Both end on a
+  // handoff, and in both nothing is clicked after a value goes in, so no value
+  // can have left the browser. Put a click after the last fill and every rule
+  // below applies again.
+  const endsInHandoff =
+    steps.length > 0 && isStep(steps[steps.length - 1]) && steps[steps.length - 1].type === 'handoff';
+  let lastFillOfAll = -1;
+  steps.forEach((step, index) => {
+    if (isStep(step) && step.type === 'fill_field') lastFillOfAll = index;
+  });
+  const sendsAfterFilling = steps.some(
+    (step, index) =>
+      isStep(step) && index > lastFillOfAll && (step.type === 'click' || step.type === 'navigate')
+  );
+  if (endsInHandoff && (lastFillOfAll === -1 || !sendsAfterFilling)) return problems;
 
   const gateIndexes = steps
     .map((step, index) => ({ step, index }))

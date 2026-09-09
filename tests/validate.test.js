@@ -157,6 +157,18 @@ const cases = [
     expect: '1 manifest in tests/fixtures/handoff-only, 1 valid, 0 failed.'
   },
   {
+    name: 'a form filled in and left for the person to send passes',
+    dir: 'tests/fixtures/fill-then-handoff',
+    exitCode: 0,
+    expect: '1 manifest in tests/fixtures/fill-then-handoff, 1 valid, 0 failed.'
+  },
+  {
+    name: 'a form filled in, sent, and only then handed over fails',
+    dir: 'tests/fixtures/send-then-handoff',
+    exitCode: 1,
+    expect: 'no human_gate step with reason submit'
+  },
+  {
     name: 'a two-page flow with one approval per send passes',
     dir: 'tests/fixtures/two-page-flow',
     exitCode: 0,
