@@ -165,6 +165,97 @@ const cases = [
     change: (m) => {
       m.recheck_stated = false;
     }
+  },
+  {
+    // A consent dialog answered after a field has already been filled. The
+    // dialog stands in front of the flow, so a click on it further down is a
+    // click on something that is no longer in the way.
+    dir: 'accept-terms-after-fill',
+    capture: true,
+    change: (m) => {
+      const fill = m.steps.findIndex((s) => s.type === 'fill_field');
+      m.steps.splice(fill + 1, 0, {
+        type: 'accept_terms',
+        selector: { label: 'Decline' },
+        warnings: 'Fixture. No dialog exists.'
+      });
+    }
+  },
+  {
+    // A reason the page never offered. The capture shows the set, the manifest
+    // lists it, and the value filled is not in it.
+    dir: 'literal-outside-choices',
+    capture: true,
+    change: (m) => {
+      const fill = m.steps.find((s) => s.type === 'fill_field' && s.value_from === 'emails');
+      delete fill.value_from;
+      fill.selector = { label: 'Select a reason' };
+      fill.choices = ['Privacy concern', 'Incorrect information'];
+      fill.value_literal = 'Some other reason';
+    }
+  },
+  {
+    // The click that places the verification call, put in front of the gate
+    // that is supposed to hold it. A phone rings before anyone said go.
+    dir: 'call-click-before-phone-gate',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps.splice(
+        gate + 1,
+        0,
+        { type: 'click', selector: { label: 'Call now to verify' } },
+        {
+          type: 'human_gate',
+          reason: 'phone_verify',
+          prompt: 'Fixture. The call is placed the moment this is clicked.'
+        }
+      );
+    }
+  },
+  {
+    // Two approvals with nothing sent between them. The person answers a gate
+    // for a send that never happens.
+    dir: 'gate-with-no-send',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps.splice(gate, 0, JSON.parse(JSON.stringify(m.steps[gate])));
+    }
+  },
+  {
+    // A second page named in the provenance list and not on disk. A page
+    // nobody can open is not provenance.
+    dir: 'absent-additional-capture',
+    capture: true,
+    change: (m) => {
+      m.additional_captures = [
+        { path: 'captures/example-broker-step2.png', of: 'Fixture. This file is deliberately not written.' }
+      ];
+    }
+  },
+  {
+    // A broker whose flow runs over two pages, each send approved on its own.
+    // This one passes: it is here so the segment rules are known to accept the
+    // shape they were widened for.
+    dir: 'two-page-flow',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.find((s) => s.type === 'human_gate');
+      const emailFill = m.steps.find((s) => s.type === 'fill_field' && s.value_from === 'emails');
+      m.steps = [
+        m.steps[0],
+        m.steps[1],
+        m.steps[2],
+        m.steps[3],
+        JSON.parse(JSON.stringify(gate)),
+        { type: 'click', selector: { label: 'Next' } },
+        emailFill,
+        JSON.parse(JSON.stringify(gate)),
+        { type: 'click', selector: { label: 'Submit request' } },
+        m.steps[m.steps.length - 1]
+      ];
+    }
   }
 ];
 

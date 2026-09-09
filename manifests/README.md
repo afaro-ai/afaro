@@ -21,6 +21,24 @@ The captured page's own markup counts as visible on it. A css fallback in a sele
 
 `source_url` is the page. `verified_on` is the date it was read. `source_capture` is the path to the capture, relative to this directory. The validator fails a manifest missing any of the three, and fails one whose capture file is not on disk.
 
+## Pages only a real run can reach
+
+Most opt-outs run past their public page. The second screen and everything after it appears only once a real listing has been submitted, so nobody can capture it from the outside, and the first two manifests stopped at the public page for that reason.
+
+The way past it is the same rule with one more step in front. A page reachable only inside a real run is captured by the person whose run it is, every value of theirs is painted out before the file enters the repository, and the blanked image is committed and listed in `additional_captures`:
+
+```json
+"additional_captures": [
+  { "path": "captures/example-step2.jpg", "of": "Step 2 of 5, reached in a person's run on 2026-09-09", "blanked": true }
+]
+```
+
+The validator fails a manifest naming a capture that is not on disk, and fails one that lists its `source_capture` again. What does not change: steps written from those pages are written from the blanked images and nothing else, and a page nobody has captured yet is a `handoff`, not a guess.
+
+Blanking is solid boxes over every value belonging to the person: name, address, phone, email, and any code or reference the page printed. The unblanked originals never enter the repository, not even in a commit that is later amended. They are staged in `incoming/`, which is ignored, and that folder is deleted once the blanked files are committed.
+
+A fact stated only on a page nobody has captured, such as a processing window printed on an acceptance screen, is not written as though a capture backed it. Say in `notes` where it came from and that no capture exists yet.
+
 ## What the validator also enforces
 
 - The filename matches the manifest `id`.
@@ -28,10 +46,15 @@ The captured page's own markup counts as visible on it. A css fallback in a sele
 - A manifest that can send anything carries a `human_gate` step with reason `submit`, and the last `click` step comes after it.
 - A broker requiring an ID, a notarized document, an account, or a payment has `method: manual` and no `fill_field` or `click` steps. Afaro does not automate those brokers.
 - Every profile field the steps read is named in `profile_fields_required`.
-- No field is filled after the submit gate, because the person approved the values they were shown.
+- No field is filled after the last submit gate, because the person approved the values they were shown.
 - A step that fills a field from the listing has a `find_listing` step before it, because the listing URL does not exist until one has been found.
 - A `handoff` is the last step, and there is at most one.
 - A null `recheck_after_days` pairs with `recheck_stated: false`, and neither appears without the other.
+- Each page of a multi-page flow carries its own submit gate, and between two gates something is clicked. A gate with no send behind it asks for approval of nothing.
+- The click that places a verification call sits behind the `phone_verify` gate, never in front of it.
+- An `accept_terms` step comes before anything is filled and before the submit gate, because a consent dialog stands in front of the flow rather than inside it.
+- A `fill_field` that lists the `choices` the page offers fills one of them and nothing else.
+- Every capture named in `additional_captures` is on disk.
 
 ## Where a page stops short
 

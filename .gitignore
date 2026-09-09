@@ -20,3 +20,6 @@ Thumbs.db
 
 # Skill zips built for install, see docs/smoke-test.md
 /*.zip
+
+# Unblanked captures from a real run, staged for the blanking step. Never tracked.
+incoming/

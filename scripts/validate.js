@@ -89,6 +89,22 @@ function checkProvenance(manifest, fileName, dir) {
     }
   }
 
+  // Pages past the first one carry the same burden as the first. A manifest
+  // that names a capture it does not have describes a page nobody can check.
+  const extras = Array.isArray(manifest.additional_captures) ? manifest.additional_captures : [];
+  extras.forEach((entry, index) => {
+    if (!entry || typeof entry.path !== 'string' || entry.path === '') return;
+    const extraPath = path.resolve(dir, entry.path);
+    if (!extraPath.startsWith(path.resolve(dir) + path.sep)) {
+      problems.push(`additional_captures[${index}] points outside the manifest directory: ${entry.path}`);
+    } else if (!fs.existsSync(extraPath)) {
+      problems.push(`additional_captures[${index}] file is absent on disk: ${entry.path}`);
+    }
+    if (entry.path === manifest.source_capture) {
+      problems.push(`additional_captures[${index}] repeats source_capture: ${entry.path}`);
+    }
+  });
+
   if (typeof manifest.verified_on === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(manifest.verified_on)) {
     // Local date, not UTC. verified_on is the day the author read the page
     // where they were sitting, so a UTC comparison flags or misses by a day
@@ -138,28 +154,31 @@ function checkGates(manifest) {
     return problems;
   }
 
-  const submitGates = steps
+  // A broker whose opt-out runs over several pages sends something on each of
+  // them, and every send is a place the person approves what is about to go.
+  // Submit gates cut the step list into segments: a segment is the steps since
+  // the previous submit gate, and what its gate approves is the values filled
+  // inside that segment. A one-page broker has one segment and reads exactly as
+  // it did before more than one gate was allowed.
+  const gateIndexes = steps
     .map((step, index) => ({ step, index }))
-    .filter(({ step }) => isStep(step) && step.type === 'human_gate' && step.reason === 'submit');
+    .filter(({ step }) => isStep(step) && step.type === 'human_gate' && step.reason === 'submit')
+    .map(({ index }) => index);
 
-  if (submitGates.length === 0) {
+  if (gateIndexes.length === 0) {
     problems.push('no human_gate step with reason submit, so there is a send path with no approval');
     return problems;
   }
-  if (submitGates.length > 1) {
-    problems.push(`${submitGates.length} human_gate steps with reason submit, so it is unclear which send the person approves`);
-    return problems;
-  }
 
-  const gateIndex = submitGates[0].index;
+  const lastGateIndex = gateIndexes[gateIndexes.length - 1];
 
-  // Nothing is filled after the person has approved. What they approved is the
+  // Nothing is filled after the last approval. What the person approved is the
   // set of values they were shown, and a field filled afterwards is a value
   // they never saw. This also closes a hole in the check below: with a fill
   // after the gate, the last fill would sit past the gate and the window
   // between them would be empty, so an early send would go unnoticed.
   const lateFill = steps.findIndex(
-    (step, index) => isStep(step) && index > gateIndex && step.type === 'fill_field'
+    (step, index) => isStep(step) && index > lastGateIndex && step.type === 'fill_field'
   );
   if (lateFill !== -1) {
     problems.push(
@@ -167,40 +186,145 @@ function checkGates(manifest) {
     );
   }
 
-  // Once the last field has been filled, nothing may be clicked or navigated
-  // to until the person has approved. Clicks before that point move through
-  // the form. A click after it is the send. Checking only the last click would
-  // let a manifest send on an earlier click and put a harmless one after the
-  // gate. The search stops at the gate so a fill placed after it cannot push
-  // the window shut.
-  let lastFillIndex = -1;
+  // Once a segment's last field has been filled, nothing may be clicked or
+  // navigated to until that segment's gate has passed. Clicks before that point
+  // move through the form. A click after it is the send. Checking only the last
+  // click would let a manifest send on an earlier click and put a harmless one
+  // after the gate. A segment that fills nothing holds no values to protect, so
+  // only a fill opens the window.
+  let segmentStart = 0;
+  for (const gateIndex of gateIndexes) {
+    let lastFillIndex = -1;
+    for (let index = segmentStart; index < gateIndex; index += 1) {
+      if (isStep(steps[index]) && steps[index].type === 'fill_field') lastFillIndex = index;
+    }
+
+    if (lastFillIndex !== -1) {
+      const earlySend = steps.findIndex(
+        (step, index) =>
+          isStep(step) &&
+          index > lastFillIndex &&
+          index < gateIndex &&
+          (step.type === 'click' || step.type === 'navigate')
+      );
+      if (earlySend !== -1) {
+        problems.push(
+          `step ${earlySend} is a ${steps[earlySend].type} after the last filled field and before the submit gate, so the form can go without approval`
+        );
+      }
+    }
+
+    segmentStart = gateIndex + 1;
+  }
+
+  // A form that nothing clicks after the gate never sends, and a gate with no
+  // send behind it asks the person to approve something that does not happen.
+  // An email broker is the exception: the person sends the message themselves.
+  if (manifest.method !== 'email') {
+    gateIndexes.forEach((gateIndex, position) => {
+      const end = position + 1 < gateIndexes.length ? gateIndexes[position + 1] : steps.length;
+      const sends = steps.some(
+        (step, index) => isStep(step) && index > gateIndex && index < end && step.type === 'click'
+      );
+      if (sends) return;
+      if (end === steps.length) {
+        problems.push('no click step after the submit gate, so nothing sends the form');
+      } else {
+        problems.push(
+          `step ${gateIndex} is a submit gate with nothing clicked before the next one, so the person approves a send that does not happen`
+        );
+      }
+    });
+  }
+
+  return problems;
+}
+
+// The click that places a verification call is the call. It sits behind the
+// phone_verify gate, never in front of it, so nobody's phone rings before they
+// have said go. Everything between the previous gate and this one is unapproved
+// by it, which is why a click there is refused.
+function checkPhoneVerify(manifest) {
+  const problems = [];
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+  const isGate = (step) => step && typeof step === 'object' && step.type === 'human_gate';
+
   steps.forEach((step, index) => {
-    if (isStep(step) && index < gateIndex && step.type === 'fill_field') lastFillIndex = index;
+    if (!isGate(step) || step.reason !== 'phone_verify') return;
+
+    let start = -1;
+    for (let before = index - 1; before >= 0; before -= 1) {
+      if (isGate(steps[before])) {
+        start = before;
+        break;
+      }
+    }
+
+    for (let inner = start + 1; inner < index; inner += 1) {
+      const candidate = steps[inner];
+      if (candidate && typeof candidate === 'object' && candidate.type === 'click') {
+        problems.push(
+          `step ${inner} clicks before the phone_verify gate at step ${index}, and the click that places the call sits behind that gate`
+        );
+      }
+    }
   });
 
-  const earlySend = steps.findIndex(
-    (step, index) =>
-      isStep(step) &&
-      index > lastFillIndex &&
-      index < gateIndex &&
-      (step.type === 'click' || step.type === 'navigate')
-  );
-  if (earlySend !== -1) {
-    problems.push(
-      `step ${earlySend} is a ${steps[earlySend].type} after the last filled field and before the submit gate, so the form can go without approval`
-    );
-  }
+  return problems;
+}
 
-  // A form that nothing clicks after the gate never sends. An email broker is
-  // the exception: the person sends the message themselves.
-  if (manifest.method !== 'email') {
-    const sendsAfterGate = steps.some(
-      (step, index) => isStep(step) && index > gateIndex && step.type === 'click'
+// A consent dialog stands in front of the flow, so it is answered before
+// anything is typed and before anyone approves a send. An accept_terms further
+// down the list is a click on a dialog that is no longer the thing in the way.
+function checkAcceptTerms(manifest) {
+  const problems = [];
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+  const isStep = (step) => step && typeof step === 'object';
+
+  steps.forEach((step, index) => {
+    if (!isStep(step) || step.type !== 'accept_terms') return;
+
+    const earlierFill = steps.findIndex(
+      (other, position) => isStep(other) && position < index && other.type === 'fill_field'
     );
-    if (!sendsAfterGate) {
-      problems.push('no click step after the submit gate, so nothing sends the form');
+    if (earlierFill !== -1) {
+      problems.push(
+        `step ${index} accepts terms after step ${earlierFill} filled a field, and a consent dialog is answered before anything is filled`
+      );
     }
-  }
+
+    const earlierGate = steps.findIndex(
+      (other, position) =>
+        isStep(other) && position < index && other.type === 'human_gate' && other.reason === 'submit'
+    );
+    if (earlierGate !== -1) {
+      problems.push(
+        `step ${index} accepts terms after the submit gate at step ${earlierGate}, and a consent dialog comes before the flow it stands in front of`
+      );
+    }
+  });
+
+  return problems;
+}
+
+// A page that offers a fixed set of reasons offers those and no others. When
+// the capture shows the set, the manifest lists it, and the value it fills has
+// to be one of them. This is the check that keeps a reason nobody was offered
+// out of a broker's form.
+function checkChoices(manifest) {
+  const problems = [];
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+
+  steps.forEach((step, index) => {
+    if (!step || typeof step !== 'object' || step.type !== 'fill_field') return;
+    if (!Array.isArray(step.choices)) return;
+    if (typeof step.value_literal !== 'string') return;
+    if (!step.choices.includes(step.value_literal)) {
+      problems.push(
+        `step ${index} fills a value that is not one of the choices the captured page offers`
+      );
+    }
+  });
 
   return problems;
 }
@@ -356,6 +480,9 @@ function validateFile(validate, dir, fileName) {
   }
   problems.push(...checkProvenance(manifest, fileName, dir));
   problems.push(...checkGates(manifest));
+  problems.push(...checkPhoneVerify(manifest));
+  problems.push(...checkAcceptTerms(manifest));
+  problems.push(...checkChoices(manifest));
   problems.push(...checkListingValues(manifest));
   problems.push(...checkHandoff(manifest));
   problems.push(...checkRecheckWindow(manifest));

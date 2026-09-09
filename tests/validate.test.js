@@ -121,6 +121,42 @@ const cases = [
     expect: 'recheck_stated is false, so recheck_after_days must be null'
   },
   {
+    name: 'a consent dialog answered after a field was filled fails',
+    dir: 'tests/fixtures/accept-terms-after-fill',
+    exitCode: 1,
+    expect: 'a consent dialog is answered before anything is filled'
+  },
+  {
+    name: 'a reason the captured page does not offer fails',
+    dir: 'tests/fixtures/literal-outside-choices',
+    exitCode: 1,
+    expect: 'not one of the choices the captured page offers'
+  },
+  {
+    name: 'the click that places the verification call, put before its gate, fails',
+    dir: 'tests/fixtures/call-click-before-phone-gate',
+    exitCode: 1,
+    expect: 'the click that places the call sits behind that gate'
+  },
+  {
+    name: 'a submit gate with nothing sent before the next one fails',
+    dir: 'tests/fixtures/gate-with-no-send',
+    exitCode: 1,
+    expect: 'the person approves a send that does not happen'
+  },
+  {
+    name: 'a second capture named in the manifest and absent on disk fails',
+    dir: 'tests/fixtures/absent-additional-capture',
+    exitCode: 1,
+    expect: 'additional_captures[0] file is absent on disk'
+  },
+  {
+    name: 'a two-page flow with one approval per send passes',
+    dir: 'tests/fixtures/two-page-flow',
+    exitCode: 0,
+    expect: '1 manifest in tests/fixtures/two-page-flow, 1 valid, 0 failed.'
+  },
+  {
     name: 'a loopback URL outside the smoke manifest fails',
     dir: 'tests/fixtures/loopback-outside-smoke',
     exitCode: 1,

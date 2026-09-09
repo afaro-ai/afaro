@@ -97,6 +97,28 @@
     "recheck_stated": {
       "description": "False when the captured page states no processing window. recheck_after_days is then null and the orchestrator falls back to its own default, saying the broker stated none. Absent or true means the number is the broker's own, copied from the captured page.",
       "type": "boolean"
+    },
+    "additional_captures": {
+      "description": "Further pages this manifest was written from, beyond source_capture. A page reachable only inside a real run is captured by the person running it, with every value of theirs blanked, and listed here so each later step has a page behind it. The validator fails a manifest whose listed capture is absent on disk.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "of"],
+        "properties": {
+          "path": { "$ref": "#/$defs/capture_path" },
+          "of": {
+            "description": "Which page this is, in plain words, and how it was reached.",
+            "type": "string",
+            "minLength": 1
+          },
+          "blanked": {
+            "description": "True when values belonging to the person whose run produced the capture were painted out before it was committed.",
+            "type": "boolean"
+          }
+        }
+      }
     }
   },
   "$defs": {
@@ -198,6 +220,7 @@
       "type": "object",
       "oneOf": [
         { "$ref": "#/$defs/step_navigate" },
+        { "$ref": "#/$defs/step_accept_terms" },
         { "$ref": "#/$defs/step_find_listing" },
         { "$ref": "#/$defs/step_fill_field" },
         { "$ref": "#/$defs/step_click" },
@@ -221,6 +244,25 @@
         },
         "prompt": {
           "description": "What is left for the person to do, in plain words.",
+          "type": "string",
+          "minLength": 1
+        },
+        "note": { "type": "string" }
+      }
+    },
+    "step_accept_terms": {
+      "description": "A consent or terms dialog that stands in front of the flow. The selector names the control that declines, or consents to the least the dialog allows, because that is the choice Afaro makes. It comes before anything is filled and before the submit gate, and the validator holds it there.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "selector"],
+      "properties": {
+        "type": { "const": "accept_terms" },
+        "selector": {
+          "description": "The decline control, or the minimal-consent control when the dialog has no decline.",
+          "$ref": "#/$defs/selector"
+        },
+        "warnings": {
+          "description": "What else the dialog does that the person should know about, as seen on the captured page. A control that opens a paid checkout goes here.",
           "type": "string",
           "minLength": 1
         },
@@ -271,8 +313,15 @@
           "$ref": "#/$defs/profile_field_path"
         },
         "value_literal": {
-          "description": "A fixed value the form needs, for example a reason code offered by the page itself.",
+          "description": "A fixed value the form needs, for example a reason code offered by the page itself. When the page offers a fixed set, list it in choices and this value has to be one of them.",
           "type": "string"
+        },
+        "choices": {
+          "description": "The options the captured page offers for this control, copied from it word for word. Present only when the capture shows them. The validator refuses a value_literal that is not one of these, which is what keeps a reason the broker never offered out of a form.",
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
         },
         "from_listing": {
           "description": "Take the value from the listing an earlier find_listing step identified. The value never comes from the profile and never appears in a run log. url is that listing's address as the browser shows it; further attributes of the find_listing result are added here when a captured page asks for one. The validator refuses this without a find_listing step before it.",
