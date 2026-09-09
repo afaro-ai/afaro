@@ -235,6 +235,26 @@ const cases = [
     }
   },
   {
+    // A broker whose page that takes a value was never captured. The steps
+    // walk as far as the captures go, type nothing, and hand the flow over.
+    // There is no send, so there is nothing to approve and no submit gate.
+    dir: 'handoff-only',
+    capture: true,
+    change: (m) => {
+      m.steps = [
+        m.steps[0],
+        m.steps[1],
+        m.steps[2],
+        { type: 'click', selector: { label: 'Next' } },
+        {
+          type: 'handoff',
+          reason: 'page_not_captured',
+          prompt: 'The rest of this flow was not captured. Finish it in the browser.'
+        }
+      ];
+    }
+  },
+  {
     // A broker whose flow runs over two pages, each send approved on its own.
     // This one passes: it is here so the segment rules are known to accept the
     // shape they were widened for.

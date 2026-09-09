@@ -151,6 +151,12 @@ const cases = [
     expect: 'additional_captures[0] file is absent on disk'
   },
   {
+    name: 'a manifest that types nothing and hands the flow over needs no submit gate',
+    dir: 'tests/fixtures/handoff-only',
+    exitCode: 0,
+    expect: '1 manifest in tests/fixtures/handoff-only, 1 valid, 0 failed.'
+  },
+  {
     name: 'a two-page flow with one approval per send passes',
     dir: 'tests/fixtures/two-page-flow',
     exitCode: 0,

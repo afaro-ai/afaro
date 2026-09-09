@@ -160,6 +160,14 @@ function checkGates(manifest) {
   // the previous submit gate, and what its gate approves is the values filled
   // inside that segment. A one-page broker has one segment and reads exactly as
   // it did before more than one gate was allowed.
+  // A manifest that types nothing and ends by handing the flow over has no
+  // send to approve. Radaris is the case: the page that takes a value was not
+  // captured, so the steps walk as far as the captured pages go and stop. The
+  // moment such a manifest fills anything, every rule below applies again.
+  const fillsNothing = !steps.some((step) => isStep(step) && step.type === 'fill_field');
+  const endsInHandoff = steps.length > 0 && isStep(steps[steps.length - 1]) && steps[steps.length - 1].type === 'handoff';
+  if (fillsNothing && endsInHandoff) return problems;
+
   const gateIndexes = steps
     .map((step, index) => ({ step, index }))
     .filter(({ step }) => isStep(step) && step.type === 'human_gate' && step.reason === 'submit')
