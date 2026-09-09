@@ -73,10 +73,14 @@ A loopback URL is allowed in that manifest and refused everywhere else, which th
 
 ## Your profile
 
-Copy `profile.example.json` into a folder of its own outside this repository and fill in your own details. That folder holds `profile.json` and the `logs/` directory the orchestrator writes to, and nothing else. Attach it and this repository as workspace folders at the start of a session; the orchestrator looks for `profile.json` in the attached folders before it asks for anything. The repository ignores `profile.json` and `profile.*.json` so a copy left in the working tree stays untracked.
+Copy `profile.example.json` into a folder of its own outside this repository and fill in your own details. That folder holds `profile.json` and the `logs/` directory the orchestrator writes to, and nothing else. Attach it and this repository as workspace folders at the start of a session; the orchestrator looks for `profile.json` in the attached folders before it asks for anything. The repository ignores every file whose name starts with `profile`, apart from the example, so a copy left in the working tree stays untracked.
+
+One person can run Afaro for a relative who has no Claude account or no email of their own. That is one profile file per person, a signed authorization from each of them kept beside their file, and a contact address the operator controls. `docs/install.md` has the rules and the three optional profile fields it uses.
 
 During a run, your profile is part of the conversation with Claude, which means it passes through Anthropic's API. Afaro stores nothing and sends nothing anywhere else. `docs/install.md` says this in plain words for a first-time reader.
 
 ## Status
 
-Phase 0, in progress. The schema, the validator, and the skill scaffolds are in place, and the first broker manifests are being added one at a time, each written from a capture of that broker's public opt-out page. Run `npm run validate` for the count. No opt-out has been filed with a real broker yet.
+Phase 0, in progress. The schema, the validator, and the skill scaffolds are in place, and broker manifests are being added one at a time, each written from a capture of that broker's public opt-out page. Run `npm run validate` for the count.
+
+The first opt-outs have been filed. Two brokers were run end to end on a real profile in guided mode, and what those runs turned up went back into the schema, the skills, and both manifests. Several manifests stop before their broker's flow does, because the rest of that flow is behind a real listing and nobody has captured it; those report as handed off rather than submitted, and no recheck clock starts until the person says they finished.
