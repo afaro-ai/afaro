@@ -2,11 +2,13 @@
 
 Afaro is a local-first personal-data removal engine.
 
-It walks a person through removing their own listing from US people-search brokers. The person's data stays in a file on their own machine, and every submission is approved by them before it is sent.
+It walks a person through removing their own listing from US people-search brokers. The person's data stays in a file on their own machine, and every submission is approved by them before it is sent. One person can also run it for a relative who has no account of their own, as their authorized agent, with a file per person and a signed authorization kept locally.
 
 ## How it works
 
 Afaro is a set of skills that run in Claude, with the Claude in Chrome extension driving the browser. Each broker's opt-out is described in a JSON manifest: where its public search is, where its opt-out form is, which profile fields the form needs, the steps to take, and how to check later whether the listing is gone. A manifest is data. No manifest contains code.
+
+The manifests and the schema are data files with no runtime in them, and the skills follow the open Agent Skills specification. What has actually been run, though, is one thing: Claude Desktop with the Claude in Chrome extension. Every claim on this page was checked there. No other runtime has been tried, and until one is, none is claimed.
 
 Every manifest records the broker's public opt-out page it was built from, the date that page was read, and a screenshot of it committed alongside. The validator refuses a manifest that is missing any of the three or whose screenshot is not on disk. Nothing in a manifest may describe anything the capture does not show.
 
@@ -16,17 +18,18 @@ Every manifest records the broker's public opt-out page it was built from, the d
 - It does not solve CAPTCHAs or work around a site that has blocked automation. When a broker blocks it, the run stops and the step goes to the person.
 - It does not make up data. If a form needs a field the profile does not have, the run stops.
 - It does not guarantee removal. Removals fail, and listings come back. That is why rechecks are scheduled.
-- It searches only through each broker's own public search interface, at the pace of a person clicking.
+- It searches only through each broker's own public search interface, at the pace of a person clicking. A broker's own name-directory page, the kind published for search engines, may be opened directly where a manifest records its pattern with a capture behind it. Result endpoints, internal JSON paths, and profile URLs built from an ID stay out.
 
 ## Safety rules
 
 These hold in every mode.
 
 1. Nothing is submitted without the person confirming it in chat.
-2. A CAPTCHA, a bot wall, an ID request, or a phone verification stops the run and goes to the person.
+2. A CAPTCHA, a bot wall, an ID request, or a phone verification goes to the person. Where it needs answering, the run stops until they answer. Where it clears itself, they are told it happened rather than left to assume nothing did.
 3. No value is invented to satisfy a form. A missing field stops the run.
 4. Run logs hold a broker id, a step, an outcome, and a timestamp. They never hold profile values.
 5. The person's profile is never copied into this repository and is never written to a log.
+6. One click per gate. After a click the person approved, the page is read; if nothing happened, the run stops and says so. A submit that produces no page change is the site refusing, and clicking again would submit the form a second time.
 
 ## The skills
 
@@ -43,13 +46,16 @@ These hold in every mode.
 ```
 schema/optout.schema.json   the manifest schema, JSON Schema 2020-12
 scripts/validate.js         the validator, run by CI on every push
+scripts/check-names.js      the redaction sweep, run against a list kept outside the repo
 scripts/serve-smoke.js      serves the smoke page on loopback
+.githooks/                  sweeps a commit message, and a branch before it is pushed
 manifests/                  one JSON file per broker, with captures/ alongside
 manifests/_smoke/           one manifest that drives a page in this repository
 profile.example.json        the shape of a profile, filled with placeholder values
 skills/                     the five skills
 docs/install.md             setup for a non-technical reader
 docs/smoke-test.md          the runtime check that comes before any broker
+CONTRIBUTING.md             the authoring rules, the sweep, and how to propose a broker
 tests/                      validator fixtures, checks, and the smoke page
 ```
 
@@ -102,7 +108,7 @@ Three edges, worth knowing before trusting any of it.
 - **Pull request bodies: a person.** Nothing here reads them. A pull request body is written outside the repository and can repeat anything, so a read-only review of the body is a required step before a pull request is opened.
 - **Images: a person, always.** No sweep can read a screenshot. Every committed capture is opened and checked by eye, and every capture blanked from a real run is reviewed by a second read-only agent against the unblanked original. That review is required, not advisory.
 
-These three belong in `CONTRIBUTING.md` when that file is written.
+These three, and the rest of the authoring rules, are in `CONTRIBUTING.md`.
 
 ## The smoke test
 
@@ -124,4 +130,8 @@ During a run, your profile is part of the conversation with Claude, which means 
 
 Phase 0, in progress. The schema, the validator, and the skill scaffolds are in place, and broker manifests are being added one at a time, each written from a capture of that broker's public opt-out page. Run `npm run validate` for the count.
 
-The first opt-outs have been filed. Two brokers were run end to end on a real profile in guided mode, and what those runs turned up went back into the schema, the skills, and both manifests. Several manifests stop before their broker's flow does, because the rest of that flow is behind a real listing and nobody has captured it; those report as handed off rather than submitted, and no recheck clock starts until the person says they finished.
+The first opt-outs have been filed. Three brokers have been run end to end on a real profile in guided mode: two of them are gone from the sites' own searches, and the third is filed with a recheck scheduled. A fourth stopped itself with nothing filed when the site returned an error, which is what it is supposed to do. What all of those runs turned up went back into the schema, the skills, and the manifests, which is most of what this repository is.
+
+Several manifests stop before their broker's flow does, because the rest of that flow is behind a real listing and nobody has captured it. Those report as handed off rather than submitted, and no recheck clock starts until the person says they finished. One broker could not be reached at all over HTTPS and has no manifest rather than a guessed one.
+
+`CONTRIBUTING.md` has the authoring rules if you want to add a broker.
