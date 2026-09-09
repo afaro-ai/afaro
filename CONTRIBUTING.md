@@ -21,7 +21,7 @@ Two commits per broker, in this order, and not one commit:
 1. **Capture the broker's public opt-out page** and commit the image on its own, before any manifest content exists.
 2. **Write the manifest from that image** and commit it second.
 
-A single commit cannot show which came first. The two-commit shape is the record.
+A single commit cannot show which came first. The two-commit shape is the record, and the place it lives is the branch and the pull request, because this repository squash-merges: on `main` the two collapse into one. So the order is checked while the pull request is open, and the reviewer is what makes it stick. If you are reading `main` and want to see it, the pull request is where to look.
 
 Save captures as `manifests/captures/<id>-optout.jpg` or `.png`. Keep them readable: the whole opt-out section, every field label, and the button in one frame. A cropped image that cuts off the button is not evidence of a button.
 
@@ -37,7 +37,7 @@ Every manifest carries three, and the validator refuses one that does not:
 | `verified_on` | The date that page was read, `YYYY-MM-DD` |
 | `source_capture` | Path to the committed image, relative to `manifests/` |
 
-Two more carry the same weight where they apply. `additional_captures` lists further pages the manifest was written from, each with a description and a `blanked` flag. `name_page` records a broker's own name-directory page, and it is only allowed with a capture of the directory path a person clicks; a pattern you noticed in a search is a lead, not provenance.
+Two more carry the same weight where they apply. `additional_captures` lists further pages the manifest was written from, each with a description and a `blanked` flag saying whether values were painted out of it. All three of those are required, and the validator refuses an entry missing any of them. `name_page` records a broker's own name-directory page, and it is only allowed with a capture of the directory path a person clicks; a pattern you noticed in a search is a lead, not provenance.
 
 The captured page's own markup counts as visible on it. A CSS fallback in a selector, or the query string a visible search box submits, may be read from the markup of the page you captured, and the manifest says so. A page you did not capture, a help article, and anything you already knew are all out.
 

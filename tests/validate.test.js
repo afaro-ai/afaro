@@ -175,6 +175,12 @@ const cases = [
     expect: '1 manifest in tests/fixtures/two-page-flow, 1 valid, 0 failed.'
   },
   {
+    name: 'a second capture that does not say whether it was blanked fails',
+    dir: 'tests/fixtures/additional-capture-without-blanked',
+    exitCode: 1,
+    expect: "must have required property 'blanked'"
+  },
+  {
     name: 'a manifest that declares a retry count fails',
     dir: 'tests/fixtures/retry-count',
     exitCode: 1,

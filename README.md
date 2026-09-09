@@ -45,7 +45,7 @@ These hold in every mode.
 
 ```
 schema/optout.schema.json   the manifest schema, JSON Schema 2020-12
-scripts/validate.js         the validator, run by CI on every push
+scripts/validate.js         the validator, run by CI on pull requests and on main
 scripts/check-names.js      the redaction sweep, run against a list kept outside the repo
 scripts/serve-smoke.js      serves the smoke page on loopback
 .githooks/                  sweeps a commit message, and a branch before it is pushed
@@ -67,7 +67,7 @@ npm run validate
 npm test
 ```
 
-`npm run validate` reads every `.json` file in `manifests/`, checks it against the schema, checks its provenance fields, and checks that its capture file is present. It reports a count derived from the directory. It makes no network requests.
+`npm run validate` reads the `.json` files sitting directly in `manifests/`, one per broker, checks each against the schema, checks its provenance fields, and checks that its capture file is present. It does not descend into subdirectories, so the one manifest in `manifests/_smoke/` is checked by `npm run validate:smoke` instead. It reports a count derived from the directory and makes no network requests.
 
 ## The redaction sweep
 

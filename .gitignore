@@ -1,9 +1,8 @@
-# Personal profile data. Never tracked. The second pattern covers the
-# per-person files operator mode creates, profile-<name>.json.
-profile.json
-profile.*.json
-profile-*.json
-profile_*.json
+# Personal profile data. Never tracked. One pattern rather than a list of
+# shapes, because the list kept missing one: profiles.json, profile.txt and
+# profile-notes.txt all slipped through the four patterns this replaces, while
+# the README told people anything starting with profile was covered.
+profile*
 !profile.example.json
 
 # Local run output. Redacted logs still stay out of git, wherever they land.

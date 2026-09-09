@@ -164,7 +164,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["path", "of"],
+        "required": ["path", "of", "blanked"],
         "properties": {
           "path": { "$ref": "#/$defs/capture_path" },
           "of": {
@@ -173,7 +173,7 @@
             "minLength": 1
           },
           "blanked": {
-            "description": "True when values belonging to the person whose run produced the capture were painted out before it was committed.",
+            "description": "True when values belonging to the person whose run produced the capture were painted out before it was committed, false when the page held nothing of anyone's. Required, because a capture from a real run that says nothing about blanking is the one a reader has to take on trust.",
             "type": "boolean"
           }
         }

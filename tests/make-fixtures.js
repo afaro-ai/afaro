@@ -237,6 +237,19 @@ const cases = [
     }
   },
   {
+    // A second capture that does not say whether values were painted out of
+    // it. CONTRIBUTING says the flag is required; this is what makes that
+    // true of the machine rather than only of the sentence.
+    dir: 'additional-capture-without-blanked',
+    capture: true,
+    extraCapture: 'example-broker-step2.png',
+    change: (m) => {
+      m.additional_captures = [
+        { path: 'captures/example-broker-step2.png', of: 'Step 2 of the flow, reached in a person run' }
+      ];
+    }
+  },
+  {
     // One click per gate. A manifest cannot ask for a second attempt, and the
     // refusal names the field rather than muttering about extra properties.
     dir: 'retry-count',
