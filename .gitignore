@@ -1,6 +1,9 @@
-# Personal profile data. Never tracked.
+# Personal profile data. Never tracked. The second pattern covers the
+# per-person files operator mode creates, profile-<name>.json.
 profile.json
 profile.*.json
+profile-*.json
+profile_*.json
 !profile.example.json
 
 # Local run output. Redacted logs still stay out of git.

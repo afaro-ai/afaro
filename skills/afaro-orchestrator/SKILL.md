@@ -27,6 +27,8 @@ Runs one broker opt-out at a time from a manifest, using the person's local prof
 ## Required inputs
 
 1. **The profile.** By default it is `profile.json` in the workspace folder the person attached for it, a folder outside this repository holding the profile and its `logs/` directory and nothing else. Look in the attached folders for a `profile.json` before asking anything. When two folders are attached, the profile folder is the one that is not the Afaro repository. If no attached folder holds one, ask: the person may have attached the profile to the conversation instead, which works and changes only where the run log goes. Never guess a path, never store the profile in a file inside this repository, and never repeat profile values back in a log.
+
+   **One run reads one profile.** An operator running Afaro for a family holds a file per person, named `profile-<name>.json` in the same folder. When the folder holds more than one, use the one the person named in their request, and ask which if they named none. Never guess from the file names and never read two. Say whose profile was read before the first broker, and if a second person's removals come up, that is a new run.
 2. **The manifests directory.** `manifests/` in the attached Afaro folder. Every `.json` file in it is one broker. Derive the list and the count by reading the directory. Never work from a remembered list of brokers. If the Afaro folder is not attached, ask for it before the first broker rather than partway through one; the person attaches folders through the folder picker and nothing else can attach one for them.
 3. **A browser.** Steps run through the Claude in Chrome extension, in the person's own browser, in their own session.
 

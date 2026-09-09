@@ -42,7 +42,7 @@ jobs:
 
       - name: No profile file and no run log is tracked
         run: |
-          bad=$(git ls-files | grep -E '(^|/)profile(\..+)?\.json$|\.log$' | grep -vE '(^|/)profile\.example\.json$' || true)
+          bad=$(git ls-files | grep -E '(^|/)profile([-_.].+)?\.json$|\.log$' | grep -vE '(^|/)profile\.example\.json$' || true)
           if [ -n "$bad" ]; then
             echo "These must not be tracked:"
             echo "$bad"

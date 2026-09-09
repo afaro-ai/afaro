@@ -28,6 +28,10 @@ You do not need to buy anything else. Afaro is free and there is no Afaro accoun
 
 This extension is what lets Claude click and type on a web page for you, in your own browser, while you watch.
 
+**Use a separate Chrome profile for Afaro, with autofill turned off.** In Chrome, open the profile menu at the top right, choose to add a profile, and in that new profile go to settings and switch off autofill for addresses and payment methods and the offer to save them.
+
+This is not tidiness. On the first real run Chrome had already filled a different email address into a broker's form before Afaro got there, and the address it filled was not the one the removal was for. Afaro now clears every box before it types and reads it back afterwards, and stops if the two do not match. A profile with nothing saved in it means that never comes up.
+
 Reference: [Getting started with Claude in Chrome](https://support.claude.com/en/articles/12012173-getting-started-with-claude-in-chrome).
 
 ---
@@ -77,7 +81,7 @@ Reference: [How to create custom skills](https://support.claude.com/en/articles/
 Your profile is one small file with the details brokers list about you. It lives on your computer in a folder of its own.
 
 1. Make a new folder **outside the Afaro folder**, at the top of a drive or in your Documents. Name it `afaro-local` if you want a name to copy.
-2. Find `profile.example.json` in the Afaro folder. Copy it into your new folder and name the copy `profile.json`.
+2. Find `profile.example.json` in the Afaro folder. Copy it into your new folder and name the copy `profile.json`. If you are going to run Afaro for other people as well, name each file `profile-<name>.json` instead, one per person.
 3. Open it in any text editor and replace the example details with your own.
 
 Keep that folder for your profile only. `profile.json` is the one file you put there. Afaro makes a `logs` folder inside it for its own record of each run, and nothing else belongs in it.
@@ -89,6 +93,11 @@ What goes in the profile: your full name, any other names you have gone by, your
 Why previous addresses and relatives: that is how the brokers connect their records, and how you tell which listing is yours.
 
 Leave `"mode": "guided"` as it is. Guided means Claude stops and asks you before it sends anything.
+
+Three fields near the bottom of the example are optional.
+
+- `opt_out_reason` is your standing answer to a broker that asks why you want your listing removed. Some of them make you pick from a short list. Afaro matches what you put here against the list on the page and asks you if none of them fits. It never picks one for you.
+- `contact_email` and `authorized_agent` are for the case in the next section, where one person runs Afaro for someone else. If you are doing your own removals, delete both lines and leave `emails` as the address brokers write to.
 
 ---
 
@@ -116,7 +125,7 @@ Read this part before you start.
 - Your profile file stays on your computer. Afaro has no server, no account, and nowhere to send it.
 - When you run a removal, Claude reads your profile as part of the conversation, and that conversation goes to Anthropic's systems the way any Claude conversation does. That is how Claude works, and it is true of anything you type into Claude.
 - Afaro's own record of a run holds only the broker's name, the step, whether it worked, and the time. It never holds your name, address, phone number, or anything else about you.
-- Nobody else's information belongs in your profile. Afaro removes listings for the person using it. A family member runs their own copy with their own file.
+- Nobody else's information belongs in your profile. One file is one person. If you are doing this for a relative as well, they get their own file, and the next section is about that.
 
 ---
 
@@ -143,6 +152,36 @@ Some brokers hand part of the job back to you. Their opt-out runs through severa
 Some removals do not work the first time. Some listings come back later, because brokers rebuild their records from public sources. Afaro rechecks on a schedule and tells you what it finds. Nobody can promise a listing stays gone.
 
 Some brokers will not take a request through a form at all. They want a photo of an ID, a notarized document, an account, or a fee. Afaro will not do any of those for you. It hands you a short note saying exactly what that broker wants and where to do it, and you decide whether it is worth it.
+
+---
+
+## Running Afaro for someone else
+
+Some people have nobody to do this for them: no Claude account, no email, or no wish to sit in front of a browser for an afternoon. One person can run Afaro for them. That person is called the operator here, and the rules below are what keep it honest rather than convenient.
+
+**One file per person.** `<name>.json` in your local profile folder, one for each person, never mixed and never in the Afaro folder. One run is one person's file. Do not start a second person's removals in the same conversation.
+
+**Written permission, before anything is filed.** You are acting as that person's authorized agent, which is the same footing the paid removal services use. Get a one-page authorization signed by them and keep it in your local folder with their profile. A typed full name and a ticked consent box on a private form is a valid signature for this; a signed PDF through a free e-signature service is only needed if a particular broker asks for one. Put a pointer to that file in the profile:
+
+```json
+"authorized_agent": {
+  "name": "Your name",
+  "email": "the address you use for their removals",
+  "authorization_ref": "the file name or form response id of their signed authorization"
+}
+```
+
+When that block is present, Afaro says so once at the start of the run, names whose listings it is working on, and says what `authorization_ref` points at. It does not change anything else. Every gate still stops.
+
+**An address you control, for each person.** Brokers reply by email and some finish the job through a link they send. If the person has no email, use plus-addressing on your own mailbox, a different suffix per person, and put it in their profile as `contact_email`. Afaro puts that address on broker forms in place of the first entry in `emails`. This is your mailbox acting for a relative, not a service anyone operates.
+
+**The steps that are still theirs.** A photo of an ID, and a phone verification, need the actual person. Whitepages, for one, calls a phone and asks for a code read back. Afaro stops before that call is placed and tells you what is about to happen, and the person whose number it is has to be holding the phone. Do not answer those steps on someone's behalf.
+
+**Starting a run for one person.** Attach their profile folder and the Afaro folder, then say which of them this run is for:
+
+> Run the Afaro opt-outs using the profile for Reed at `<path>\reed.json`. Guided mode.
+
+Naming the file in the first message is what stops the wrong profile being picked up when several sit in the same folder. Afaro reads one profile per run and will say whose it read before it starts.
 
 ---
 
