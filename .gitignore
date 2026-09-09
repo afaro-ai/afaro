@@ -6,9 +6,10 @@ profile-*.json
 profile_*.json
 !profile.example.json
 
-# Local run output. Redacted logs still stay out of git.
+# Local run output. Redacted logs still stay out of git, wherever they land.
 logs/
 out/
+*.log
 
 # Secrets
 .env
