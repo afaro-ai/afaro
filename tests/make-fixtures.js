@@ -57,6 +57,8 @@ const cases = [
   },
   {
     // A send click placed before the gate, with a harmless one after it.
+    // Stays permanently, by ruling, alongside fill-after-gate. The two of them
+    // are what prove the segment rules did not widen the thing they guard.
     dir: 'click-before-gate',
     capture: true,
     change: (m) => {
@@ -238,6 +240,7 @@ const cases = [
     // A broker whose page that takes a value was never captured. The steps
     // walk as far as the captures go, type nothing, and hand the flow over.
     // There is no send, so there is nothing to approve and no submit gate.
+    // Stays permanently, by ruling, as one of the two handoff exemptions.
     dir: 'handoff-only',
     capture: true,
     change: (m) => {
@@ -257,6 +260,7 @@ const cases = [
   {
     // A form filled in and left on screen for the person to send themselves.
     // Nothing is clicked after a value goes in, so nothing can have gone.
+    // Stays permanently, by ruling, as the other handoff exemption.
     dir: 'fill-then-handoff',
     capture: true,
     change: (m) => {
@@ -273,6 +277,9 @@ const cases = [
   {
     // The hole the exemption above must not open: a form filled in, a click
     // that sends it, and a handoff after the fact, with nobody asked.
+    // Stays permanently. The ruling named the two exemption fixtures; this is
+    // the one that bounds them, and an exemption with nothing holding its edge
+    // is not an exemption for long.
     dir: 'send-then-handoff',
     capture: true,
     change: (m) => {

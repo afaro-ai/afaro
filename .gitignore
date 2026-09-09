@@ -11,6 +11,12 @@ logs/
 out/
 *.log
 
+# The redaction sweep's list of values. It belongs beside the profiles, outside
+# this repository, and the sweep refuses a list kept in here. These patterns are
+# the belt to that brace, and cover the copy the tests write and delete.
+redaction-list*
+names-list*
+
 # Secrets
 .env
 .env.*
