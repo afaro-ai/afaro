@@ -1,0 +1,89 @@
+{
+  "id": "truepeoplesearch",
+  "name": "TruePeopleSearch",
+  "home_url": "https://www.truepeoplesearch.com/",
+  "search_url_template": "https://www.truepeoplesearch.com/results?searchtype=name&name={{full_name}}&citystatezip={{current_address.city}}, {{current_address.state}}",
+  "optout_url": "https://www.truepeoplesearch.com/removal",
+  "method": "form",
+  "profile_fields_required": ["first_name", "middle_name", "last_name", "emails"],
+  "steps": [
+    {
+      "type": "navigate",
+      "url": "https://www.truepeoplesearch.com/removal",
+      "note": "The page asks for a name and an email address and nothing about a listing, so no search is needed first. The site's own people search sits in the header of this same page, with a name box and a city, state or zip box; both are visible on the capture and the query string behind them was read from that form's own markup on verified_on."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Exercise my rights as a:", "css": "select[name=\"RightsExerciseType\"]" },
+      "value_literal": "The subject of the request",
+      "choices": [
+        "The subject of the request",
+        "An authorized agent of the subject of the request"
+      ],
+      "note": "A dropdown that already reads The subject of the request on the capture. Its second answer was read from that page's own markup on verified_on, along with the empty placeholder that is not an answer. Stop here rather than filling it when the profile carries an authorized_agent block: the honest answer is then the second one, and choosing it opens agent name and email fields that are not on this capture and are not described anywhere in this manifest."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "First Name", "css": "input[name=\"FirstName\"]" },
+      "value_from": "first_name",
+      "note": "The three name boxes sit under a second label reading I am:. Each box carries its own name as placeholder text."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Middle Name (Optional)", "css": "input[name=\"MiddleName\"]" },
+      "value_from": "middle_name"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Last Name", "css": "input[name=\"LastName\"]" },
+      "value_from": "last_name"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Email Address", "css": "input[name=\"Email\"]" },
+      "value_from": "emails",
+      "note": "The page says the link that opens the real opt-out form is sent to this address, so it has to be an inbox the person can open."
+    },
+    {
+      "type": "human_gate",
+      "reason": "captcha",
+      "prompt": "TruePeopleSearch puts an hCaptcha I am human box under the form. Tick it yourself, then say when it is done.",
+      "note": "Handed over, never worked around. Nothing here solves it."
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "The name and email are filled in and the human check is done. One box is still unticked, and it authorizes TruePeopleSearch to write to that address about the request and certifies that you are the subject of the request or an agent authorized to act for them. Check the values, then say yes and I will tick that box and send the request."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "I authorize TruePeopleSearch.com to send communications relating to my privacy request to the email address(es) provided.", "css": "input[name=\"AuthorizeContact\"]" },
+      "note": "Ticked only after the gate above, because the certification is the person's to make."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "Send Request" }
+    },
+    {
+      "type": "handoff",
+      "reason": "requires_email_link",
+      "prompt": "TruePeopleSearch is sending a link to that address. Opening it brings up the actual opt-out form, which asks for the details on the record you want removed. That form is not on any page captured here, so fill it in yourself. The page says the link stops working after 24 hours and a new one has to be requested after that. Tell me when the form is submitted and what its confirmation said.",
+      "note": "This is where the manifest stops and the broker's flow does not. Nothing has been removed at this point; only a link has been asked for."
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "A search of the site's own people search for this name and city no longer returns the listing."
+  },
+  "recheck_after_days": 3,
+  "recheck_stated": true,
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": "The first form asks for a name and an email address. No account, payment, notarised document, or photo ID appears anywhere on it. What the form behind the emailed link asks for is not known, because that page was not captured."
+  },
+  "notes": "Written from the opt-out page captured on verified_on. Five things the page states and a run depends on. The first form only asks for a link to be emailed, and the opt-out form itself arrives at that address. The link stops working after 24 hours, and a new one has to be requested. A confirmation page and a confirmation email follow the second form. The page asks people to allow 3 days for the record to come off the site, which is where recheck_after_days comes from. The page also states that information gathered during the process is not used for anything other than processing the request. The dropdown offers a path for someone acting as an authorized agent, and that path is not described here because choosing it opens fields the capture does not show; a run for someone else stops at that step rather than certifying the wrong thing. What the capture shows and what it does not: the heading, the directions, every field label and placeholder, the checkbox text, the human check, the Send Request button, and the site's own search boxes are all on the image; the css fallbacks, the dropdown's second answer, and the search query string were read from the page's own markup on the same visit, and the image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it. One thing was done to the page before it was captured, and it adds and removes nothing the broker wrote: it was viewed zoomed out so the whole section fits one frame.",
+  "source_url": "https://www.truepeoplesearch.com/removal",
+  "verified_on": "2026-09-09",
+  "source_capture": "captures/truepeoplesearch-optout.jpg"
+}
