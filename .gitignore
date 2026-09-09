@@ -1,11 +1,21 @@
-# Personal profile data. Never tracked.
+# Personal profile data. Never tracked. The second pattern covers the
+# per-person files operator mode creates, profile-<name>.json.
 profile.json
 profile.*.json
+profile-*.json
+profile_*.json
 !profile.example.json
 
-# Local run output. Redacted logs still stay out of git.
+# Local run output. Redacted logs still stay out of git, wherever they land.
 logs/
 out/
+*.log
+
+# The redaction sweep's list of values. It belongs beside the profiles, outside
+# this repository, and the sweep refuses a list kept in here. These patterns are
+# the belt to that brace, and cover the copy the tests write and delete.
+redaction-list*
+names-list*
 
 # Secrets
 .env
@@ -20,3 +30,6 @@ Thumbs.db
 
 # Skill zips built for install, see docs/smoke-test.md
 /*.zip
+
+# Unblanked captures from a real run, staged for the blanking step. Never tracked.
+incoming/

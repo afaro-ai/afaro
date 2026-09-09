@@ -1,6 +1,6 @@
 # Manifest step types
 
-Eight step types exist. A manifest lists them in order under `steps`. Nothing else is executable: a manifest is data, and this file is the only place that says what the data means.
+Nine step types exist. A manifest lists them in order under `steps`. Nothing else is executable: a manifest is data, and this file is the only place that says what the data means.
 
 Profile placeholders appear inside double braces, for example `{{full_name}}` or `{{current_address.state}}`. Resolve them from the profile at the moment the step runs. If a placeholder has no value in the profile, stop.
 
@@ -24,13 +24,35 @@ Never open a result by constructing its URL. Click it the way a person would.
 
 Keep the address of the listing you settled on. Brokers that opt out one listing at a time ask for that URL on their form, and `fill_field` reads it back through `from_listing`. Keep it in the run, not in the log.
 
+### More than one match
+
+A search can return the same person more than once. Two result cards can also be two views of one profile, which is why the rule is about addresses and not about cards.
+
+1. Collect every result that matches `match_on`.
+2. Reduce them to distinct profile URLs. Two cards that open the same URL are one listing.
+3. Log the reduction on its own line, `find_listing:dedupe`, with the counts on a following `#` line. Counts are not profile values.
+4. Say how many distinct listings there are and run the broker's steps once per listing, asking the person before each one. Nothing is filed for a listing they did not agree to.
+
+A person can hold several listings on one broker and each is opted out on its own. Never merge them into a single request, and never run the second one without asking.
+
 ## fill_field
 
 Fields: `selector`, then exactly one of `value_from`, `value_literal`, or `from_listing`, optional `note`.
 
 `selector.label` is the visible label on the page as it appeared on `verified_on`. Find the control by that label first. `selector.css` is a fallback and is expected to drift.
 
+Fill in three moves, every time: clear the field, write the value, read the field back. If what the field holds afterwards is not what was written, stop and say which field and that the value did not take. Do not write it again and do not carry on.
+
+The reason is not theoretical. On the first live run Chrome had already filled the operator's own email address into a broker's form before the step ran. A step that had trusted what was in the box would have sent a stranger's confirmation link to the wrong inbox. Clearing first is what makes the value the profile's, and reading back is what proves it.
+
 `value_from` is a profile field path. `value_literal` is a fixed value the page itself offers, such as a reason code in a dropdown.
+
+Two profile rules apply when the value is resolved.
+
+- `emails` resolves to `contact_email` when the profile has one, and to the first entry of `emails` otherwise. In operator mode the contact address is the operator's, so broker replies and confirmation links reach the person who is doing the work.
+- `opt_out_reason` is the person's standing answer to a broker that asks why. It is optional, and a manifest that reads it names it in `profile_fields_required` like any other field.
+
+`choices` lists the options the captured page offers, word for word, and appears only when the capture shows them. When it is there, the value filled has to be one of them and the validator refuses anything else. When a page offers a set the capture did not show, the manifest names no value: match the profile's `opt_out_reason` against what the page shows at the time, and if nothing matches, stop and ask the person to choose. Never invent a reason a broker did not offer, and never pick one because it looks closest.
 
 `from_listing` takes the value from the listing the earlier `find_listing` step identified, not from the profile. `url` is that listing's address as the browser shows it, and further attributes of the result are added when a captured page asks for one. It exists because a broker that keys its opt-out to one listing asks for that URL and no profile holds it. The validator refuses a manifest that fills from the listing without a `find_listing` step before it. Never type a description of a value into a form: if the value is not known, stop.
 
@@ -38,13 +60,25 @@ A value taken from the listing never appears in a run log, the same as a profile
 
 If the field cannot be found, stop. Do not fill the nearest similar field.
 
+## accept_terms
+
+Fields: `selector`, optional `warnings`, optional `note`.
+
+A consent or terms dialog standing in front of the flow. Click the control the manifest names, which is the one that declines, or consents to the least the dialog allows.
+
+The default is the most privacy-preserving choice on offer, always. Decline where there is a decline. Where there is none, take the smallest consent the dialog will accept: reject all, necessary only, or whatever that dialog calls it. Never accept everything to get past it faster, and never agree to a setting the person was not shown.
+
+`warnings` says what else the dialog does. Read it out before clicking. One control on one of these dialogs opened a paid checkout in a new tab, so a control that costs money or signs someone up is named there and is never the one clicked.
+
+It comes first: before anything is filled and before the submit gate. The validator holds it there.
+
 ## click
 
 Fields: `selector`, optional `note`.
 
 Click the control with that visible label.
 
-Clicks before the submit gate move through the form. The click that sends it comes after the gate. The validator holds that shape: once the last `fill_field` has run, no `click` and no `navigate` may appear until the submit gate has passed, and a manifest that is not `method: email` must click something after the gate.
+Clicks before a submit gate move through the form. The click that sends comes after the gate. Brokers whose opt-out runs over several pages send something on each page, so a manifest may carry more than one submit gate, and each one approves the values filled since the previous one. The validator holds that shape per segment: once the last `fill_field` before a gate has run, no `click` and no `navigate` may appear until that gate has passed; nothing is filled after the last gate; and a manifest that is not `method: email` clicks something after every gate.
 
 ## wait_for_email_confirm
 
@@ -67,6 +101,8 @@ Fields: `reason`, `prompt`, optional `note`.
 Stop. Print `prompt`. Wait for the person.
 
 `reason` is one of `captcha`, `bot_wall`, `id_upload`, `phone_verify`, `submit`. See `gates-and-modes.md` for which mode passes which reason. Guided mode passes none of them.
+
+`phone_verify` carries one extra rule. The click that places the call sits behind the gate, never in front of it, because that click makes a phone ring. The validator refuses a click between a `phone_verify` gate and the gate before it. Tell the person the call is placed the moment the button is pressed, and that they answer it and read the code back themselves.
 
 ## handoff
 

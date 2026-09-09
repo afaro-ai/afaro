@@ -27,6 +27,8 @@ Runs one broker opt-out at a time from a manifest, using the person's local prof
 ## Required inputs
 
 1. **The profile.** By default it is `profile.json` in the workspace folder the person attached for it, a folder outside this repository holding the profile and its `logs/` directory and nothing else. Look in the attached folders for a `profile.json` before asking anything. When two folders are attached, the profile folder is the one that is not the Afaro repository. If no attached folder holds one, ask: the person may have attached the profile to the conversation instead, which works and changes only where the run log goes. Never guess a path, never store the profile in a file inside this repository, and never repeat profile values back in a log.
+
+   **One run reads one profile.** An operator running Afaro for a family holds a file per person, named `profile-<name>.json` in the same folder. When the folder holds more than one, use the one the person named in their request, and ask which if they named none. Never guess from the file names and never read two. Say whose profile was read before the first broker, and if a second person's removals come up, that is a new run.
 2. **The manifests directory.** `manifests/` in the attached Afaro folder. Every `.json` file in it is one broker. Derive the list and the count by reading the directory. Never work from a remembered list of brokers. If the Afaro folder is not attached, ask for it before the first broker rather than partway through one; the person attaches folders through the folder picker and nothing else can attach one for them.
 3. **A browser.** Steps run through the Claude in Chrome extension, in the person's own browser, in their own session.
 
@@ -49,7 +51,9 @@ Afaro holds four rules that do not bend.
 
 `guided` is the default and the only mode implemented today. If `mode` is `supervised`, stop and say: supervised mode is defined but not enabled yet, so this run needs guided mode. Do not approximate it.
 
-**Nothing is sent without a person saying so in chat.** In guided mode the `submit` gate is a real stop. Print what is about to be sent, wait for the person to answer, and accept only a clear yes. Silence is not a yes.
+**Nothing is sent without a person saying so in chat.** In guided mode the `submit` gate is a real stop. Print what is about to be sent, wait for the person to answer, and accept only a clear yes. Silence is not a yes. A broker whose opt-out runs over several pages sends something on each one and carries a gate for each send, so a run can stop several times for one broker.
+
+**Every value is written, not assumed.** Each `fill_field` clears the field, writes the value, and reads it back. A browser that has filled the box already is the reason: on the first live run Chrome had put the operator's own email into a broker's form before the step ran. If the read-back does not match, stop and name the field.
 
 **Blocks are handed over, never worked around.** On a CAPTCHA, a bot wall, an ID request, or a phone verification, stop and hand the step to the person. Do not fetch a page another way, do not retry, do not look for a different endpoint.
 
@@ -59,22 +63,26 @@ Afaro holds four rules that do not bend.
 
 1. Find the profile in the attached folders, and ask only if it is not there. Read it. Note its `mode`, and note whether it came from a folder or from an attachment, because that decides where the run log goes.
 2. If `mode` is not `guided`, stop with the message above.
-3. List the manifests directory. Report the derived count, for example "12 brokers available".
-4. Ask the person which brokers to run, or confirm running all of them in order.
-5. For each broker, in turn:
+3. If the profile carries an `authorized_agent` block, say so once, here, before the first broker: whose listings this run is about, that the operator is acting as their authorized agent, and what `authorization_ref` points at. Say it once and not again. If the profile carries a `contact_email`, that is the address that goes on broker forms in place of the first entry of `emails`, and it is named here too. Nothing else about the run changes: every gate behaves the same, and a step that needs the actual person still needs them.
+4. List the manifests directory. Report the derived count, for example "12 brokers available".
+5. Ask the person which brokers to run, or confirm running all of them in order.
+6. For each broker, in turn:
    1. Read the manifest. Check that every path in `profile_fields_required` is present in the profile. If one is missing, stop and ask.
    2. If `method` is `manual`, do not automate it. Report what the broker requires and hand it to `afaro-followup`.
    3. Walk `steps` in order. See `references/step-types.md` for what each type means.
    4. At every `human_gate`, stop, print the `prompt`, and wait. Resume only after the person answers.
-   5. Append one redacted line per step to the run log. See `references/run-log-format.md`.
-6. After the last broker, print a summary: submitted, handed off, stopped, skipped, and why. A broker whose steps ended on a `handoff` is reported as `handed off at step N`, never as submitted, however far its steps got. Nothing was filed. Say what the person still has to do on the broker's site.
-7. Tell the person when each broker is due for a recheck, using `recheck_after_days`, and point them at `afaro-removal-verify`. Two exceptions. When `recheck_stated` is false, `recheck_after_days` is null because the page states no window: wait 30 days, and say in the summary that the broker did not state one, so the 30 is Afaro's number and not theirs. When the broker ended on a `handoff`, give no due date at all, because no clock starts until the person says they finished the flow.
+   5. When a `find_listing` step matches more than one result, reduce them to distinct profile URLs, log the reduction on its own line, and say how many listings there are. Run the broker's steps once per distinct listing, and ask before each one. A person can hold several listings on one broker, and each is opted out separately.
+   6. Append one redacted line per step to the run log. See `references/run-log-format.md`.
+7. After the last broker, print a summary: submitted, handed off, stopped, skipped, and why. A broker whose steps ended on a `handoff` is reported as `handed off at step N`, never as submitted, however far its steps got. Nothing was filed. Say what the person still has to do on the broker's site.
+8. Tell the person when each broker is due for a recheck, using `recheck_after_days`, and point them at `afaro-removal-verify`. Two exceptions. When `recheck_stated` is false, `recheck_after_days` is null because the page states no window: wait 30 days, and say in the summary that the broker did not state one, so the 30 is Afaro's number and not theirs. When the broker ended on a `handoff`, give no due date at all, because no clock starts until the person says they finished the flow.
 
 ---
 
 ## Failure patterns
 
 - **A missing profile field.** Stop and ask. Never fill a form with a value the profile does not hold, and never use a placeholder.
+- **A value that does not take.** The field was cleared and written and holds something else. Stop, name the field, and say the value did not take. Do not write it again. Something on the page is fighting the step, and a second attempt sends whichever value wins.
+- **A page asking for a reason it did not offer.** Fill only an option the page shows. If the profile's `opt_out_reason` matches none of them, ask the person which one they want. Never pick the nearest.
 - **A form that no longer matches the manifest.** The manifest records what a page looked like on `verified_on`. If the page has changed, stop, say which field could not be found, and record it as a finding. Repairing manifests on the fly is a Phase 1 behavior that is not enabled.
 - **A step that seems to need a hidden request.** If Claude in Chrome cannot complete a step in the browser, log the finding and stop. Do not reach for a direct fetch.
 - **A person answering "whatever you think".** That is not approval for a `submit` gate. Ask again in plain terms.

@@ -1,0 +1,14 @@
+#!/bin/sh
+# Afaro: sweep the commit message before it is written.
+#
+# git ls-files does not reach a commit message, so the sweep that guards the
+# tracked files does not guard this. It should: the first two values it ever
+# caught were one in a source comment and one in the message of the commit
+# that added it, written minutes apart by the same person.
+#
+# Install with: npm run hooks:install
+#
+# --allow-missing-list so that somebody without a list can still commit. The
+# notice it prints is the honest signal that the sweep did not run.
+
+exec node scripts/check-names.js --file "$1" --allow-missing-list

@@ -118,6 +118,18 @@ If the folder picker is not available in your session type, that is the finding.
 
 ---
 
+## Step 5b. The field that was already filled
+
+A one-minute check, worth doing on either run. Before you say anything to Claude, open the smoke page yourself and type a wrong email address into the **Email address** box. Leave it there. Then start the run.
+
+What should happen: the fill step clears the box, writes the address from the profile, reads it back, and carries on. What must not happen: the wrong address surviving into the form, or being appended to.
+
+This is the shape of the defect the first live run turned up. Chrome had filled the operator's own address into a broker's form before the step ran, and a step that trusted what was in the box would have sent someone else's confirmation link to the wrong inbox. Record which of the two you saw.
+
+The validator cannot check this one. It never runs a step, so a value that does not take is not something a manifest can be inspected for. This check and the run log's `fill_field:readback` line are where the rule is visible.
+
+---
+
 ## Step 6. Write down what happened
 
 Append to `_state.md`, in the local-context folder, under a `## 2026-09-08 pass 2a smoke test (Andy)` heading:
@@ -125,6 +137,7 @@ Append to `_state.md`, in the local-context folder, under a `## 2026-09-08 pass 
 - Which profile path worked, A, B, or both.
 - Whether the orchestrator executed the steps in manifest order, or the extension collapsed them into its own plan.
 - Where the human gate fired, and whether anything was clicked before you answered.
+- Whether the value you typed into the email box by hand was cleared before the profile's address was written.
 - Whether the run log stayed redacted.
 - Your plan and the session type you used, since the plan decides what is available.
 

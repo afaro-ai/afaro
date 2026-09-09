@@ -25,5 +25,12 @@
   ],
   "phones": ["555-0100"],
   "emails": ["jane.example@example.com"],
-  "relatives": ["John Example", "Mary Example"]
+  "relatives": ["John Example", "Mary Example"],
+  "opt_out_reason": "Privacy concerns",
+  "contact_email": "alex+jane@example.com",
+  "authorized_agent": {
+    "name": "Alex Example",
+    "email": "alex+jane@example.com",
+    "authorization_ref": "authorization-jane-quinn-example-2026-09-09.pdf"
+  }
 }

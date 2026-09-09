@@ -57,6 +57,8 @@ const cases = [
   },
   {
     // A send click placed before the gate, with a harmless one after it.
+    // Stays permanently, by ruling, alongside fill-after-gate. The two of them
+    // are what prove the segment rules did not widen the thing they guard.
     dir: 'click-before-gate',
     capture: true,
     change: (m) => {
@@ -164,6 +166,154 @@ const cases = [
     capture: true,
     change: (m) => {
       m.recheck_stated = false;
+    }
+  },
+  {
+    // A consent dialog answered after a field has already been filled. The
+    // dialog stands in front of the flow, so a click on it further down is a
+    // click on something that is no longer in the way.
+    dir: 'accept-terms-after-fill',
+    capture: true,
+    change: (m) => {
+      const fill = m.steps.findIndex((s) => s.type === 'fill_field');
+      m.steps.splice(fill + 1, 0, {
+        type: 'accept_terms',
+        selector: { label: 'Decline' },
+        warnings: 'Fixture. No dialog exists.'
+      });
+    }
+  },
+  {
+    // A reason the page never offered. The capture shows the set, the manifest
+    // lists it, and the value filled is not in it.
+    dir: 'literal-outside-choices',
+    capture: true,
+    change: (m) => {
+      const fill = m.steps.find((s) => s.type === 'fill_field' && s.value_from === 'emails');
+      delete fill.value_from;
+      fill.selector = { label: 'Select a reason' };
+      fill.choices = ['Privacy concern', 'Incorrect information'];
+      fill.value_literal = 'Some other reason';
+    }
+  },
+  {
+    // The click that places the verification call, put in front of the gate
+    // that is supposed to hold it. A phone rings before anyone said go.
+    dir: 'call-click-before-phone-gate',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps.splice(
+        gate + 1,
+        0,
+        { type: 'click', selector: { label: 'Call now to verify' } },
+        {
+          type: 'human_gate',
+          reason: 'phone_verify',
+          prompt: 'Fixture. The call is placed the moment this is clicked.'
+        }
+      );
+    }
+  },
+  {
+    // Two approvals with nothing sent between them. The person answers a gate
+    // for a send that never happens.
+    dir: 'gate-with-no-send',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps.splice(gate, 0, JSON.parse(JSON.stringify(m.steps[gate])));
+    }
+  },
+  {
+    // A second page named in the provenance list and not on disk. A page
+    // nobody can open is not provenance.
+    dir: 'absent-additional-capture',
+    capture: true,
+    change: (m) => {
+      m.additional_captures = [
+        { path: 'captures/example-broker-step2.png', of: 'Fixture. This file is deliberately not written.' }
+      ];
+    }
+  },
+  {
+    // A broker whose page that takes a value was never captured. The steps
+    // walk as far as the captures go, type nothing, and hand the flow over.
+    // There is no send, so there is nothing to approve and no submit gate.
+    // Stays permanently, by ruling, as one of the two handoff exemptions.
+    dir: 'handoff-only',
+    capture: true,
+    change: (m) => {
+      m.steps = [
+        m.steps[0],
+        m.steps[1],
+        m.steps[2],
+        { type: 'click', selector: { label: 'Next' } },
+        {
+          type: 'handoff',
+          reason: 'page_not_captured',
+          prompt: 'The rest of this flow was not captured. Finish it in the browser.'
+        }
+      ];
+    }
+  },
+  {
+    // A form filled in and left on screen for the person to send themselves.
+    // Nothing is clicked after a value goes in, so nothing can have gone.
+    // Stays permanently, by ruling, as the other handoff exemption.
+    dir: 'fill-then-handoff',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps = m.steps.slice(0, gate).concat([
+        {
+          type: 'handoff',
+          reason: 'page_not_captured',
+          prompt: 'The form is filled in. What the next control does was not captured, so finish it yourself.'
+        }
+      ]);
+    }
+  },
+  {
+    // The hole the exemption above must not open: a form filled in, a click
+    // that sends it, and a handoff after the fact, with nobody asked.
+    // Stays permanently, by ruling. It is the fixture that gives the two
+    // exemptions their edges, and without it they are unbounded.
+    dir: 'send-then-handoff',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps = m.steps.slice(0, gate).concat([
+        { type: 'click', selector: { label: 'Submit request' } },
+        {
+          type: 'handoff',
+          reason: 'page_not_captured',
+          prompt: 'The rest of this flow was not captured. Finish it in the browser.'
+        }
+      ]);
+    }
+  },
+  {
+    // A broker whose flow runs over two pages, each send approved on its own.
+    // This one passes: it is here so the segment rules are known to accept the
+    // shape they were widened for.
+    dir: 'two-page-flow',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.find((s) => s.type === 'human_gate');
+      const emailFill = m.steps.find((s) => s.type === 'fill_field' && s.value_from === 'emails');
+      m.steps = [
+        m.steps[0],
+        m.steps[1],
+        m.steps[2],
+        m.steps[3],
+        JSON.parse(JSON.stringify(gate)),
+        { type: 'click', selector: { label: 'Next' } },
+        emailFill,
+        JSON.parse(JSON.stringify(gate)),
+        { type: 'click', selector: { label: 'Submit request' } },
+        m.steps[m.steps.length - 1]
+      ];
     }
   }
 ];

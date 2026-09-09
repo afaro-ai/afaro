@@ -1,0 +1,49 @@
+{
+  "id": "radaris",
+  "name": "Radaris",
+  "home_url": "https://radaris.com/",
+  "search_url_template": "https://radaris.com/srv/a.go_search?q={{full_name}}&name_city_state={{current_address.city}}, {{current_address.state}}",
+  "optout_url": "https://radaris.com/control-privacy",
+  "method": "search_then_form",
+  "profile_fields_required": ["full_name", "current_address.city", "current_address.state"],
+  "steps": [
+    {
+      "type": "navigate",
+      "url": "https://radaris.com/control-privacy",
+      "note": "The address loads the first screen of Radaris' removal wizard, which is a paragraph and a button. Nothing is asked for yet."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "NEXT" },
+      "note": "Moves to the second screen. Nothing has been typed and nothing is sent by this click; it opens the part of the wizard that asks which page to remove."
+    },
+    {
+      "type": "handoff",
+      "reason": "page_not_captured",
+      "prompt": "Radaris is now on its second screen, headed Please identify your personal page. It offers two ways in: search your first and last name plus city and state in the boxes there, or paste the address of your Radaris page into the box below them. The page says you find that address by running a search on Radaris and copying the URL of your page. What Radaris asks for after that was not captured, so carry on in the browser from here and tell me what each screen asked and when the request was filed.",
+      "note": "This manifest stops on the last screen anyone can reach without a real listing. The screens past it are behind a profile URL, and one of them, seen only in the page's own markup, carries an email box and a reCAPTCHA. Nothing about it is described here because nobody has captured it."
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "A search of Radaris for this name and city no longer returns the person's page."
+  },
+  "recheck_after_days": null,
+  "recheck_stated": false,
+  "additional_captures": [
+    {
+      "path": "captures/radaris-optout-identify.jpg",
+      "of": "The second screen of the same wizard, headed Please identify your personal page, reached by pressing NEXT on the first with nothing typed",
+      "blanked": false
+    }
+  ],
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": "Neither captured screen asks for an account, a payment, a notarised document, or a photo ID. What the screens behind a profile URL ask for is not known, because they were not captured."
+  },
+  "notes": "Written from the two screens Radaris shows at this address without a listing. The first says federal law does not require data brokers to delete publicly available information and that Radaris offers removal as a courtesy, and it carries an asterisk pointing at California Consumer Privacy Act opt-out requests. The second asks the person to confirm the information is their own and to identify their page by name and city or by its URL. Neither screen states a processing window, so recheck_after_days is null with recheck_stated false and the wait is the orchestrator's own. This manifest goes no further than those two screens: the rest of the wizard needs a real profile URL, which this pass had none of, so it ends on a handoff rather than describing pages nobody has seen. Two things read from the captured pages' own markup rather than off the image. The search box on the second screen submits to the address in search_url_template with the two fields named there; that same form also carries a hidden field whose value is generated per visit, so an exposure scan that gets nothing back from the URL should use the box on the page instead. And a third form sits in the same markup holding an email box and a reCAPTCHA, which is the step after a URL is given; it is named here only to say it exists and is not described. The image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it. One thing on the second image is not the broker's: a small icon inside the name box, which is a browser extension's own control and holds no value.",
+  "source_url": "https://radaris.com/control-privacy",
+  "verified_on": "2026-09-09",
+  "source_capture": "captures/radaris-optout.jpg"
+}

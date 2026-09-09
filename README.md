@@ -63,6 +63,47 @@ npm test
 
 `npm run validate` reads every `.json` file in `manifests/`, checks it against the schema, checks its provenance fields, and checks that its capture file is present. It reports a count derived from the directory. It makes no network requests.
 
+## The redaction sweep
+
+```
+export AFARO_NAME_LIST=<path to your list>
+npm run check:names
+```
+
+`npm run check:names` reads every tracked text file and fails if any of them holds a value from a list of real people's details. Run it before opening a pull request. It is the check that catches a real name used as an example, which is how one got in.
+
+The list is not in this repository and cannot be. It holds the values being protected, so it lives beside the profiles, outside the working tree, and the sweep refuses a list kept inside. One value per line; blank lines and `#` comments are ignored, so the list can be grouped by person.
+
+A failure names the file and the line and which entry of the list fired, by number. It never prints the value, so a build log and a screen full of output stay clean. Look the number up in your own copy.
+
+A bare word is matched on its own boundaries, a value with spaces or punctuation is matched as written, and a value holding seven or more digits is also matched digits-only, so a number written with dots trips a list that writes it with dashes. File names are checked as well as contents.
+
+With no list configured the sweep does not run, and it says so and exits 2 rather than reporting a pass. Continuous integration runs it with `--allow-missing-list`, because the list must never reach a build machine; that run prints the same notice and passes, and the real sweep stays the author's job.
+
+### The hooks
+
+```
+npm run hooks:install
+```
+
+That points git at `.githooks/`, which holds two.
+
+`commit-msg` sweeps the message before the commit is written. A commit message is not a tracked file, so `git ls-files` never reaches it, and a message is written in the same sitting as the code it describes, by the same person. The first two values this sweep ever caught were one in a source comment and one in the message of the commit that added it.
+
+`pre-push` sweeps the message of every commit on the branch that the remote has not seen. It catches the ones written before the hooks were installed, the ones amended past them, and anything rebased in from elsewhere.
+
+Both run with `--allow-missing-list`, so somebody without a list can still commit and push. The notice they print is the signal that the sweep did not run.
+
+### What the machine catches, and what a person must
+
+Three edges, worth knowing before trusting any of it.
+
+- **Tracked files and commit messages: the machine.** The sweep and the two hooks cover both, and continuous integration runs the tracked-file pass in its no-list mode.
+- **Pull request bodies: a person.** Nothing here reads them. A pull request body is written outside the repository and can repeat anything, so a read-only review of the body is a required step before a pull request is opened.
+- **Images: a person, always.** No sweep can read a screenshot. Every committed capture is opened and checked by eye, and every capture blanked from a real run is reviewed by a second read-only agent against the unblanked original. That review is required, not advisory.
+
+These three belong in `CONTRIBUTING.md` when that file is written.
+
 ## The smoke test
 
 `manifests/_smoke/` holds one manifest that is not a broker. It drives a page checked into `tests/smoke/`, served on loopback by `npm run smoke`, so a whole run can be watched end to end without touching a real site. The page handles its own submission and makes no network request.
@@ -73,10 +114,14 @@ A loopback URL is allowed in that manifest and refused everywhere else, which th
 
 ## Your profile
 
-Copy `profile.example.json` into a folder of its own outside this repository and fill in your own details. That folder holds `profile.json` and the `logs/` directory the orchestrator writes to, and nothing else. Attach it and this repository as workspace folders at the start of a session; the orchestrator looks for `profile.json` in the attached folders before it asks for anything. The repository ignores `profile.json` and `profile.*.json` so a copy left in the working tree stays untracked.
+Copy `profile.example.json` into a folder of its own outside this repository and fill in your own details. That folder holds `profile.json` and the `logs/` directory the orchestrator writes to, and nothing else. Attach it and this repository as workspace folders at the start of a session; the orchestrator looks for `profile.json` in the attached folders before it asks for anything. The repository ignores every file whose name starts with `profile`, apart from the example, so a copy left in the working tree stays untracked.
+
+One person can run Afaro for a relative who has no Claude account or no email of their own. That is one profile file per person, a signed authorization from each of them kept beside their file, and a contact address the operator controls. `docs/install.md` has the rules and the three optional profile fields it uses.
 
 During a run, your profile is part of the conversation with Claude, which means it passes through Anthropic's API. Afaro stores nothing and sends nothing anywhere else. `docs/install.md` says this in plain words for a first-time reader.
 
 ## Status
 
-Phase 0, in progress. The schema, the validator, and the skill scaffolds are in place, and the first broker manifests are being added one at a time, each written from a capture of that broker's public opt-out page. Run `npm run validate` for the count. No opt-out has been filed with a real broker yet.
+Phase 0, in progress. The schema, the validator, and the skill scaffolds are in place, and broker manifests are being added one at a time, each written from a capture of that broker's public opt-out page. Run `npm run validate` for the count.
+
+The first opt-outs have been filed. Two brokers were run end to end on a real profile in guided mode, and what those runs turned up went back into the schema, the skills, and both manifests. Several manifests stop before their broker's flow does, because the rest of that flow is behind a real listing and nobody has captured it; those report as handed off rather than submitted, and no recheck clock starts until the person says they finished.

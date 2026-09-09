@@ -1,0 +1,99 @@
+{
+  "id": "mylife",
+  "name": "MyLife",
+  "home_url": "https://www.mylife.com/",
+  "search_url_template": "https://www.mylife.com/",
+  "optout_url": "https://www.mylife.com/privacyrequest",
+  "method": "form",
+  "profile_fields_required": [
+    "first_name",
+    "last_name",
+    "current_address.city",
+    "current_address.postal_code",
+    "current_address.state",
+    "emails",
+    "date_of_birth",
+    "aliases"
+  ],
+  "steps": [
+    {
+      "type": "navigate",
+      "url": "https://www.mylife.com/privacyrequest",
+      "note": "The form asks for the person's details rather than a listing, so no search comes first. MyLife's own search box lives on its home page, which is the second capture; that box carries no address of its own, so search_url_template is the page holding it and a scan types into the box the way a person would."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "State:" },
+      "value_from": "current_address.state",
+      "note": "A required dropdown reading Please Select on the capture. Its list was not captured, so no value is named here: open it, match the profile's state against what it shows, and stop and ask if nothing matches. The profile holds two-letter states and the list may spell them out."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "First Name" },
+      "value_from": "first_name",
+      "note": "The two boxes under the Name heading are captioned First Name and Last Name underneath."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Last Name" },
+      "value_from": "last_name"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "City" },
+      "value_from": "current_address.city",
+      "note": "The two boxes under the Location heading are captioned City and Postal / Zip Code underneath."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Postal / Zip Code" },
+      "value_from": "current_address.postal_code"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Email Validator" },
+      "value_from": "emails",
+      "note": "The box beside the Verify Email button. The page says this address is where the confirmation goes when the deletion is done, and that MyLife also unsubscribes it and deletes any account registered with it."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Birth Year (YYYY):" },
+      "value_from": "date_of_birth",
+      "note": "The label asks for four digits and the caption under it says the birth year helps MyLife find the right profile. The profile holds a full date, so type its year and nothing else. If the profile has no date of birth, stop and ask rather than guessing a year."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Maiden Name or Alias Name:" },
+      "value_from": "aliases",
+      "note": "One box, and no required marker beside it. Use the first entry in the profile's aliases. Leave it empty if there are none rather than putting anything else in it."
+    },
+    {
+      "type": "handoff",
+      "reason": "page_not_captured",
+      "prompt": "The form is filled in and nothing has been sent. Four things are left. Press Verify Email beside the address, which the page requires and whose behaviour is not on the capture. Complete the box headed Please verify that you are human. The box marked Middle Initial is empty and I left it that way, because the profile holds a middle name rather than a letter; put your initial in it if you want to. If you know the address of your MyLife profile, paste it into the box reading Enter the profile URL for your profile listing, which is optional and which the page has a link for finding. Then read the form back and press Submit yourself. Tell me what the page said afterwards.",
+      "note": "Nothing is clicked after the last value goes in, so nothing can leave the browser before the person has read the form. That is why there is no submit gate: the handoff is the moment they take it over."
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "MyLife's own search no longer returns a profile for this name and city. The form says a matching profile listing will be permanently removed."
+  },
+  "recheck_after_days": null,
+  "recheck_stated": false,
+  "additional_captures": [
+    {
+      "path": "captures/mylife-home-search.jpg",
+      "of": "MyLife's home page, which is where the site's own search box sits, captured in the same visit",
+      "blanked": false
+    }
+  ],
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": "No account, payment, notarised document, or photo ID appears on the form. It does ask for a birth year and it does require an email address to be verified through a button on the form."
+  },
+  "notes": "Written from the opt-out form captured on verified_on, joined from three views of the same page so every label from the heading to the Submit button sits in one frame. Four things the page states and a run depends on. Requests are processed within the legally required time frames, which is not a number, so recheck_after_days is null with recheck_stated false and the wait is the orchestrator's own. A profile listing matching the information given will be permanently removed. The email address is where the confirmation goes when the deletion is done, and MyLife also unsubscribes it and deletes any account registered under it. A named list of states whose residents have opt-out and deletion rights is printed on the page, along with a line saying MyLife extends the same options to residents of other states at its discretion. The manifest stops before anything is sent. It fills every box on the capture that a profile field answers, then hands the form to the person with four things left: the Verify Email button, whose behaviour is not on the capture, the human check, whose widget had not drawn when the capture was taken, the Middle Initial box, which is left empty because the profile holds a middle name rather than a letter and shortening one to the other is the person's call, and the optional profile URL box, which needs an address this pass had no way to find. What the capture shows and what it does not: every label, caption, and the Submit button are on the image. The form sits in a frame served by another host, so its markup could not be read at all and no css fallback appears in any selector here. The State dropdown was shut, so its list is not named. The image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it. MyLife's search box has no address of its own in the home page's markup, so search_url_template is the page that holds the box.",
+  "source_url": "https://www.mylife.com/privacyrequest",
+  "verified_on": "2026-09-09",
+  "source_capture": "captures/mylife-optout.jpg"
+}

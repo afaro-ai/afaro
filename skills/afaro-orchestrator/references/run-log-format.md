@@ -18,8 +18,24 @@ timestamp	broker_id	step	outcome
 
 - `timestamp` is ISO 8601 local time.
 - `broker_id` is the manifest `id`.
-- `step` is the step type, plus the gate reason when the type is `human_gate`, for example `human_gate:submit`.
+- `step` is the step type, plus the gate reason when the type is `human_gate`, for example `human_gate:submit`. Two step markers name something narrower than a type: `find_listing:dedupe` and `fill_field:readback`.
 - `outcome` is one of `ok`, `stopped`, `not_found`, `skipped`, `error`, `approved`, `declined`.
+
+## Two lines worth writing on purpose
+
+**The dedupe.** When a search returns more than one match, the reduction to distinct profile URLs gets its own line, and the counts go on a following `#` line. A count is not a profile value, and the line is how a person sees that two results were one listing rather than two.
+
+```
+2026-09-09T10:14:19	example-broker	find_listing:dedupe	ok
+# 3 results matched, 2 distinct listings
+```
+
+**The read-back.** Every fill clears the field, writes the value, and reads it back. When the field does not hold what was written, the run stops there and the line says so by field path, never by value.
+
+```
+2026-09-09T10:14:41	example-broker	fill_field:readback	error
+# the field did not hold the value that was written: emails
+```
 
 ## What a run looks like
 

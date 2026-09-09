@@ -36,7 +36,7 @@
     {
       "type": "human_gate",
       "reason": "captcha",
-      "prompt": "Spokeo shows an I am not a robot checkbox between the email field and the OPT OUT button. Tick it yourself, then say when it is done.",
+      "prompt": "Spokeo shows a checkbox reading I'm not a robot between the email field and the OPT OUT button. Tick it yourself, then say when it is done.",
       "note": "Handed over, never worked around. Nothing here solves it."
     },
     {
@@ -59,13 +59,13 @@
     "method": "search",
     "success_when": "The listing URL that was opted out no longer returns that listing. The page states each listing has its own URL, so a listing found at a different URL is another listing rather than a failed removal."
   },
-  "recheck_after_days": 2,
+  "recheck_after_days": 3,
   "id_requirements": {
     "required": false,
     "kinds": [],
     "note": "The page asks for the listing URL and an email address, and nothing else."
   },
-  "notes": "Written from the opt-out page captured on verified_on. Four things that page states and a run depends on. Each listing has its own URL and is opted out one at a time, so a person with several listings runs this once per listing. A request should be processed in 24-48 hours, which the page makes conditional on the nature of the request and the amount of data. The process completes only when the person clicks the link in the confirmation email. Information may reappear later without notice, and the page asks people to check again for new listings. What the capture shows and what it does not: the labels, the fields, the checkbox, the button, and the site's own search box are all on the image; the css fallbacks in the selectors and the search query string were read from the page's own markup on the same visit, and the image holds no browser address bar, so source_url and optout_url record the address that was open rather than something legible on it.",
+  "notes": "Written from the opt-out page captured on verified_on. Four things that page states and a run depends on. Each listing has its own URL and is opted out one at a time, so a person with several listings runs this once per listing. A request should be processed in 24-48 hours, which the page makes conditional on the nature of the request and the amount of data. The process completes only when the person clicks the link in the confirmation email. Information may reappear later without notice, and the page asks people to check again for new listings. Two wordings, one number: the captured page says 24 to 48 hours, and the page shown after the emailed link is clicked says 2 to 3 days. recheck_after_days is 3, the longer of the two, so a recheck does not go out while the request is still inside the window Spokeo itself quoted last. That second page appears only after a real submission and nobody has captured it; its wording is recorded from a person's run on 2026-09-09 and is not visible on any image in this repository. What the capture shows and what it does not: the labels, the fields, the checkbox, the button, and the site's own search box are all on the image; the css fallbacks in the selectors and the search query string were read from the page's own markup on the same visit, and the image holds no browser address bar, so source_url and optout_url record the address that was open rather than something legible on it.",
   "source_url": "https://www.spokeo.com/optout",
   "verified_on": "2026-09-08",
   "source_capture": "captures/spokeo-optout.jpg"
