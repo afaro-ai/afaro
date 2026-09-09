@@ -46,7 +46,7 @@
     },
     {
       "type": "human_gate",
-      "reason": "skip_gate",
+      "reason": "submit",
       "prompt": "Review the form, then confirm here to send the removal request."
     },
     {
@@ -65,7 +65,7 @@
     "method": "search",
     "success_when": "The search for this name in this state returns no matching listing."
   },
-  "recheck_after_days": 14,
+  "recheck_after_days": null,
   "id_requirements": {
     "required": false,
     "kinds": [],

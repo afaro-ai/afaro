@@ -1,0 +1,64 @@
+{
+  "id": "whitepages",
+  "name": "Whitepages",
+  "home_url": "https://www.whitepages.com/",
+  "search_url_template": "https://www.whitepages.com/header-search/name?s_name={{full_name}}&s_loc={{current_address.city}}, {{current_address.state}}",
+  "optout_url": "https://www.whitepages.com/suppression-requests",
+  "method": "search_then_form",
+  "profile_fields_required": ["full_name", "current_address.city", "current_address.state"],
+  "steps": [
+    {
+      "type": "navigate",
+      "url": "https://www.whitepages.com/header-search/name?s_name={{full_name}}&s_loc={{current_address.city}}, {{current_address.state}}",
+      "note": "The opt-out page asks for the URL of the profile, so the listing is found first. This is the search the site's own people search in the page header submits, and it takes a name and a location, as its two boxes show. The boxes are visible on the capture; the query string behind them was read from that form's own markup on verified_on."
+    },
+    {
+      "type": "find_listing",
+      "match_on": ["full_name", "current_address.city"],
+      "on_not_found": "stop"
+    },
+    {
+      "type": "navigate",
+      "url": "https://www.whitepages.com/suppression-requests"
+    },
+    {
+      "type": "fill_field",
+      "selector": {
+        "label": "Copy and paste the URL of your profile",
+        "css": "#suppression-requests-person-url"
+      },
+      "from_listing": "url",
+      "note": "The one field on the page. Its visible text is the instruction inside the box."
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "This sends the listing URL to Whitepages and opens step 2 of 5. The page this manifest was written from is step 1, so from here you are working the remaining steps on screen yourself. Check the URL, then say yes to continue."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "Next" }
+    },
+    {
+      "type": "handoff",
+      "reason": "page_not_captured",
+      "prompt": "Whitepages is now on step 2 of 5. The remaining steps were not on the public opt-out page this manifest was written from, so finish them in the browser yourself. Tell me what each one asked for, and say when the request is filed.",
+      "note": "Nothing about steps 2 to 5 is assumed here. What they ask for is recorded the first time a person walks them."
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "The listing no longer appears in the site's own people search for this name and location. The page says a person can opt out and have their listing removed from the Whitepages website."
+  },
+  "recheck_after_days": null,
+  "recheck_stated": false,
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": "Step 1 asks for the URL of the profile and nothing else. What the remaining steps ask for is not on the public page."
+  },
+  "notes": "Written from the opt-out page captured on verified_on, which prints STEP 1 OF 5 and holds one field and a Next button. The other four steps sit behind a real profile URL and were not visible, so they are not described here and nothing about them is assumed. The manifest ends where the page ends: it finds the listing, fills its URL, gates, clicks Next, and hands off. recheck_after_days is null and recheck_stated is false because the page states no processing window, so the wait is the orchestrator's default rather than a figure of anyone's dressed up as the broker's. What the capture shows and what it does not: the heading, the step marker, the sentence, the field, the button, and the site's own people search are all on the image; the css fallback in the selector and the search query string were read from the page's own markup on the same visit, and the image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it.",
+  "source_url": "https://www.whitepages.com/suppression-requests",
+  "verified_on": "2026-09-08",
+  "source_capture": "captures/whitepages-optout.jpg"
+}

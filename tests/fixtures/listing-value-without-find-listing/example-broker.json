@@ -18,14 +18,6 @@
       "note": "Test fixture. Not a real broker."
     },
     {
-      "type": "find_listing",
-      "match_on": [
-        "full_name",
-        "current_address.city"
-      ],
-      "on_not_found": "stop"
-    },
-    {
       "type": "navigate",
       "url": "https://example.com/opt-out"
     },
@@ -46,7 +38,7 @@
     },
     {
       "type": "human_gate",
-      "reason": "skip_gate",
+      "reason": "submit",
       "prompt": "Review the form, then confirm here to send the removal request."
     },
     {

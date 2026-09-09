@@ -12,6 +12,8 @@
 
 The first four are not passed by any mode. There is no setting that turns them off. A build that passes one of them is a defect, not a feature.
 
+A `handoff` step is not a gate, and no mode passes it either. It is where a manifest stops because the broker's flow goes further than its public page showed. Nothing was filed, the outcome is handed off, and no recheck clock starts. Supervised mode does not push past it any more than guided mode does.
+
 ## The two modes
 
 `mode` lives in the person's profile.

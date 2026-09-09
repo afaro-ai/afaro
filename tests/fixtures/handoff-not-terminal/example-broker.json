@@ -46,7 +46,7 @@
     },
     {
       "type": "human_gate",
-      "reason": "skip_gate",
+      "reason": "submit",
       "prompt": "Review the form, then confirm here to send the removal request."
     },
     {
@@ -59,6 +59,17 @@
       "type": "wait_for_email_confirm",
       "expect_from": "noreply@example.com",
       "timeout_minutes": 60
+    },
+    {
+      "type": "handoff",
+      "reason": "page_not_captured",
+      "prompt": "Finish the remaining steps in the browser."
+    },
+    {
+      "type": "click",
+      "selector": {
+        "label": "Done"
+      }
     }
   ],
   "verification": {

@@ -4,8 +4,9 @@ Work through this once per broker that is due.
 
 ## Before the check
 
+- [ ] The broker was actually filed. A run that ended on a `handoff` filed nothing, so the date comes from the person saying they finished the flow, and without that the broker is not due.
 - [ ] The submission date for this broker is recorded, not assumed.
-- [ ] Today is on or after submission date plus `recheck_after_days`.
+- [ ] Today is on or after submission date plus `recheck_after_days`, or plus 30 days when `recheck_stated` is false and there is no number to add.
 - [ ] The manifest's `verification` block has been read, including `success_when`.
 - [ ] The profile fields the check needs are present.
 

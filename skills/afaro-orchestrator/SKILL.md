@@ -26,8 +26,8 @@ Runs one broker opt-out at a time from a manifest, using the person's local prof
 
 ## Required inputs
 
-1. **The profile path.** Ask for it on the first run of a session. Never guess it, never store it in a file inside this repository, and never repeat profile values back in a log.
-2. **The manifests directory.** Every `.json` file in it is one broker. Derive the list and the count by reading the directory. Never work from a remembered list of brokers.
+1. **The profile.** By default it is `profile.json` in the workspace folder the person attached for it, a folder outside this repository holding the profile and its `logs/` directory and nothing else. Look in the attached folders for a `profile.json` before asking anything. When two folders are attached, the profile folder is the one that is not the Afaro repository. If no attached folder holds one, ask: the person may have attached the profile to the conversation instead, which works and changes only where the run log goes. Never guess a path, never store the profile in a file inside this repository, and never repeat profile values back in a log.
+2. **The manifests directory.** `manifests/` in the attached Afaro folder. Every `.json` file in it is one broker. Derive the list and the count by reading the directory. Never work from a remembered list of brokers. If the Afaro folder is not attached, ask for it before the first broker rather than partway through one; the person attaches folders through the folder picker and nothing else can attach one for them.
 3. **A browser.** Steps run through the Claude in Chrome extension, in the person's own browser, in their own session.
 
 If the profile is missing a field a manifest requires, stop and ask the person for it. Never invent a value to satisfy a form.
@@ -57,7 +57,7 @@ Afaro holds four rules that do not bend.
 
 ## Workflow
 
-1. Ask for the profile path if you do not have it. Read the profile. Note its `mode`.
+1. Find the profile in the attached folders, and ask only if it is not there. Read it. Note its `mode`, and note whether it came from a folder or from an attachment, because that decides where the run log goes.
 2. If `mode` is not `guided`, stop with the message above.
 3. List the manifests directory. Report the derived count, for example "12 brokers available".
 4. Ask the person which brokers to run, or confirm running all of them in order.
@@ -67,8 +67,8 @@ Afaro holds four rules that do not bend.
    3. Walk `steps` in order. See `references/step-types.md` for what each type means.
    4. At every `human_gate`, stop, print the `prompt`, and wait. Resume only after the person answers.
    5. Append one redacted line per step to the run log. See `references/run-log-format.md`.
-6. After the last broker, print a summary: submitted, stopped, skipped, and why.
-7. Tell the person when each broker is due for a recheck, using `recheck_after_days`, and point them at `afaro-removal-verify`.
+6. After the last broker, print a summary: submitted, handed off, stopped, skipped, and why. A broker whose steps ended on a `handoff` is reported as `handed off at step N`, never as submitted, however far its steps got. Nothing was filed. Say what the person still has to do on the broker's site.
+7. Tell the person when each broker is due for a recheck, using `recheck_after_days`, and point them at `afaro-removal-verify`. Two exceptions. When `recheck_stated` is false, `recheck_after_days` is null because the page states no window: wait 30 days, and say in the summary that the broker did not state one, so the 30 is Afaro's number and not theirs. When the broker ended on a `handoff`, give no due date at all, because no clock starts until the person says they finished the flow.
 
 ---
 
@@ -84,7 +84,8 @@ Afaro holds four rules that do not bend.
 
 ## Output format
 
-- **Run log:** one local, redacted file per run under a `logs/` directory outside the repository. Format in `references/run-log-format.md`.
+- **Run log:** one local, redacted file per run in `logs/` inside the profile folder, next to `profile.json`, named `afaro-run-YYYY-MM-DD-HHMM.log`. Create `logs/` if it is not there. Format in `references/run-log-format.md`.
+- **When the profile came as an attachment:** there is no folder to write to. Say so at the start of the run, keep the same lines, and deliver the whole log in the chat when the run ends.
 - **Chat summary:** one line per broker, in the order they ran, then the recheck dates.
 - **Nothing else is written.** No profile copy, no scraped broker data, no cache of search results.
 

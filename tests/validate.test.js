@@ -85,6 +85,42 @@ const cases = [
     expect: 'steps read emails, which is not in profile_fields_required'
   },
   {
+    name: 'a field filled after the submit gate fails',
+    dir: 'tests/fixtures/fill-after-gate',
+    exitCode: 1,
+    expect: 'fills a field after the submit gate'
+  },
+  {
+    name: 'a fill after the gate does not hide an early send',
+    dir: 'tests/fixtures/fill-after-gate',
+    exitCode: 1,
+    expect: 'before the submit gate, so the form can go without approval'
+  },
+  {
+    name: 'a fill from the listing with no find_listing before it fails',
+    dir: 'tests/fixtures/listing-value-without-find-listing',
+    exitCode: 1,
+    expect: 'no find_listing step comes before it'
+  },
+  {
+    name: 'a step after a handoff fails',
+    dir: 'tests/fixtures/handoff-not-terminal',
+    exitCode: 1,
+    expect: 'a handoff is where the manifest ends'
+  },
+  {
+    name: 'a null recheck window with nothing saying the page stated none fails',
+    dir: 'tests/fixtures/recheck-null-without-flag',
+    exitCode: 1,
+    expect: 'recheck_after_days is null, so recheck_stated must be false'
+  },
+  {
+    name: 'an unstated recheck window carrying a number anyway fails',
+    dir: 'tests/fixtures/recheck-unstated-with-number',
+    exitCode: 1,
+    expect: 'recheck_stated is false, so recheck_after_days must be null'
+  },
+  {
     name: 'a loopback URL outside the smoke manifest fails',
     dir: 'tests/fixtures/loopback-outside-smoke',
     exitCode: 1,
