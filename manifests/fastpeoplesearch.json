@@ -1,0 +1,89 @@
+{
+  "id": "fastpeoplesearch",
+  "name": "FastPeopleSearch",
+  "home_url": "https://www.fastpeoplesearch.com/",
+  "search_url_template": "https://www.fastpeoplesearch.com/search?name={{full_name}}&address={{current_address.city}}, {{current_address.state}}",
+  "optout_url": "https://www.fastpeoplesearch.com/optout",
+  "method": "form",
+  "profile_fields_required": ["first_name", "middle_name", "last_name", "emails"],
+  "steps": [
+    {
+      "type": "navigate",
+      "url": "https://www.fastpeoplesearch.com/optout",
+      "note": "The page asks for a name and an email address and nothing about a listing, so no search is needed first. The site's own people search sits in the header of this same page; its two boxes are visible on the capture and the query string behind them was read from that form's own markup on verified_on."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "I am:", "css": "#optout-start select[name=\"am\"]" },
+      "value_literal": "The subject of this request",
+      "choices": [
+        "The subject of this request",
+        "An authorized agent of the subject of the request"
+      ],
+      "note": "A required dropdown, shut on the capture, whose two answers were read from that page's own markup on verified_on along with the empty Choose One placeholder that is not an answer. Stop here rather than filling it when the profile carries an authorized_agent block: the honest answer is then the second one, and choosing it opens agent name and email fields that are not on this capture and are not described anywhere in this manifest."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "First Name", "css": "#optout-start input[name=\"firstname\"]" },
+      "value_from": "first_name"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Middle Name", "css": "#optout-start input[name=\"middlename\"]" },
+      "value_from": "middle_name",
+      "note": "The only field on the form without a required marker beside its label."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Last Name", "css": "#optout-start input[name=\"lastname\"]" },
+      "value_from": "last_name"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Email address", "css": "#optout-start input[name=\"email\"]" },
+      "value_from": "emails",
+      "note": "The page says the link that opens the real opt-out form is sent to this address, so it has to be an inbox the person can open."
+    },
+    {
+      "type": "human_gate",
+      "reason": "captcha",
+      "prompt": "FastPeopleSearch puts a Cloudflare human check under the form. Complete it yourself, then say when it is done.",
+      "note": "Handed over, never worked around. Nothing here solves it."
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "The name and email are filled in and the human check is done. One box is still unticked, and it reads: I authorize FastPeopleSearch.com to send communications relating to my privacy request to the email address(es) provided, and it certifies that you are the subject of the request or an agent authorized to act for them. Check the values, then say yes and I will tick that box and send the request."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "I authorize FastPeopleSearch.com to send communications relating to my privacy request to the email address(es) provided.", "css": "#optout-start input[name=\"legal\"]" },
+      "note": "Ticked only after the gate above, because the certification is the person's to make."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "SUBMIT", "css": "#optout-start button[type=\"submit\"]" }
+    },
+    {
+      "type": "handoff",
+      "reason": "requires_email_link",
+      "prompt": "FastPeopleSearch is sending a link to that address. Opening it brings up the actual opt-out form, which asks for the details on the record you want removed. That form is not on any page captured here, so fill it in yourself. The page says the link expires after 24 hours and that a new one has to be requested after that. Tell me when the form is submitted and what its confirmation said.",
+      "note": "This is where the manifest stops and the broker's flow does not. Nothing has been removed at this point; only a link has been asked for."
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "A search of the site's own people search for this name and city no longer returns the listing."
+  },
+  "recheck_after_days": 3,
+  "recheck_stated": true,
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": "The first form asks for a name and an email address. No account, payment, notarised document, or photo ID appears anywhere on it. What the form behind the emailed link asks for is not known, because that page was not captured."
+  },
+  "notes": "Written from the opt-out page captured on verified_on. Four things the page states and a run depends on. The first form only asks for a link to be emailed, and the opt-out form itself arrives at that address. The link stops working after 24 hours, and a new one has to be requested. A confirmation page and a confirmation email follow the second form. The page asks people to allow 3 days for the record to come off the site, which is where recheck_after_days comes from. The dropdown offers a path for someone acting as an authorized agent, and that path is not described here because choosing it opens fields the capture does not show; a run for someone else stops at that step rather than certifying the wrong thing. What the capture shows and what it does not: the heading, the directions, every field label, the checkbox text, the human check, the submit button, and the site's own search boxes are all on the image; the css fallbacks, the two dropdown answers, and the search query string were read from the page's own markup on the same visit, and the image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it. Two things were done to the page before it was captured, and neither adds or removes anything the broker wrote: fixed advertising containers were hidden, one of which sat over the form, and the page was viewed zoomed out so the whole section fits one frame.",
+  "source_url": "https://www.fastpeoplesearch.com/optout",
+  "verified_on": "2026-09-09",
+  "source_capture": "captures/fastpeoplesearch-optout.jpg"
+}
