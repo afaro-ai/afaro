@@ -1,0 +1,131 @@
+{
+  "id": "peoplefinders",
+  "name": "PeopleFinders",
+  "home_url": "https://www.peoplefinders.com/",
+  "search_url_template": "https://www.peoplefinders.com/",
+  "optout_url": "https://www.peoplefinders.com/opt-out",
+  "method": "form",
+  "profile_fields_required": [
+    "first_name",
+    "middle_name",
+    "last_name",
+    "emails",
+    "phones",
+    "date_of_birth",
+    "current_address.line1",
+    "current_address.city",
+    "current_address.state"
+  ],
+  "steps": [
+    {
+      "type": "navigate",
+      "url": "https://www.peoplefinders.com/opt-out",
+      "note": "The form asks for the person's details rather than a listing, so no search comes first. The site's own search box sits in the header of this same page and carries no address of its own in the page's markup, so search_url_template is the page holding the box and a scan types into it the way a person would."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "First Name" },
+      "value_from": "first_name",
+      "note": "The page asks for names without special characters and gives its own example of a suffix written without a comma or a full stop. Type the name as the profile holds it, and if it carries a full stop or a hyphen, stop and ask rather than editing it silently."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Middle Name" },
+      "value_from": "middle_name",
+      "note": "No required marker beside this label."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Last Name" },
+      "value_from": "last_name"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Email" },
+      "value_from": "emails",
+      "note": "No required marker beside this label. On the capture the box already holds the word opt-out, which the browser put there rather than the broker. Clear the box before writing, as every fill does, and read it back afterwards."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Phone" },
+      "value_from": "phones",
+      "note": "No required marker beside this label."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Month" },
+      "value_from": "date_of_birth",
+      "note": "The first of three Date of Birth controls, a dropdown reading Month on the capture. Its list was not captured, so no value is named here: open it and choose the month of the profile's date of birth as that list spells it. The page says a made-up date of birth only hinders the request, so if the profile has no date of birth, leave all three empty rather than inventing one."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "DD" },
+      "value_from": "date_of_birth",
+      "note": "The day of the profile's date of birth, two digits, and nothing else."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "YYYY" },
+      "value_from": "date_of_birth",
+      "note": "The year of the profile's date of birth, four digits, and nothing else."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Street Address" },
+      "value_from": "current_address.line1"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "City" },
+      "value_from": "current_address.city"
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "State/Region" },
+      "value_from": "current_address.state",
+      "note": "A plain box on the capture, with no list attached to it, so what the profile holds is what goes in."
+    },
+    {
+      "type": "human_gate",
+      "reason": "captcha",
+      "prompt": "PeopleFinders puts a reCAPTCHA I am not a robot box above the Submit button. Tick it yourself, then say when it is done.",
+      "note": "Handed over, never worked around. Nothing here solves it."
+    },
+    {
+      "type": "human_gate",
+      "reason": "submit",
+      "prompt": "The form is filled and the robot check is done. The page says you will not be able to change any of it once Submit is pressed, so read the values on screen now. One box is still unticked, and it certifies that you are the person the information is about, or an agent authorized to act for them, and that what is on the form is accurate. Say yes and I will tick that box and press Submit."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "Please review the information above to ensure it is accurate." },
+      "note": "The certification checkbox, ticked only after the gate above, because what it certifies is the person's to say."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "Submit" }
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "PeopleFinders' own search no longer returns a record for this name and city. The page says the record is located from the information given and removed from their system."
+  },
+  "recheck_after_days": 3,
+  "recheck_stated": true,
+  "additional_captures": [
+    {
+      "path": "captures/peoplefinders-optout-top.jpg",
+      "of": "The top of the same page, holding the heading, the Right to Opt-out panel and its Next button, the site's search box, and the cookie banner, captured in the same visit",
+      "blanked": false
+    }
+  ],
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": "No account, payment, notarised document, or photo ID appears on the form. The page states in its own words that both routes it offers are free and that no trial or payment is required."
+  },
+  "notes": "Written from the opt-out page captured on verified_on, in two images of one page. Five things the page states and a run depends on. The record is located from the information given and removed from PeopleFinders' system within 3 days, which is where recheck_after_days comes from. Omitting information or giving inaccurate information, a made-up date of birth among the examples, only hinders the request. Names go in without special characters such as full stops and hyphens. Information entered is not used for any purpose other than processing the removal. And a record they could not identify from the original request may reappear if new data reaches them, which is the page's own reason for filling in everything asked. Nothing on the form can be changed after Submit is pressed, which the submit gate says out loud. The page offers a second route beside the form, a Right to Opt-out panel with a Next button, and a Free Identity Monitoring product; neither is described here, because the form is the route that files a removal and the other two were not followed. What the captures show and what they do not: every label, the certification text, the reCAPTCHA, and the Submit button are on the first image, and the heading, the search box, and the cookie banner are on the second. No selector here carries a css fallback: the form sits outside any form element in that page's markup and the boxes have no names to fall back to. The Month dropdown was shut, so its list is not named. The Email box on the first image holds the word opt-out, which the browser put there and not the broker. The images hold no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on them. The cookie banner offers only Accept, so it was not answered, and it is hidden in the first image because it is pinned to the bottom of the window and would otherwise lie across the form.",
+  "source_url": "https://www.peoplefinders.com/opt-out",
+  "verified_on": "2026-09-09",
+  "source_capture": "captures/peoplefinders-optout.jpg"
+}
