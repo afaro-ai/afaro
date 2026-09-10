@@ -105,7 +105,7 @@ These hold in every mode. The second column says what holds each one, because a 
 | The person's profile is never copied into this repository and never written to a log | **Repository guard**: the ignore rules, the CI check on tracked files, and the redaction sweep. **Reviewer** for the images, which no sweep can read |
 | One click per gate | **Validator**, which refuses a manifest declaring a retry, by name. **Orchestrator instruction** for reading the page after the click |
 
-Three of the six are instructions rather than code. That is the honest shape of it: a skill can be told what not to do, and the validator can only refuse a manifest that asks for it.
+Two of the six rest on an instruction alone: no invented value, and what a run log may hold. Nothing reads a running skill to check either. That is the honest shape of it: a skill can be told what not to do, and the validator can only refuse a manifest that asks for it.
 
 ## The skills
 

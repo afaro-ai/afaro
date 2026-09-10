@@ -32,3 +32,7 @@ Thumbs.db
 
 # Unblanked captures from a real run, staged for the blanking step. Never tracked.
 incoming/
+
+# Skills copied out for a runtime spike. A copy of what is already published,
+# so nothing here is private, but it is a copy and does not belong in git.
+.agents/
