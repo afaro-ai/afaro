@@ -6,6 +6,52 @@ Afaro is a local-first personal-data removal engine.
 
 It walks a person through removing their own listing from US people-search brokers. The person's data stays in a file on their own machine, and every submission is approved by them before it is sent. One person can also run it for a relative who has no account of their own, as their authorized agent, with a file per person and a signed authorization kept locally.
 
+## Brokers covered
+
+<!-- brokers:start -->
+
+9 brokers. Every cell below is read from that broker's manifest, so this table cannot say anything the catalogue does not.
+
+| Broker | Opt-out method | Flow ends at | Gates you will see | Page last verified |
+|---|---|---|---|---|
+| FastPeopleSearch | Form | Handed off: a link the broker emails | captcha, submit | 2026-09-09 |
+| Intelius | Form | Handed off: a link the broker emails | submit | 2026-09-09 |
+| MyLife | Form | Handed off: the rest of the flow is not captured | None (nothing is sent) | 2026-09-09 |
+| Nuwber | Search, then form | Handed off: a link the broker emails | submit | 2026-09-09 |
+| PeopleFinders | Form | Submitted | captcha, submit | 2026-09-09 |
+| Radaris | Search, then form | Handed off: the rest of the flow is not captured | None (nothing is sent) | 2026-09-09 |
+| Spokeo | Search, then form | Submitted, then a confirmation email | captcha, submit | 2026-09-08 |
+| TruePeopleSearch | Form | Handed off: a link the broker emails | captcha, submit | 2026-09-09 |
+| Whitepages | Search, then form | Handed off: the rest of the flow is not captured | submit ×4, phone verify | 2026-09-08 |
+
+<!-- brokers:end -->
+
+Being listed here means one thing: that broker's public opt-out page was captured, and its manifest validates against the schema. It does not mean a removal is guaranteed, and it does not mean the site has ever been run.
+
+<!--
+  The block below is written by hand and is NOT generated or checked by CI.
+  It records runs, which are facts about somebody's machine rather than facts
+  about this repository, so nothing in the tree can verify them. The table
+  above is the opposite: generated from manifests/ and checked by CI. Keep the
+  two apart, and update this one by hand when a run happens.
+-->
+
+### Runs the maintainer has made
+
+As of 2026-09-10. What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed:
+
+| Broker | What happened |
+|---|---|
+| FastPeopleSearch | Filed 2026-09-09. Recheck due 2026-09-12. |
+| Intelius | Scanned only. Not run. |
+| MyLife | Scanned only. Not run. |
+| Nuwber | Scanned only. Not run. |
+| PeopleFinders | Stopped by the site's own error on 2026-09-09 and again on 2026-09-10. Nothing filed. |
+| Radaris | Scanned only. Not run. |
+| Spokeo | Filed 2026-09-09. Listing gone on a later scan. |
+| TruePeopleSearch | Scanned only. Not run. |
+| Whitepages | Filed 2026-09-09. Listing gone on a later scan. |
+
 ## What it looks like
 
 Every image below is the smoke test, which is Afaro running against a fake people-search page served from this repository, with the example profile. No real broker, no real person, nothing sent anywhere.
@@ -75,6 +121,7 @@ Three of the six are instructions rather than code. That is the honest shape of 
 schema/optout.schema.json   the manifest schema, JSON Schema 2020-12
 scripts/validate.js         the validator, run by CI on pull requests and on main
 scripts/check-names.js      the redaction sweep, run against a list kept outside the repo
+scripts/brokers-table.js    regenerates the broker table above from manifests/
 scripts/serve-smoke.js      serves the smoke page on loopback
 .githooks/                  sweeps a commit message, and a branch before it is pushed
 manifests/                  one JSON file per broker, with captures/ alongside
@@ -97,9 +144,14 @@ tests/                      validator fixtures, checks, and the smoke page
 npm install
 npm run validate
 npm test
+npm run brokers:table
 ```
 
 `npm run validate` reads the `.json` files sitting directly in `manifests/`, one per broker, checks each against the schema, checks its provenance fields, and checks that its capture file is present. It does not descend into subdirectories, so the one manifest in `manifests/_smoke/` is checked by `npm run validate:smoke` instead. It reports a count derived from the directory and makes no network requests.
+
+`npm test` runs three suites: the validator's own checks, the redaction sweep's, and a literal check that a handful of run-time rules are still written in the skill text. That last one exists because those rules cannot be enforced by a schema, so nothing else would notice them being softened away.
+
+`npm run brokers:table` rewrites the broker table in this file from `manifests/`. `npm run brokers:check` fails if it is out of date, which is what CI runs. Nothing between the table's markers is edited by hand.
 
 ## The redaction sweep
 
