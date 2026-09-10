@@ -1,4 +1,4 @@
-# Afaro data removal
+# Afaro: agent skills for personal data removal
 
 Afaro is a local-first personal-data removal engine.
 
@@ -59,7 +59,9 @@ profile.example.json        the shape of a profile, filled with placeholder valu
 skills/                     the five skills
 docs/install.md             setup for a non-technical reader
 docs/smoke-test.md          the runtime check that comes before any broker
+docs/releases/              what shipped in each release, and what did not
 CONTRIBUTING.md             the authoring rules, the sweep, and how to propose a broker
+LICENSE                     MIT, and what it does not cover
 tests/                      validator fixtures, checks, and the smoke page
 ```
 
@@ -149,3 +151,13 @@ What the maintainer says, which this repository cannot show you, because run log
 Everything those runs turned up went back into the schema, the skills, and the manifests, which is most of what this repository is.
 
 `CONTRIBUTING.md` has the authoring rules if you want to add a broker.
+
+**The name.** Afaro comes from the Greek *aphairein*, to take away. Pronounced a-FAR-oh.
+
+## License
+
+The skills, the schema, the validator, the manifests, and the documentation are MIT licensed. `LICENSE` has the terms.
+
+The screenshots under `manifests/captures/` are a different thing and are not covered by that. They are images of third-party websites' public pages, and they are here for one reason: so a reader can check that each manifest matches the page it was built from. Whatever rights exist in those pages belong to the site operators, not to this project. The MIT license covers this repository's own work and does not purport to license anybody else's page content.
+
+None of this is legal advice.
