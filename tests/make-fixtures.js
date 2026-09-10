@@ -24,6 +24,22 @@ const PNG = Buffer.from(
 
 const base = JSON.parse(fs.readFileSync(BASE, 'utf8'));
 
+// The block as a real one is shaped: two captures, the site's A-to-Z bar and
+// the person's own name page from a run. The template carries placeholder
+// slugs, which is how the pattern is recorded without a name reaching the
+// manifest.
+const NAME_PAGE = () => ({
+  template: 'https://example.com/people/{{name_slug}}/',
+  slug_rules: { name_slug: 'first-last, lowercase, hyphen between' },
+  levels: ['name'],
+  directory_path: ['Name Directory letter', 'surname page'],
+  shows: 'free_listing',
+  consent_modal: false,
+  verified_on: '2026-09-09',
+  directory_capture: 'captures/example-broker-directory.png',
+  page_capture: 'captures/example-broker-name-page.png'
+});
+
 const cases = [
   {
     dir: 'missing-source-url',
@@ -242,7 +258,7 @@ const cases = [
     // true of the machine rather than only of the sentence.
     dir: 'additional-capture-without-blanked',
     capture: true,
-    extraCapture: 'example-broker-step2.png',
+    extraCaptures: ['example-broker-step2.png'],
     change: (m) => {
       m.additional_captures = [
         { path: 'captures/example-broker-step2.png', of: 'Step 2 of the flow, reached in a person run' }
@@ -270,40 +286,35 @@ const cases = [
     }
   },
   {
-    // A name page whose directory path is not on disk. The pattern is then a
-    // lead somebody wrote down, which is the one thing the ruling forbids.
+    // A name page missing one of its two captures. The person's own page is
+    // what shows the page exists and what it holds; without it the pattern is
+    // a lead somebody wrote down, which is the one thing the ruling forbids.
     dir: 'name-page-absent-capture',
     capture: true,
+    extraCaptures: ['example-broker-directory.png'],
     change: (m) => {
-      m.name_page = {
-        template: 'https://example.com/people/{{name_slug}}/',
-        slug_rules: { name_slug: 'first-last, lowercase, hyphen between' },
-        levels: ['name'],
-        directory_path: ['Name Directory letter', 'surname page'],
-        shows: 'free_listing',
-        consent_modal: false,
-        verified_on: '2026-09-09',
-        source_capture: 'captures/example-broker-directory.png'
-      };
+      m.name_page = NAME_PAGE();
     }
   },
   {
-    // The same block with its capture on disk, which is what a real one looks
-    // like. Here so the shape is known to pass as well as known to fail.
+    // Both captures named, one file. The A-to-Z bar and the person's own page
+    // are two different pages, and one image cannot be both.
+    dir: 'name-page-one-file',
+    capture: true,
+    extraCaptures: ['example-broker-directory.png'],
+    change: (m) => {
+      m.name_page = NAME_PAGE();
+      m.name_page.page_capture = 'captures/example-broker-directory.png';
+    }
+  },
+  {
+    // The whole block with both captures on disk, which is what a real one
+    // looks like. Here so the shape is known to pass as well as known to fail.
     dir: 'valid-name-page',
     capture: true,
-    extraCapture: 'example-broker-directory.png',
+    extraCaptures: ['example-broker-directory.png', 'example-broker-name-page.png'],
     change: (m) => {
-      m.name_page = {
-        template: 'https://example.com/people/{{name_slug}}/',
-        slug_rules: { name_slug: 'first-last, lowercase, hyphen between' },
-        levels: ['name'],
-        directory_path: ['Name Directory letter', 'surname page'],
-        shows: 'free_listing',
-        consent_modal: false,
-        verified_on: '2026-09-09',
-        source_capture: 'captures/example-broker-directory.png'
-      };
+      m.name_page = NAME_PAGE();
     }
   },
   {
@@ -431,8 +442,8 @@ for (const testCase of cases) {
   if (testCase.capture) {
     fs.mkdirSync(captures, { recursive: true });
     fs.writeFileSync(path.join(captures, 'example-broker-optout.png'), PNG);
-    if (testCase.extraCapture) {
-      fs.writeFileSync(path.join(captures, testCase.extraCapture), PNG);
+    for (const extra of testCase.extraCaptures || []) {
+      fs.writeFileSync(path.join(captures, extra), PNG);
     }
   } else if (fs.existsSync(captures)) {
     fs.rmSync(captures, { recursive: true });

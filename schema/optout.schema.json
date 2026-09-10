@@ -99,7 +99,7 @@
       "type": "boolean"
     },
     "name_page": {
-      "description": "A broker's own public name-directory landing page: a static page keyed by name, and sometimes by state or city, that the site publishes for search engines and public linking. Where one exists it is a cheaper and steadier door than the search box, and search-conduct.md carves it out of the result-URL ban under four conditions. Present only when the directory path a person clicks has been captured; a pattern seen in a live search is a lead, not provenance.",
+      "description": "A broker's own public name-directory landing page: a static page keyed by name, and sometimes by state or city, that the site publishes for search engines and public linking. Where one exists it is a cheaper and steadier door than the search box, and search-conduct.md carves it out of the result-URL ban under four conditions. It takes two captures and neither substitutes for the other: the site's own A-to-Z bar, which lists letters and names nobody, and the person's own name page from a real run, blanked like any run capture. A capture of a directory letter page is not one of them and never will be: those pages list strangers, and blanking a thousand names is not something anybody can check. Until a broker has both captures the block stays absent, and a pattern seen in a live search is a lead rather than provenance.",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -110,7 +110,8 @@
         "shows",
         "consent_modal",
         "verified_on",
-        "source_capture"
+        "directory_capture",
+        "page_capture"
       ],
       "properties": {
         "template": {
@@ -151,8 +152,12 @@
           "format": "date",
           "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
         },
-        "source_capture": {
-          "description": "Path to the committed capture of the directory path, relative to the manifests directory. The validator fails if the file is absent.",
+        "directory_capture": {
+          "description": "Path to the committed capture of the site's own A-to-Z name bar, relative to the manifests directory. Letters only. Nobody is named on it, which is why it may be committed at all. The validator fails if the file is absent.",
+          "$ref": "#/$defs/capture_path"
+        },
+        "page_capture": {
+          "description": "Path to the committed capture of the person's own name page, reached in a real run and blanked the way every run capture is. This is what shows the page exists and what it shows; the template is read from that page's own address and written here with the slugs put back as placeholders, so no name reaches the manifest or the run log. The validator fails if the file is absent, or if it is the same file as directory_capture.",
           "$ref": "#/$defs/capture_path"
         }
       }

@@ -90,6 +90,7 @@
     "shows": "free_listing",
     "consent_modal": false,
     "verified_on": "2026-09-09",
-    "source_capture": "captures/example-broker-directory.png"
+    "directory_capture": "captures/example-broker-directory.png",
+    "page_capture": "captures/example-broker-name-page.png"
   }
 }

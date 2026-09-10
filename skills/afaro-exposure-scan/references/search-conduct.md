@@ -17,7 +17,11 @@ Most brokers publish name-directory pages: static pages keyed by a name, and som
 
 A page like that may be opened from its pattern rather than clicked to, under four conditions, all of them:
 
-1. **The pattern is recorded in the manifest** in a `name_page` block, with a capture of the directory path a person clicks to reach it and the date that path was read. A pattern noticed in a live search is a lead. A pattern with a captured directory path behind it is provenance.
+1. **The pattern is recorded in the manifest** in a `name_page` block, with two captures behind it and the date they were read. The first is the site's own A-to-Z bar, which lists letters and names nobody. The second is the person's own name page, reached in a real run and blanked the way every run capture is. The pattern is read from that page's own address and written into the manifest with the slugs put back as placeholders, so no name reaches the manifest or the log.
+
+   A capture of a directory letter page is not one of the two and cannot become one. Those pages list strangers by the hundred, and a promise to have blanked a thousand names is not something a reviewer can check. No stranger's name enters this repository, painted out or not.
+
+   A pattern noticed in a live search is a lead. Until a broker has both captures its block stays absent.
 2. **Only the profile's own names go into it.** One person, the names they have used, the places they have lived. No enumeration, no walking a letter, no list of anybody else.
 3. **One request per page, at the pace of a person.** No retries. A bot wall or a funnel ends that broker as `not_assessable`, the same as anywhere else.
 4. **Result endpoints stay banned.** No JSON or XHR path, no API-shaped URL, no profile-detail page built from an ID. Those are what reads as scraping and what gets a session blocked, and none of them is a page a site publishes to be linked to.

@@ -359,9 +359,11 @@ function endpointProblems(label, value) {
 }
 
 // The name-directory page is the one place a URL may be built from a pattern
-// rather than clicked, and it is allowed only because a capture shows the path
-// a person clicks to reach it. Without that capture the pattern is a lead
-// somebody wrote down, which is what the ruling says it must not be.
+// rather than clicked, and it takes two captures to earn that. The A-to-Z bar
+// shows the site publishes a directory and names nobody. The person's own name
+// page shows what the page holds, blanked like any run capture. A capture of a
+// directory letter page is neither: those list strangers by the hundred, and
+// blanking a list that long is not something a reviewer can check.
 function checkNamePage(manifest, dir) {
   const problems = [];
   const page = manifest.name_page;
@@ -370,13 +372,24 @@ function checkNamePage(manifest, dir) {
 
   problems.push(...endpointProblems('name_page.template', page.template));
 
-  if (typeof page.source_capture === 'string' && page.source_capture !== '') {
-    const capturePath = path.resolve(dir, page.source_capture);
+  for (const field of ['directory_capture', 'page_capture']) {
+    const value = page[field];
+    if (typeof value !== 'string' || value === '') continue;
+    const capturePath = path.resolve(dir, value);
     if (!capturePath.startsWith(path.resolve(dir) + path.sep)) {
-      problems.push(`name_page.source_capture points outside the manifest directory: ${page.source_capture}`);
+      problems.push(`name_page.${field} points outside the manifest directory: ${value}`);
     } else if (!fs.existsSync(capturePath)) {
-      problems.push(`name_page.source_capture file is absent on disk: ${page.source_capture}`);
+      problems.push(`name_page.${field} file is absent on disk: ${value}`);
     }
+  }
+
+  if (
+    typeof page.directory_capture === 'string' &&
+    page.directory_capture === page.page_capture
+  ) {
+    problems.push(
+      'name_page names one file for both captures, and the A-to-Z bar and the person\'s own page are two different pages'
+    );
   }
 
   if (typeof page.verified_on === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(page.verified_on)) {

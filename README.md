@@ -22,14 +22,18 @@ Every manifest records the broker's public opt-out page it was built from, the d
 
 ## Safety rules
 
-These hold in every mode.
+These hold in every mode. The second column says what holds each one, because a rule enforced by a schema and a rule written down for a skill to follow are not the same promise, and you should be able to tell which you are getting.
 
-1. Nothing is submitted without the person confirming it in chat.
-2. A CAPTCHA, a bot wall, an ID request, or a phone verification goes to the person. Where it needs answering, the run stops until they answer. Where it clears itself, they are told it happened rather than left to assume nothing did.
-3. No value is invented to satisfy a form. A missing field stops the run.
-4. Run logs hold a broker id, a step, an outcome, and a timestamp. They never hold profile values.
-5. The person's profile is never copied into this repository and is never written to a log.
-6. One click per gate. After a click the person approved, the page is read; if nothing happened, the run stops and says so. A submit that produces no page change is the site refusing, and clicking again would submit the form a second time.
+| Rule | Held by |
+|---|---|
+| Nothing is submitted without the person confirming it in chat | **Validator**, for the shape: a manifest that can send anything carries a submit gate, nothing is filled after the last one, and nothing is clicked between the last fill and the gate. **Orchestrator instruction** for honouring the stop at run time |
+| A CAPTCHA, a bot wall, an ID request, or a phone verification goes to the person. Where it needs answering the run stops; where it clears itself they are told it happened | **Schema**, which fixes the five gate reasons. **Validator**, which keeps the click that places a verification call behind its gate. **Orchestrator instruction** for the rest |
+| No value is invented to satisfy a form. A missing field stops the run | **Orchestrator instruction.** The validator's nearest help is forcing every field the steps read into `profile_fields_required`, and refusing a choice the captured page does not offer |
+| Run logs hold a broker id, a step, an outcome, and a timestamp, and never profile values | **Orchestrator instruction.** Nothing reads a log to check it. CI refuses a tracked one |
+| The person's profile is never copied into this repository and never written to a log | **Repository guard**: the ignore rules, the CI check on tracked files, and the redaction sweep. **Reviewer** for the images, which no sweep can read |
+| One click per gate | **Validator**, which refuses a manifest declaring a retry, by name. **Orchestrator instruction** for reading the page after the click |
+
+Three of the six are instructions rather than code. That is the honest shape of it: a skill can be told what not to do, and the validator can only refuse a manifest that asks for it.
 
 ## The skills
 
@@ -128,10 +132,20 @@ During a run, your profile is part of the conversation with Claude, which means 
 
 ## Status
 
-Phase 0, in progress. The schema, the validator, and the skill scaffolds are in place, and broker manifests are being added one at a time, each written from a capture of that broker's public opt-out page. Run `npm run validate` for the count.
+Phase 0, in progress.
 
-The first opt-outs have been filed. Three brokers have been run end to end on a real profile in guided mode: two of them are gone from the sites' own searches, and the third is filed with a recheck scheduled. A fourth stopped itself with nothing filed when the site returned an error, which is what it is supposed to do. What all of those runs turned up went back into the schema, the skills, and the manifests, which is most of what this repository is.
+What this repository can show you, and you can check yourself:
 
-Several manifests stop before their broker's flow does, because the rest of that flow is behind a real listing and nobody has captured it. Those report as handed off rather than submitted, and no recheck clock starts until the person says they finished. One broker could not be reached at all over HTTPS and has no manifest rather than a guessed one.
+- Every broker manifest validates against the schema and was written from a capture committed alongside it, on the date recorded in that file. `npm run validate` reports the count, derived from the directory.
+- Most of them stop before their broker's flow does, on a `handoff` step, because the rest of that flow sits behind a real listing and nobody has captured it. Those report as handed off rather than submitted, and no recheck clock starts until the person says they finished.
+- The checks that guard all of this run with `npm test`.
+
+What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed:
+
+- Three brokers were filed end to end on a real profile in guided mode during September 2026. Two of those listings are gone from the sites' own searches; the third is filed with a recheck scheduled.
+- A fourth run stopped itself with nothing filed when the site returned an error, which is what it is supposed to do.
+- One broker could not be reached over HTTPS at all, across four attempts on two hostnames, and so has no manifest rather than a guessed one.
+
+Everything those runs turned up went back into the schema, the skills, and the manifests, which is most of what this repository is.
 
 `CONTRIBUTING.md` has the authoring rules if you want to add a broker.

@@ -91,6 +91,6 @@
     "consent_modal": false,
     "verified_on": "2026-09-09",
     "directory_capture": "captures/example-broker-directory.png",
-    "page_capture": "captures/example-broker-name-page.png"
+    "page_capture": "captures/example-broker-directory.png"
   }
 }

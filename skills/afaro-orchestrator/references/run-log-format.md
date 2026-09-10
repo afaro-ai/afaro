@@ -46,6 +46,13 @@ timestamp	broker_id	step	outcome
 # the page showed validation text beside: phones
 ```
 
+**A name page's address.** A name page's URL has the person's name in it, so the URL itself never goes in the log. What goes in is the shape, with the slugs written back as placeholders. That line is what a manifest's `name_page.template` is later read from.
+
+```
+2026-09-09T10:12:40	example-broker	name_page	ok
+# /people/{{name_slug}}/{{state_slug}}/
+```
+
 **A click the person made first.** A gate is a pause and a person can act during one.
 
 ```

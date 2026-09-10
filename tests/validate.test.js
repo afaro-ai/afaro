@@ -193,10 +193,16 @@ const cases = [
     expect: 'no captcha gate immediately before it, so there is nothing to fold in'
   },
   {
-    name: 'a name page whose directory capture is absent fails',
+    name: 'a name page missing the person own page capture fails',
     dir: 'tests/fixtures/name-page-absent-capture',
     exitCode: 1,
-    expect: 'name_page.source_capture file is absent on disk'
+    expect: 'name_page.page_capture file is absent on disk'
+  },
+  {
+    name: 'a name page naming one file for both captures fails',
+    dir: 'tests/fixtures/name-page-one-file',
+    exitCode: 1,
+    expect: 'names one file for both captures'
   },
   {
     name: 'a name page with its directory capture on disk passes',
