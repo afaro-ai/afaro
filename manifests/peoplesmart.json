@@ -1,0 +1,57 @@
+{
+  "id": "peoplesmart",
+  "name": "PeopleSmart",
+  "home_url": "https://www.peoplesmart.com/",
+  "search_url_template": "https://www.peoplesmart.com/svc/optout/search/contact_optouts",
+  "optout_url": "https://www.peoplesmart.com/svc/optout/search/contact_optouts",
+  "method": "search_then_form",
+  "profile_fields_required": [
+    "full_name",
+    "current_address.city"
+  ],
+  "steps": [
+    {
+      "type": "use_search_box",
+      "url": "https://www.peoplesmart.com/svc/optout/search/contact_optouts",
+      "inputs": [
+        {
+          "selector": { "label": "First and last name", "css": "#optout-form input[name=\"name\"]" },
+          "value_from": "full_name"
+        },
+        {
+          "selector": { "label": "City", "css": "#optout-form input[name=\"city\"]" },
+          "value_from": "current_address.city"
+        }
+      ],
+      "submit": { "label": "Search" },
+      "note": "The search is on the opt-out page itself and the page says to start by searching a contact record. The boxes carry no labels beside them; the words inside them are their labels. Two more boxes sit between these two, Job Title and Company, and both say Optional on the page. No step fills either: the profile holds neither, and nothing here invents an employer for somebody. A state control at the end reads All on the capture and no step touches it. What leaves the browser here is the search itself, the words a person would type into that site's own boxes."
+    },
+    {
+      "type": "find_listing",
+      "match_on": ["full_name", "current_address.city"],
+      "on_not_found": "stop",
+      "note": "One record, picked by hand from what the search returns. The page does not say how a record is selected or what follows, so this step identifies the record and the manifest stops at the next one."
+    },
+    {
+      "type": "handoff",
+      "reason": "page_not_captured",
+      "prompt": "PeopleSmart has your search results. This page opts out of the site's Contact Search, which is the business-contact listing rather than the home-address people search the other brokers in this run cover, and the page's own boxes ask for a job title and a company. Pick the record you want removed and follow the rest yourself. Unlike the other sites in this run, this page does not say what happens after you pick one: it says only that an email confirms the request has been processed and that removal shows about a day after that. So expect a step nobody here can describe. Two things the page does say. You never pay and you do not need an account. And your name may still show in the site's other searches, which this opt-out does not cover. Tell me what you were asked for and what the confirmation said.",
+      "note": "This is where the captures stop and the broker's flow does not. Nothing has been sent at this point; a search has been run and nothing else. The other three brokers captured in this pass print a paragraph describing their whole flow. This page prints no such paragraph, so the prompt says a step is coming that nobody has described rather than borrowing another site's description of its own flow."
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "A search of this same opt-out search for this name and city no longer returns the record that was opted out. The page says a record may be recreated later from a new source it cannot match to the old one, so a record found afterwards may be a new record rather than a failed removal, and it says the name may still appear in the site's other searches either way."
+  },
+  "recheck_after_days": 1,
+  "recheck_stated": true,
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": "The page states that no membership is needed to opt out and that removal of your own record is never paid for. No notarised document or photo ID appears anywhere on it. The page also names a separate route by email for people covered by Daniel's Law who do not want to use the automated opt-out, and that route asks for a screenshot or link to the record, or a full name, date of birth, city, state, and email address. That is a different process from this one and no step here uses it."
+  },
+  "notes": "Written from the opt-out page captured on verified_on. Read the heading first: this page opts out of the site's Contact Search, and its boxes ask for a job title and a company beside a name and a city, so the listing it removes is a business-contact record rather than the home-address listing the rest of this catalogue is about. That is what the page says it is, and it is recorded here rather than filed under the same description as the others. The address was reached from the site's own privacy policy, which links to it under both Opt-Out and Do Not Sell or Share My Personal Information, so it is a page a person is sent to by the site itself. The Cloudflare check under the form was already showing Success when the page settled, which is why no captcha gate appears: nothing was asked. A check that does ask on a later run is a bot wall that ends the broker. Three things the page states and this manifest depends on. No account is needed and removal of your own record is never paid for. An email confirms the request has been processed, and removal shows in the site's results about 24 hours after that email, which is where recheck_after_days comes from; since this manifest ends on a handoff, no clock starts here. And a name may still appear in the site's other searches afterwards. One thing the page does not state, and the manifest does not fill in. It never says what happens between picking a record and that confirmation email: there is no instructions paragraph, no mention of a verification email, and no mention of a link to click. Three other brokers captured in this pass do print such a paragraph. Borrowing their description would be writing this page's flow from somebody else's page, so the handoff says a step is coming that nobody has described. What the capture shows and what it does not: the heading, the instruction to start by searching a contact record, all four search boxes, the state control reading All, the Search button, the Cloudflare check, and the five answers below are on the frame; the css fallbacks and the form's own id were read from the page's markup on the same visit, and the image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it. The page was viewed zoomed out so the whole of it fits one frame, and nothing was hidden. No syndication note appears in this manifest. The page states no relationship to any other site.",
+  "source_url": "https://www.peoplesmart.com/svc/optout/search/contact_optouts",
+  "verified_on": "2026-09-10",
+  "source_capture": "captures/peoplesmart-optout.jpg"
+}
