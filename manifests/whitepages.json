@@ -10,7 +10,7 @@
     "current_address.city",
     "current_address.state",
     "opt_out_reason",
-    "phones"
+    "contact_phone"
   ],
   "steps": [
     {
@@ -75,18 +75,19 @@
     {
       "type": "fill_field",
       "selector": { "label": "Enter your phone number" },
-      "value_from": "phones",
-      "note": "Step 4 of 5. The page says the number is used to place a verification call and states it will not be used for any other purpose."
+      "value_from": "contact_phone",
+      "phone_field": "contact",
+      "note": "Step 4 of 5. The page says the number is used to place a verification call and states it will not be used for any other purpose, which makes it a number the broker rings rather than the number on the listing. It comes from contact_phone for that reason: whoever is running this has to be able to answer it within the minute, and in operator mode that is not always the person whose listing is being removed."
     },
     {
       "type": "human_gate",
       "reason": "submit",
-      "prompt": "Step 4 of 5. The phone number in the box is the one about to go to Whitepages. Check it before anything is clicked."
+      "prompt": "Step 4 of 5. The number in the box is the one about to go to Whitepages, and it is the one they will ring. Check it, and check that whoever answers it is here."
     },
     {
       "type": "human_gate",
       "reason": "phone_verify",
-      "prompt": "Whitepages verifies by calling that number, and the call goes out the moment the button is pressed. The box I am about to tick reads: By checking this box I affirm that I am the person associated with this phone number, and I would like my information to be removed from Whitepages listings. That has to be true of whoever answers. Say yes when the person whose number this is has the phone in hand, and they will be asked for a code."
+      "prompt": "Whitepages verifies by calling that number, and the call goes out the moment the button is pressed. The box I am about to tick reads: By checking this box I affirm that I am the person associated with this phone number, and I would like my information to be removed from Whitepages listings. That has to be true of whoever answers. Say yes when the person whose number this is has the phone in hand, and they will be asked for a code. If Whitepages refuses the number, stop there and tell me: some brokers will not take a number they read as internet telephony, and the answer to that is a different number you can answer, not the number on the listing."
     },
     {
       "type": "click",

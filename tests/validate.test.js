@@ -181,6 +181,18 @@ const cases = [
     expect: "must have required property 'blanked'"
   },
   {
+    name: 'a number the broker will call, taken from the person own handset, fails',
+    dir: 'tests/fixtures/contact-number-from-phones',
+    exitCode: 1,
+    expect: 'a contact number comes from contact_phone'
+  },
+  {
+    name: 'the same field taken from contact_phone passes',
+    dir: 'tests/fixtures/contact-number-from-contact-phone',
+    exitCode: 0,
+    expect: '1 manifest in tests/fixtures/contact-number-from-contact-phone, 1 valid, 0 failed.'
+  },
+  {
     name: 'a manifest that declares a retry count fails',
     dir: 'tests/fixtures/retry-count',
     exitCode: 1,

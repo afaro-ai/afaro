@@ -266,6 +266,39 @@ const cases = [
     }
   },
   {
+    // A number the broker will call, taken from the person's own handset
+    // rather than the one the operator can answer. In operator mode that
+    // sends the verification call to somebody who is not expecting it.
+    dir: 'contact-number-from-phones',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps.splice(gate, 0, {
+        type: 'fill_field',
+        selector: { label: 'Phone number we can reach you on' },
+        value_from: 'phones',
+        phone_field: 'contact'
+      });
+      m.profile_fields_required.push('phones');
+    }
+  },
+  {
+    // The same field taken from the right place. Here so the shape that passes
+    // is pinned as well as the one that fails.
+    dir: 'contact-number-from-contact-phone',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate');
+      m.steps.splice(gate, 0, {
+        type: 'fill_field',
+        selector: { label: 'Phone number we can reach you on' },
+        value_from: 'contact_phone',
+        phone_field: 'contact'
+      });
+      m.profile_fields_required.push('contact_phone');
+    }
+  },
+  {
     // One click per gate. A manifest cannot ask for a second attempt, and the
     // refusal names the field rather than muttering about extra properties.
     dir: 'retry-count',

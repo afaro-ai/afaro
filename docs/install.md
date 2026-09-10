@@ -94,10 +94,13 @@ Why previous addresses and relatives: that is how the brokers connect their reco
 
 Leave `"mode": "guided"` as it is. Guided means Claude stops and asks you before it sends anything.
 
-Three fields near the bottom of the example are optional.
+Four fields near the bottom of the example are optional.
 
 - `opt_out_reason` is your standing answer to a broker that asks why you want your listing removed. Some of them make you pick from a short list. Afaro matches what you put here against the list on the page and asks you if none of them fits. It never picks one for you.
+- `contact_phone` is the number a broker will ring or text to check it is really you. A couple of them do this, and the call comes within the minute. Put the number you will be holding while the run happens. `phones` is a different thing: those are the numbers on your listing, which is how the right listing gets found, and Afaro never puts them in a box a broker will ring.
 - `contact_email` and `authorized_agent` are for the case in the next section, where one person runs Afaro for someone else. If you are doing your own removals, delete both lines and leave `emails` as the address brokers write to.
+
+If you are doing your own removals, `contact_phone` is still worth filling in. It is your own number either way, and it is the one Afaro reaches for when a page asks for a number to ring, so the two never get mixed up.
 
 ---
 
@@ -174,6 +177,10 @@ Some people have nobody to do this for them: no Claude account, no email, or no 
 When that block is present, Afaro says so once at the start of the run, names whose listings it is working on, and says what `authorization_ref` points at. It does not change anything else. Every gate still stops.
 
 **An address you control, for each person.** Brokers reply by email and some finish the job through a link they send. If the person has no email, use plus-addressing on your own mailbox, a different suffix per person, and put it in their profile as `contact_email`. Afaro puts that address on broker forms in place of the first entry in `emails`. This is your mailbox acting for a relative, not a service anyone operates.
+
+**A number you can answer, for each person.** Some brokers verify by ringing a number and reading out a code, and the call comes within the minute. Put a number you will actually be holding into their profile as `contact_phone`. Afaro uses it wherever a page asks for a number the broker will ring, and it never uses the numbers in `phones` for that: those are the person's own, they are how a listing gets matched, and in operator mode they ring somebody who is not sitting with you.
+
+One thing to know before you rely on it: some brokers refuse a number they read as internet telephony, and a number that works everywhere else can be rejected on one site for that reason alone. If that happens Afaro stops and asks you for a different number. It does not quietly try the number on the listing.
 
 **The steps that are still theirs.** A photo of an ID, and a phone verification, need the actual person. Whitepages, for one, calls a phone and asks for a code read back. Afaro stops before that call is placed and tells you what is about to happen, and the person whose number it is has to be holding the phone. Do not answer those steps on someone's behalf.
 
