@@ -417,7 +417,11 @@
           "enum": ["contact", "listing"]
         },
         "value_literal": {
-          "description": "A fixed value the form needs, for example a reason code offered by the page itself. When the page offers a fixed set, list it in choices and this value has to be one of them.",
+          "description": "A fixed value the form needs, for example a reason code offered by the page itself. When the page offers a fixed set, list it in choices and this value has to be one of them. On a control asking who is making the request, this is the answer for the person themselves, and the answer for an operator goes in agent_value_literal.",
+          "type": "string"
+        },
+        "agent_value_literal": {
+          "description": "On a control that asks whether the request comes from the person or from someone acting for them, the answer to give when the profile carries an authorized_agent block. Present only where the captured page offers both answers, and only alongside value_literal, which is the answer given when the profile carries no such block. Both have to appear in choices. The agent answer is never written into value_literal: that would tell every broker the request is an agent's, whoever is running it and whatever the profile says.",
           "type": "string"
         },
         "format": {

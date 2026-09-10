@@ -28,7 +28,7 @@
         "The subject of this request",
         "An authorized agent of the subject of the request"
       ],
-      "note": "A required dropdown, shut on the capture, whose two answers were read from that page's own markup on verified_on along with the empty Choose One placeholder that is not an answer. Stop here rather than filling it when the profile carries an authorized_agent block: the honest answer is then the second one, and choosing it opens agent name and email fields that are not on this capture and are not described anywhere in this manifest."
+      "note": "A required dropdown, shut on the capture, whose two answers were read from that page's own markup on verified_on along with the empty Choose One placeholder that is not an answer. Stop here rather than filling it when the profile carries an authorized_agent block: the honest answer is then the second one, and choosing it opens agent name and email fields that are not on this capture and are not described anywhere in this manifest. That is also why this step carries no agent_value_literal: the field exists now, and filling the agent answer here would walk the run into a form nobody has captured."
     },
     {
       "type": "fill_field",

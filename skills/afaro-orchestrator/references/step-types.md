@@ -61,6 +61,12 @@ Two profile rules apply when the value is resolved.
 
 `choices` lists the options the captured page offers, word for word, and appears only when the capture shows them. When it is there, the value filled has to be one of them and the validator refuses anything else. When a page offers a set the capture did not show, the manifest names no value: match the profile's `opt_out_reason` against what the page shows at the time, and if nothing matches, stop and ask the person to choose. Never invent a reason a broker did not offer, and never pick one because it looks closest.
 
+`agent_value_literal` is for one control and one question: forms that ask whether the request comes from the person themselves or from someone acting for them. The answer is not the manifest's to give. `value_literal` holds the answer for the person, `agent_value_literal` holds the answer for an operator, both in the page's own words from `choices`, and the run picks between them on one test: does the profile carry an `authorized_agent` block. Nothing else decides it, and the person is told which answer went in.
+
+The agent answer never goes in `value_literal`. A manifest that writes it there tells every broker the request is an agent's, whoever is at the keyboard and whatever the profile says, and the validator refuses it by name. The check reads the answer's own words, so a page whose wording is unusual enough to trip it needs the note to say so rather than a workaround.
+
+Where choosing the agent answer opens fields the manifest does not describe, do not carry `agent_value_literal` at all. Two manifests are in exactly that position: the agent answer reveals agent name and email boxes that are on no capture, so both leave the field out and stop, and their notes say why. A capability that walks a run into an undescribed form is worse than the stop it replaces.
+
 `from_listing` takes the value from the listing the earlier `find_listing` step identified, not from the profile. `url` is that listing's address as the browser shows it, and further attributes of the result are added when a captured page asks for one. It exists because a broker that keys its opt-out to one listing asks for that URL and no profile holds it. The validator refuses a manifest that fills from the listing without a `find_listing` step before it. Never type a description of a value into a form: if the value is not known, stop.
 
 A value taken from the listing never appears in a run log, the same as a profile value. Log the step and the outcome, never the URL.
