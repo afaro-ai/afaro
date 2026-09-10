@@ -2,32 +2,27 @@
   "id": "nuwber",
   "name": "Nuwber",
   "home_url": "https://nuwber.com/",
-  "search_url_template": "https://nuwber.com/removal/link",
+  "search_url_template": "https://nuwber.com/",
   "optout_url": "https://nuwber.com/removal/link",
   "method": "search_then_form",
   "profile_fields_required": ["full_name", "current_address.city", "current_address.state"],
   "steps": [
     {
-      "type": "navigate",
-      "url": "https://nuwber.com/removal/link",
-      "note": "The site's own person search sits at the top of this same page, which is why search_url_template and optout_url are the same address. That search box carries no address of its own in the page's markup, so the search is made by typing into the box rather than by opening a result URL."
-    },
-    {
-      "type": "fill_field",
-      "selector": { "label": "Enter a full name", "css": "input[name=\"name\"]" },
-      "value_from": "full_name",
-      "note": "The first box of the site's own person search, under the tab marked PERSON. The page's first direction says to find the listing here."
-    },
-    {
-      "type": "fill_field",
-      "selector": { "label": "Enter a city and a state", "css": "input[name=\"locationQuery\"]" },
-      "value_from": "current_address.city",
-      "note": "One box for two things. The profile keeps the city and the state apart, so type them together the way the box asks, city then state."
-    },
-    {
-      "type": "click",
-      "selector": { "label": "Search", "css": "button.search__input.button-submit" },
-      "note": "The search control shows only a magnifying glass. Its own text reads Search and was read from the captured page's markup, since there is nothing to read on the image. This click sends the name and the location to Nuwber. It is the same exposure as any search on any of these sites, and it is what an exposure scan does by design."
+      "type": "use_search_box",
+      "url": "https://nuwber.com/",
+      "inputs": [
+        {
+          "selector": { "label": "Enter a full name" },
+          "value_from": "full_name"
+        },
+        {
+          "selector": { "label": "Enter a city and a state" },
+          "value_from": "current_address.city",
+          "note": "One box for two things. The profile keeps the city and the state apart, so type them together the way the box asks, city then state."
+        }
+      ],
+      "submit": { "label": "Search" },
+      "note": "The search happens on the site's front page, where both boxes and a Search button are on the page in the open. It used to happen on the opt-out page itself; on 2026-09-10 those boxes moved behind a magnifying-glass icon in the header, and that icon carries no text and no accessible name, so nothing here clicks it. What leaves the browser is the search itself, the words a person would type into that site's own boxes."
     },
     {
       "type": "find_listing",
@@ -38,11 +33,11 @@
     {
       "type": "navigate",
       "url": "https://nuwber.com/removal/link",
-      "note": "Back to the opt-out, which is the page the search was started from."
+      "note": "Back to the opt-out page, which is where the listing's address is pasted. A Cloudflare interstitial stands in front of this page and clears itself after a few seconds. Tell the person it happened rather than letting it pass unremarked, and if it does not clear it is a bot wall and the broker ends there."
     },
     {
       "type": "fill_field",
-      "selector": { "label": "Copy & Paste URL of Your Profile here", "css": "input[name=\"link\"]" },
+      "selector": { "label": "Copy & Paste URL of Your Profile here" },
       "from_listing": "url",
       "note": "The one box in the opt-out form. The page prints an example address under it in the shape it expects."
     },
@@ -70,8 +65,13 @@
   "recheck_stated": true,
   "additional_captures": [
     {
+      "path": "captures/nuwber-home-search.jpg",
+      "of": "The site's front page on the same visit, where the two search boxes and the Search button are on the page in the open, which is the door this manifest uses",
+      "blanked": false
+    },
+    {
       "path": "captures/nuwber-optout-faq.jpg",
-      "of": "Two answers from the same page's own list, opened by clicking them: how quickly a listing is removed, and what happens when a person has more than one listing",
+      "of": "Two answers from the opt-out page's own list, opened by clicking them: how quickly a listing is removed, and what happens when a person has more than one listing. Cropped to stop above the site's block of common name strings",
       "blanked": false
     }
   ],
@@ -80,8 +80,8 @@
     "kinds": [],
     "note": "The opt-out form asks for the address of the listing, and the page after it asks for an email address. No account, payment, notarised document, or photo ID appears on either the form or the page's own answers."
   },
-  "notes": "Written from the opt-out page captured on verified_on and from two answers opened on that same page. Four things it states and a run depends on. The three directions it prints are to find the listing in the site's own search, copy its URL into the box and press Opt Out, then give an email address and follow the instructions on the next page. The listing is deleted after the emailed removal link is followed, and the process may take up to 48 hours, which is where recheck_after_days of 2 comes from with recheck_stated true. A person may hold several listings, each with its own URL, each removed on its own, and new ones arrive over time. The page also says it is protected by reCAPTCHA; no challenge box is on the capture, and if one appears during a run it is a gate the person answers and never something to work around. What the captures show and what they do not: the heading, the directions, both search boxes, the URL box and its example, the Opt Out button, and the reCAPTCHA line are on the first image, and the two answers are on the second. Two things were read from the page's own markup rather than the image and are named here for that reason: the css fallbacks, and the word Search, which is the text of a control that shows only a magnifying glass. The images hold no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on them. The cookie banner offers only Accept, so it was not answered.",
+  "notes": "Rewritten on verified_on after the page changed. Until 2026-09-10 this manifest searched from boxes that sat on the opt-out page itself; Nuwber moved them behind a magnifying-glass icon in the site header, which left two fill steps pointing at labels that no longer exist while the old verified_on read as current. The search now runs from the front page, where the same boxes are still in the open. The header icon is not clicked by any step here: it carries no text and no accessible name, so there is nothing to name it by that a person could check against the capture. Four things the pages state and a run depends on. The three printed directions are to find the listing in the site's own search, copy its URL into the box and press Opt Out, then give an email address and follow the instructions on the next page. The listing is deleted after the emailed removal link is followed, and the process may take up to 48 hours, which is where recheck_after_days of 2 comes from with recheck_stated true. A person may hold several listings, each with its own URL, each removed on its own, and new ones arrive over time. The opt-out page also says it is protected by reCAPTCHA; a Cloudflare interstitial stood in front of it on this visit and cleared itself after a few seconds, which is shown to the person rather than passed over, and a check that does not clear is a bot wall that ends the broker. What the captures show and what they do not: the heading, the directions, the URL box and its example, the Opt Out button and the reCAPTCHA line are on the first image; the two search boxes and the Search button are on the second; the two answers are on the third. No selector here carries a css fallback, because these pages were read as images on this visit rather than through their markup. The third image is cropped at 510 pixels so that the block of common name strings the page prints below the list stays out of this repository. The images hold no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on them. The cookie banner that appeared on the earlier capture did not appear on this visit.",
   "source_url": "https://nuwber.com/removal/link",
-  "verified_on": "2026-09-09",
+  "verified_on": "2026-09-10",
   "source_capture": "captures/nuwber-optout.jpg"
 }

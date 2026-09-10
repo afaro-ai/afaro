@@ -28,6 +28,10 @@ You do not need to buy anything else. Afaro is free and there is no Afaro accoun
 
 This extension is what lets Claude click and type on a web page for you, in your own browser, while you watch.
 
+**It asks again for every site.** Permission is granted per website, not once for the whole browser, so each broker's address has to be allowed before Claude can read anything there. The first time a run reaches a new broker you will get a prompt; allow it and the run carries on.
+
+This is worth knowing before your first scan rather than during it. On one real scan seven of nine brokers came back as "could not be assessed" for this reason alone. Nothing was blocking the tool: the sites were fine and the profile was fine, and the extension simply had no permission for those four addresses yet. If a scan reports a run of sites it could not assess, check this before you look for anything else.
+
 **Use a separate Chrome profile for Afaro, with autofill turned off.** In Chrome, open the profile menu at the top right, choose to add a profile, and in that new profile go to settings and switch off autofill for addresses and payment methods and the offer to save them.
 
 This is not tidiness. On the first real run Chrome had already filled a different email address into a broker's form before Afaro got there, and the address it filled was not the one the removal was for. Afaro now clears every box before it types and reads it back afterwards, and stops if the two do not match. A profile with nothing saved in it means that never comes up.
@@ -52,7 +56,7 @@ Reference: [Create and edit files with Claude](https://support.claude.com/en/art
 Afaro is five skills. Each one is uploaded as its own zip file, and the skill folder has to sit at the very top of the zip.
 
 1. Download the Afaro files to your computer. This guide calls that the Afaro folder.
-2. Open PowerShell in the Afaro folder and run these five lines. They write five zip files into the folder.
+2. Open a terminal in the Afaro folder and run these five lines. They write five zip files into the folder. On Windows that is PowerShell; on a Mac it is Terminal, and the same five lines work there unchanged.
 
    ```powershell
    tar -a -c -f "afaro-orchestrator.zip" -C skills afaro-orchestrator

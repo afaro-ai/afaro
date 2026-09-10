@@ -41,6 +41,17 @@ Two more carry the same weight where they apply. `additional_captures` lists fur
 
 **No stranger's name enters this repository, painted out or not.** That is the harder half of the rule and the one worth remembering: the blanking procedure exists for the person whose run it is, not as a way to admit other people's data by covering it up.
 
+### The two phone boxes
+
+A phone box on a broker's form is one of two things, and the difference decides whose handset rings.
+
+- **A number the broker will call or text**, to check it is really you. That comes from `contact_phone`, and the fill step carries `phone_field: "contact"`.
+- **The number as it stands on the listing** being removed, which is how the right record gets found. That comes from `phones`, and the fill step carries `phone_field: "listing"`.
+
+The validator holds each to its source once the marker is there. What it cannot catch is the marker missing: a fill from `phones` with no `phone_field` passes, and if that box was a verification field the call goes to the person whose listing it is, who in operator mode may be in another house and not expecting it.
+
+So read the page before you write the step. **Only mark it where the captured page says which it is**, and where the page does not say, leave the marker out and put the reason in a note. Two manifests carry a marker today, one of each kind, and a third names `phones` among its required fields with no phone step at all because the form that asks for one arrives by email and nobody has captured it. That third one says so in its notes, which is the shape to copy when a page has not told you.
+
 The captured page's own markup counts as visible on it. A CSS fallback in a selector, or the query string a visible search box submits, may be read from the markup of the page you captured, and the manifest says so. A page you did not capture, a help article, and anything you already knew are all out.
 
 ### Pages only a real run can reach

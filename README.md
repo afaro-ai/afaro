@@ -17,7 +17,7 @@ It walks a person through removing their own listing from US people-search broke
 | FastPeopleSearch | Form | Handed off: a link the broker emails | captcha, submit | 2026-09-09 |
 | Intelius | Form | Handed off: a link the broker emails | submit | 2026-09-09 |
 | MyLife | Form | Handed off: the rest of the flow is not captured | None (nothing is sent) | 2026-09-09 |
-| Nuwber | Search, then form | Handed off: a link the broker emails | submit | 2026-09-09 |
+| Nuwber | Search, then form | Handed off: a link the broker emails | submit | 2026-09-10 |
 | PeopleFinders | Form | Submitted | captcha, submit | 2026-09-09 |
 | Radaris | Search, then form | Handed off: the rest of the flow is not captured | None (nothing is sent) | 2026-09-09 |
 | Spokeo | Search, then form | Submitted, then a confirmation email | captcha, submit | 2026-09-08 |
@@ -38,18 +38,20 @@ Being listed here means one thing: that broker's public opt-out page was capture
 
 ### Runs the maintainer has made
 
-As of 2026-09-10. What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed:
+**Last updated 2026-09-10.** If that date is old by the time you read it, treat the table as history rather than status.
+
+What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed. Five opt-outs filed across two family members:
 
 | Broker | What happened |
 |---|---|
-| FastPeopleSearch | Filed 2026-09-09. Recheck due 2026-09-12. |
+| FastPeopleSearch | Filed twice, 2026-09-09 and 2026-09-10, for two different people. Rechecks due 2026-09-12 and 2026-09-13. |
 | Intelius | Scanned only. Not run. |
 | MyLife | Scanned only. Not run. |
 | Nuwber | Scanned only. Not run. |
 | PeopleFinders | Stopped by the site's own error on 2026-09-09 and again on 2026-09-10. Nothing filed. |
 | Radaris | Scanned only. Not run. |
 | Spokeo | Filed 2026-09-09. Listing gone on a later scan. |
-| TruePeopleSearch | Scanned only. Not run. |
+| TruePeopleSearch | Filed 2026-09-10. Recheck due 2026-09-13. |
 | Whitepages | Filed 2026-09-09. Listing gone on a later scan. |
 
 ## What it looks like
@@ -103,7 +105,7 @@ These hold in every mode. The second column says what holds each one, because a 
 | The person's profile is never copied into this repository and never written to a log | **Repository guard**: the ignore rules, the CI check on tracked files, and the redaction sweep. **Reviewer** for the images, which no sweep can read |
 | One click per gate | **Validator**, which refuses a manifest declaring a retry, by name. **Orchestrator instruction** for reading the page after the click |
 
-Three of the six are instructions rather than code. That is the honest shape of it: a skill can be told what not to do, and the validator can only refuse a manifest that asks for it.
+Two of the six rest on an instruction alone: no invented value, and what a run log may hold. Nothing reads a running skill to check either. That is the honest shape of it: a skill can be told what not to do, and the validator can only refuse a manifest that asks for it.
 
 ## The skills
 
@@ -222,9 +224,10 @@ What this repository can show you, and you can check yourself:
 
 What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed:
 
-- Three brokers were filed end to end on a real profile in guided mode during September 2026. Two of those listings are gone from the sites' own searches; the third is filed with a recheck scheduled.
-- A fourth run stopped itself with nothing filed when the site returned an error, which is what it is supposed to do.
+- As of 2026-09-10: five opt-outs filed end to end in guided mode, across two family members' profiles. Two of those listings are gone from the sites' own searches; the rest are filed with rechecks scheduled.
+- One broker stopped itself twice with nothing filed, both times because the site returned its own error, which is what it is supposed to do.
 - One broker could not be reached over HTTPS at all, across four attempts on two hostnames, and so has no manifest rather than a guessed one.
+- The table above under **Brokers covered** carries the same runs broker by broker, with the date it was last updated.
 
 Everything those runs turned up went back into the schema, the skills, and the manifests, which is most of what this repository is.
 
