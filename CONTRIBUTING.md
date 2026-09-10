@@ -114,6 +114,12 @@ Say what you could not capture. A manifest that stops at a `handoff` and says wh
 
 Things that will send a manifest back: a selector whose label is not on the capture, a processing window that is not on the page, a step that would need a CAPTCHA solved or a bot wall worked around, and any value belonging to a real person anywhere in the diff.
 
+## Contribution terms
+
+Contributions are accepted under the MIT license in `LICENSE`. By opening a pull request you agree your work goes in under those terms.
+
+The capture rule is part of those terms, not a style preference: public opt-out pages only, included only so a reader can verify the manifest against the page it was built from, and no stranger's name in any image or file.
+
 ## What Afaro will not do
 
 These are not preferences and a pull request will not change them.

@@ -2,6 +2,7 @@
   "name": "afaro-data-removal",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
   "description": "Afaro is a local-first personal-data removal engine. This package holds the manifest validator only.",
   "type": "commonjs",
   "scripts": {
