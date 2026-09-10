@@ -40,8 +40,9 @@ const { execFileSync } = require('child_process');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 
-// Images are swept by a person looking at them, not by this script. The
-// review that prompted this check opened all nineteen.
+// Images are swept by a person looking at them, not by this script. Every
+// committed capture is opened and looked at as part of a review, which is one
+// of the three edges CONTRIBUTING.md names.
 const BINARY_EXTENSIONS = new Set([
   '.jpg', '.jpeg', '.png', '.webp', '.gif', '.ico', '.pdf', '.zip', '.woff', '.woff2', '.ttf'
 ]);

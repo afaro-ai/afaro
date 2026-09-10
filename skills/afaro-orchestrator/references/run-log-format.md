@@ -19,7 +19,9 @@ timestamp	broker_id	step	outcome
 - `timestamp` is ISO 8601 local time.
 - `broker_id` is the manifest `id`.
 - `step` is the step type, plus the gate reason when the type is `human_gate`, for example `human_gate:submit`. Two step markers name something narrower than a type: `find_listing:dedupe` and `fill_field:readback`.
-- `outcome` is one of `ok`, `stopped`, `not_found`, `skipped`, `error`, `approved`, `declined`.
+- `outcome` is one of `ok`, `stopped`, `not_found`, `skipped`, `error`, `approved`, `declined`, `submitted_by_person`.
+
+`submitted_by_person` is for a click a gate approved that the person had already made themselves while answering. It says the step happened and that Afaro did not do it, which is the difference between a record and a guess.
 
 ## Two lines worth writing on purpose
 
@@ -35,6 +37,27 @@ timestamp	broker_id	step	outcome
 ```
 2026-09-09T10:14:41	example-broker	fill_field:readback	error
 # the field did not hold the value that was written: emails
+```
+
+**A value the page refused.** When validation text appears beside a field after a fill, the line records that the page said something, and the comment names the field. The page's own wording goes to the person on screen, not into the log, because it can repeat the value back.
+
+```
+2026-09-09T10:15:02	example-broker	fill_field:rejected	stopped
+# the page showed validation text beside: phones
+```
+
+**A name page's address.** A name page's URL has the person's name in it, so the URL itself never goes in the log. What goes in is the shape, with the slugs written back as placeholders. That line is what a manifest's `name_page.template` is later read from.
+
+```
+2026-09-09T10:12:40	example-broker	name_page	ok
+# /people/{{name_slug}}/{{state_slug}}/
+```
+
+**A click the person made first.** A gate is a pause and a person can act during one.
+
+```
+2026-09-09T10:16:11	example-broker	click	submitted_by_person
+# the page had already moved when the yes came back
 ```
 
 ## What a run looks like

@@ -24,6 +24,24 @@ This is not a way to ask for approval twice for the same send. Between two submi
 
 `phone_verify` has an order of its own. The click that places the call sits behind that gate and never in front of it, because the call reaches a real phone the moment the button is pressed. The validator refuses a click between a `phone_verify` gate and the gate before it.
 
+## A gate that asks once
+
+Some brokers issue a captcha token that expires inside the window between the captcha gate and the submit gate. The person ticks the box, reads the values, says go, and the form is refused because the token died while they were reading. Asking twice is correct and still fails.
+
+For those brokers the manifest sets `gate_mode: combined` on the submit gate, and the two are asked as one: tick the box, check what is about to be sent, say go. The validator allows it only where a captcha gate is the step immediately before, because that is the pair being folded. Nothing is passed and nothing is assumed; the person still answers before anything is sent.
+
+## Bot checks that clear themselves
+
+Some checks pass without the person doing anything. The box ticks itself, the page moves on, and nothing was asked.
+
+Show it anyway. Say that the site put a bot check in the way, that it cleared on its own, and that the run is continuing. A person who is told the tool met a bot check and got past it knows what happened on their own machine. A person who is told nothing has no way to tell that from a tool quietly working around one, which is the thing this project promises never to do.
+
+## Links on a confirmation page
+
+A confirmation page is the end of a broker's flow and the beginning of its sales pitch. One of these pages ends with a link to a paid removal service that pays the broker for the click.
+
+Never follow one. Not to read it, not to check what it says, not to report it. The opt-out finished when the broker confirmed it. An affiliate link, an upsell, a monitoring trial, and a link to a partner are all outside the flow, and a manifest note that names one is there so nobody treats it as the next step.
+
 ## The two modes
 
 `mode` lives in the person's profile.

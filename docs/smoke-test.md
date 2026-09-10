@@ -132,7 +132,7 @@ The validator cannot check this one. It never runs a step, so a value that does 
 
 ## Step 6. Write down what happened
 
-Append to `_state.md`, in the local-context folder, under a `## 2026-09-08 pass 2a smoke test (Andy)` heading:
+Append to `_state.md`, in the local-context folder, under a `## <date> smoke test (the person running it)` heading:
 
 - Which profile path worked, A, B, or both.
 - Whether the orchestrator executed the steps in manifest order, or the extension collapsed them into its own plan.

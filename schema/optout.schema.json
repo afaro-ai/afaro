@@ -98,6 +98,70 @@
       "description": "False when the captured page states no processing window. recheck_after_days is then null and the orchestrator falls back to its own default, saying the broker stated none. Absent or true means the number is the broker's own. Where the page that states it is not among the captures, because it appears only after a real submission, the notes say where it was read and that no capture exists yet.",
       "type": "boolean"
     },
+    "name_page": {
+      "description": "A broker's own public name-directory landing page: a static page keyed by name, and sometimes by state or city, that the site publishes for search engines and public linking. Where one exists it is a cheaper and steadier door than the search box, and search-conduct.md carves it out of the result-URL ban under four conditions. It takes two captures and neither substitutes for the other: the site's own A-to-Z bar, which lists letters and names nobody, and the person's own name page from a real run, blanked like any run capture. A capture of a directory letter page is not one of them and never will be: those pages list strangers, and blanking a thousand names is not something anybody can check. Until a broker has both captures the block stays absent, and a pattern seen in a live search is a lead rather than provenance.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "template",
+        "slug_rules",
+        "levels",
+        "directory_path",
+        "shows",
+        "consent_modal",
+        "verified_on",
+        "directory_capture",
+        "page_capture"
+      ],
+      "properties": {
+        "template": {
+          "description": "The page address with slug placeholders in double braces, for example https://example.com/people/{{name_slug}}/{{state_slug}}/. The same endpoint ban as search_url_template applies.",
+          "type": "string",
+          "$ref": "#/$defs/page_url"
+        },
+        "slug_rules": {
+          "description": "How each placeholder is built from the profile, in plain words, one entry per placeholder.",
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
+        "levels": {
+          "description": "Which pages the site publishes. A level that returns 404 where the site supports it is a not_found signal for that level, not an error.",
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "enum": ["name", "name+state", "name+city"] }
+        },
+        "directory_path": {
+          "description": "The links a person clicks to reach the page from the site's own directory, in order. This is what the capture shows, and it is what makes the pattern provenance rather than a guess.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "shows": {
+          "description": "free_listing: the page shows the listing in the open and can settle found or not_found on its own. teaser: enough to match on name, age, and city with the rest hidden, which the scan treats as free_listing and says so. funnel: the page sells a report, settles nothing, and leaves the broker not_assessable unless another door works.",
+          "type": "string",
+          "enum": ["free_listing", "teaser", "funnel"]
+        },
+        "consent_modal": {
+          "description": "True when a terms or cookie wall stands in front of the page's content. The scan then stops there the way it does on a search page, and the person decides.",
+          "type": "boolean"
+        },
+        "verified_on": {
+          "type": "string",
+          "format": "date",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "directory_capture": {
+          "description": "Path to the committed capture of the site's own A-to-Z name bar, relative to the manifests directory. Letters only. Nobody is named on it, which is why it may be committed at all. The validator fails if the file is absent.",
+          "$ref": "#/$defs/capture_path"
+        },
+        "page_capture": {
+          "description": "Path to the committed capture of the person's own name page, reached in a real run and blanked the way every run capture is. This is what shows the page exists and what it shows; the template is read from that page's own address and written here with the slugs put back as placeholders, so no name reaches the manifest or the run log. The validator fails if the file is absent, or if it is the same file as directory_capture.",
+          "$ref": "#/$defs/capture_path"
+        }
+      }
+    },
     "additional_captures": {
       "description": "Further pages this manifest was written from, beyond source_capture. A page reachable only inside a real run is captured by the person running it, with every value of theirs blanked, and listed here so each later step has a page behind it. The validator fails a manifest whose listed capture is absent on disk.",
       "type": "array",
@@ -105,7 +169,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["path", "of"],
+        "required": ["path", "of", "blanked"],
         "properties": {
           "path": { "$ref": "#/$defs/capture_path" },
           "of": {
@@ -114,7 +178,7 @@
             "minLength": 1
           },
           "blanked": {
-            "description": "True when values belonging to the person whose run produced the capture were painted out before it was committed.",
+            "description": "True when values belonging to the person whose run produced the capture were painted out before it was committed, false when the page held nothing of anyone's. Required, because a capture from a real run that says nothing about blanking is the one a reader has to take on trust.",
             "type": "boolean"
           }
         }
@@ -221,6 +285,7 @@
       "oneOf": [
         { "$ref": "#/$defs/step_navigate" },
         { "$ref": "#/$defs/step_accept_terms" },
+        { "$ref": "#/$defs/step_use_search_box" },
         { "$ref": "#/$defs/step_find_listing" },
         { "$ref": "#/$defs/step_fill_field" },
         { "$ref": "#/$defs/step_click" },
@@ -265,6 +330,40 @@
           "description": "What else the dialog does that the person should know about, as seen on the captured page. A control that opens a paid checkout goes here.",
           "type": "string",
           "minLength": 1
+        },
+        "note": { "type": "string" }
+      }
+    },
+    "step_use_search_box": {
+      "description": "Search through the box the site shows, rather than through an address. This is what a broker gets when its search_url_template has drifted or was never a page: the box is typed into and submitted the way a person would. It comes before anything is filled on a form and before the submit gate, because a search is not a submission and must never be a way to send form values early.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "inputs"],
+      "properties": {
+        "type": { "const": "use_search_box" },
+        "url": {
+          "description": "The page holding the box, when the run is not already on it.",
+          "type": "string",
+          "$ref": "#/$defs/page_url"
+        },
+        "inputs": {
+          "description": "The boxes of the search form and what goes in each, in the order the page shows them.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["selector", "value_from"],
+            "properties": {
+              "selector": { "$ref": "#/$defs/selector" },
+              "value_from": { "$ref": "#/$defs/profile_field_path" },
+              "note": { "type": "string" }
+            }
+          }
+        },
+        "submit": {
+          "description": "The control that runs the search. Absent means the form is submitted from the box itself.",
+          "$ref": "#/$defs/selector"
         },
         "note": { "type": "string" }
       }
@@ -315,6 +414,11 @@
         "value_literal": {
           "description": "A fixed value the form needs, for example a reason code offered by the page itself. When the page offers a fixed set, list it in choices and this value has to be one of them.",
           "type": "string"
+        },
+        "format": {
+          "description": "How the value is written into the box, when the box wants it in a shape the profile does not keep. digits strips everything that is not a digit, which is what a phone field that rejects brackets and dashes needs. lowercase lowers the case. as_is is the default and is the same as leaving this out. The profile keeps the value as a person writes it; the step does the shaping, and the read-back afterwards checks the shaped value rather than the profile's.",
+          "type": "string",
+          "enum": ["as_is", "digits", "lowercase"]
         },
         "choices": {
           "description": "The options the captured page offers for this control, copied from it word for word. Present only when the capture shows them. The validator refuses a value_literal that is not one of these, which is what keeps a reason the broker never offered out of a form.",
@@ -380,6 +484,11 @@
         "reason": {
           "type": "string",
           "enum": ["captcha", "bot_wall", "id_upload", "phone_verify", "submit"]
+        },
+        "gate_mode": {
+          "description": "combined folds the captcha gate immediately before this one into this prompt, so the person ticks, checks, and says go in one exchange. It exists for brokers whose captcha token expires inside the window between two separate gates, which turns a correct two-gate flow into a failed submission. Only valid on a submit gate, and only when a captcha gate is the step immediately before it. Absent means the two gates are asked separately, which stays the default.",
+          "type": "string",
+          "enum": ["combined"]
         },
         "prompt": {
           "description": "What the person is being asked to do, in plain words.",

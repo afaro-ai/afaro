@@ -2,7 +2,7 @@
   "id": "radaris",
   "name": "Radaris",
   "home_url": "https://radaris.com/",
-  "search_url_template": "https://radaris.com/srv/a.go_search?q={{full_name}}&name_city_state={{current_address.city}}, {{current_address.state}}",
+  "search_url_template": "https://radaris.com/",
   "optout_url": "https://radaris.com/control-privacy",
   "method": "search_then_form",
   "profile_fields_required": ["full_name", "current_address.city", "current_address.state"],
@@ -18,10 +18,37 @@
       "note": "Moves to the second screen. Nothing has been typed and nothing is sent by this click; it opens the part of the wizard that asks which page to remove."
     },
     {
+      "type": "use_search_box",
+      "inputs": [
+        {
+          "selector": { "label": "First and last name" },
+          "value_from": "full_name"
+        },
+        {
+          "selector": { "label": "City, state" },
+          "value_from": "current_address.city",
+          "note": "One box for two things. The profile keeps the city and the state apart, so type them together the way the box asks, city then state."
+        }
+      ],
+      "note": "The second screen's own search, which is the way it offers to find the page. The control beside the boxes shows only a magnifying glass and no text, so the search is run from the box rather than by clicking it. What leaves the browser here is the search itself, the words a person would type into that site's own boxes."
+    },
+    {
+      "type": "find_listing",
+      "match_on": ["full_name", "current_address.city"],
+      "on_not_found": "stop",
+      "note": "The page asks the person to confirm the information is their own before identifying a page, so show the candidate and let them say."
+    },
+    {
+      "type": "fill_field",
+      "selector": { "label": "Or Enter URL of your page" },
+      "from_listing": "url",
+      "note": "The box under the search, which the page says takes the address of your own page. It is filled and left on screen; nothing here sends it."
+    },
+    {
       "type": "handoff",
       "reason": "page_not_captured",
-      "prompt": "Radaris is now on its second screen, headed Please identify your personal page. It offers two ways in: search your first and last name plus city and state in the boxes there, or paste the address of your Radaris page into the box below them. The page says you find that address by running a search on Radaris and copying the URL of your page. What Radaris asks for after that was not captured, so carry on in the browser from here and tell me what each screen asked and when the request was filed.",
-      "note": "This manifest stops on the last screen anyone can reach without a real listing. The screens past it are behind a profile URL, and one of them, seen only in the page's own markup, carries an email box and a reCAPTCHA. Nothing about it is described here because nobody has captured it."
+      "prompt": "The address of the listing is in the box on Radaris' second screen and nothing has been sent. The control that takes it from here was not captured, and neither was any screen after it, so carry on in the browser yourself. Tell me what each screen asked and when the request was filed.",
+      "note": "This manifest stops on the last screen anyone can reach without a real listing. The screens past it are behind a submitted URL, and one of them, seen only in the page's own markup, carries an email box and a reCAPTCHA. Nothing about it is described here because nobody has captured it. Nothing is clicked after the box is filled, which is why there is no submit gate: the handoff is the moment the person takes it over."
     }
   ],
   "verification": {
@@ -42,7 +69,7 @@
     "kinds": [],
     "note": "Neither captured screen asks for an account, a payment, a notarised document, or a photo ID. What the screens behind a profile URL ask for is not known, because they were not captured."
   },
-  "notes": "Written from the two screens Radaris shows at this address without a listing. The first says federal law does not require data brokers to delete publicly available information and that Radaris offers removal as a courtesy, and it carries an asterisk pointing at California Consumer Privacy Act opt-out requests. The second asks the person to confirm the information is their own and to identify their page by name and city or by its URL. Neither screen states a processing window, so recheck_after_days is null with recheck_stated false and the wait is the orchestrator's own. This manifest goes no further than those two screens: the rest of the wizard needs a real profile URL, which this pass had none of, so it ends on a handoff rather than describing pages nobody has seen. Two things read from the captured pages' own markup rather than off the image. The search box on the second screen submits to the address in search_url_template with the two fields named there; that same form also carries a hidden field whose value is generated per visit, so an exposure scan that gets nothing back from the URL should use the box on the page instead. And a third form sits in the same markup holding an email box and a reCAPTCHA, which is the step after a URL is given; it is named here only to say it exists and is not described. The image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it. One thing on the second image is not the broker's: a small icon inside the name box, which is a browser extension's own control and holds no value.",
+  "notes": "Written from the two screens Radaris shows at this address without a listing. The first says federal law does not require data brokers to delete publicly available information and that Radaris offers removal as a courtesy, and it carries an asterisk pointing at California Consumer Privacy Act opt-out requests. The second asks the person to confirm the information is their own and to identify their page by name and city or by its URL. Neither screen states a processing window, so recheck_after_days is null with recheck_stated false and the wait is the orchestrator's own. This manifest goes no further than those two screens: the rest of the wizard needs a real profile URL, which this pass had none of, so it ends on a handoff rather than describing pages nobody has seen. search_url_template was an internal endpoint until 2026-09-09, read from the search form's own markup and carrying a hidden field generated per visit. A live scan that day resolved it to JSON rather than a page, and the validator now refuses that shape on its face: a search door has to be a page a person could be sent to. It is the site's front page now, and the search happens through the box, which is what use_search_box says. One thing still read from the captured page's markup rather than off the image: a third form sits there holding an email box and a reCAPTCHA, which is the step after a URL is given; it is named here only to say it exists and is not described. The image holds no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on it. One thing on the second image is not the broker's: a small icon inside the name box, which is a browser extension's own control and holds no value.",
   "source_url": "https://radaris.com/control-privacy",
   "verified_on": "2026-09-09",
   "source_capture": "captures/radaris-optout.jpg"

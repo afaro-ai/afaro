@@ -175,6 +175,60 @@ const cases = [
     expect: '1 manifest in tests/fixtures/two-page-flow, 1 valid, 0 failed.'
   },
   {
+    name: 'a second capture that does not say whether it was blanked fails',
+    dir: 'tests/fixtures/additional-capture-without-blanked',
+    exitCode: 1,
+    expect: "must have required property 'blanked'"
+  },
+  {
+    name: 'a manifest that declares a retry count fails',
+    dir: 'tests/fixtures/retry-count',
+    exitCode: 1,
+    expect: 'there is one click per gate with no second attempt'
+  },
+  {
+    name: 'a combined gate with no captcha gate before it fails',
+    dir: 'tests/fixtures/combined-without-captcha',
+    exitCode: 1,
+    expect: 'no captcha gate immediately before it, so there is nothing to fold in'
+  },
+  {
+    name: 'a name page missing the person own page capture fails',
+    dir: 'tests/fixtures/name-page-absent-capture',
+    exitCode: 1,
+    expect: 'name_page.page_capture file is absent on disk'
+  },
+  {
+    name: 'a name page naming one file for both captures fails',
+    dir: 'tests/fixtures/name-page-one-file',
+    exitCode: 1,
+    expect: 'names one file for both captures'
+  },
+  {
+    name: 'a name page with its directory capture on disk passes',
+    dir: 'tests/fixtures/valid-name-page',
+    exitCode: 0,
+    expect: '1 manifest in tests/fixtures/valid-name-page, 1 valid, 0 failed.'
+  },
+  {
+    name: 'a search template pointing at an internal endpoint fails',
+    dir: 'tests/fixtures/search-endpoint-template',
+    exitCode: 1,
+    expect: 'internal endpoint rather than a page a person can be sent to'
+  },
+  {
+    name: 'a search box used after the form has been filled fails',
+    dir: 'tests/fixtures/search-box-after-fill',
+    exitCode: 1,
+    expect: 'uses the search box after step 3 filled a field'
+  },
+  {
+    name: 'stripping a listing address down to digits fails',
+    dir: 'tests/fixtures/listing-digits-format',
+    exitCode: 1,
+    expect: 'would strip the listing address down to its digits'
+  },
+  {
     name: 'a loopback URL outside the smoke manifest fails',
     dir: 'tests/fixtures/loopback-outside-smoke',
     exitCode: 1,

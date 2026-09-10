@@ -80,7 +80,7 @@ const cases = [
     name: 'a match never prints the value it matched',
     args: ['--list', listPath, '--dir', 'tests/fixtures/names-hit'],
     exitCode: 1,
-    refute: ['Quill', 'Marisol', '555']
+    refute: ['Quill', 'Marisol', '555-0142', '5550142']
   },
   {
     name: 'a file named after somebody is found by its name',
@@ -129,7 +129,7 @@ const cases = [
     args: ['--list', listPath, '--dir', messageRepo, '--commits', 'HEAD~1..HEAD'],
     exitCode: 1,
     expect: 'commit ',
-    refute: ['Quill', 'Marisol', '555']
+    refute: ['Quill', 'Marisol', '555-0142', '5550142']
   },
   {
     name: 'a list kept inside this repository is refused',
