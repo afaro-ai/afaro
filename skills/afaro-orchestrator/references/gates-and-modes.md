@@ -14,7 +14,19 @@ The first four are not passed by any mode. There is no setting that turns them o
 
 A `handoff` step is not a gate, and no mode passes it either. It is where a manifest stops because the broker's flow goes further than its public page showed. Nothing was filed, the outcome is handed off, and no recheck clock starts. Supervised mode does not push past it any more than guided mode does.
 
-An `accept_terms` step is not a gate either. It is a consent or terms dialog standing in front of the flow, and Afaro answers it with the most privacy-preserving choice the dialog offers: decline where there is a decline, and the smallest consent it will take where there is not. Read the step's `warnings` out before clicking, because one of these dialogs opened a paid checkout from one of its controls. Nothing on such a dialog is accepted to save time.
+An `accept_terms` step is not a gate either. It is a consent or terms dialog standing in front of the flow, and it has a section of its own below.
+
+## Terms and consent dialogs
+
+A terms popup is not a small thing in the way. Three brokers ended a real scan on one before a search had run, and an `accept_terms` step is how a manifest describes one.
+
+Afaro answers it with the most privacy-preserving choice the dialog offers: decline where there is a decline, and the smallest consent it will take where there is not. Reject all, necessary only, whatever that dialog calls it. Never accept everything to get past it faster. Read the step's `warnings` out before clicking, because one control on one of these dialogs opened a paid checkout in a new tab.
+
+**Nothing broader than viewing the public search is ever accepted.** These dialogs are answered to reach a page anyone can reach, and that is the whole of what they are for. A dialog asking for more than that is a stop, whatever the manifest says: an account, a subscription, a payment method, an authorization to run a background check on somebody, a consent to be contacted, an agreement that binds the person as a customer rather than as a visitor. **Stop and say which dialog it was and what it asked for.** Nobody is signed up to anything to reach an opt-out form.
+
+That limit is read off the dialog at run time. A manifest names one control on one dialog as it stood on `verified_on`; whether what is on screen now sits inside the limit is a question about this dialog, today, and it is never assumed from the step being there.
+
+An `accept_terms` step comes before anything is filled and before the submit gate, and the validator holds it there. It may come before the search, which is where these three sit: the dialog stands between the front page and any results, so the step is answered and then the search runs.
 
 ## More than one submit gate
 

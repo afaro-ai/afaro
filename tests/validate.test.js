@@ -127,6 +127,18 @@ const cases = [
     expect: 'a consent dialog is answered before anything is filled'
   },
   {
+    name: 'a consent dialog answered after the submit gate fails',
+    dir: 'tests/fixtures/accept-terms-after-gate',
+    exitCode: 1,
+    expect: 'a consent dialog comes before the flow it stands in front of'
+  },
+  {
+    name: 'a consent dialog standing in front of the search passes',
+    dir: 'tests/fixtures/terms-before-search',
+    exitCode: 0,
+    expect: '1 manifest in tests/fixtures/terms-before-search, 1 valid, 0 failed.'
+  },
+  {
     name: 'a reason the captured page does not offer fails',
     dir: 'tests/fixtures/literal-outside-choices',
     exitCode: 1,

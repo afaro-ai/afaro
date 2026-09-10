@@ -77,7 +77,11 @@ The default is the most privacy-preserving choice on offer, always. Decline wher
 
 `warnings` says what else the dialog does. Read it out before clicking. One control on one of these dialogs opened a paid checkout in a new tab, so a control that costs money or signs someone up is named there and is never the one clicked.
 
-It comes first: before anything is filled and before the submit gate. The validator holds it there.
+**Nothing broader than viewing the public search is ever accepted.** A dialog that asks for an account, a payment method, an authorization to run a background check, or an agreement binding the person as a customer is a stop, whatever the manifest says. Say which dialog it was and what it asked for. The full rule is in `gates-and-modes.md`.
+
+It comes first: before anything is filled and before the submit gate. The validator holds it there. It may sit before the search, which is where a dialog standing between a front page and its results goes.
+
+What a manifest needs to carry one: the decline or minimal-consent control in `selector`, with the visible label the dialog shows, and the dialog on a capture. Most of these open with the page, so `source_capture` shows them; one reached later in a flow goes in `additional_captures` like any other. A dialog nobody has captured gets no step. Three brokers stop a scan on a terms popup today and none of them carries one, because guessing at a control on a dialog nobody has seen is how a tool clicks Accept All on somebody's behalf.
 
 ## use_search_box
 

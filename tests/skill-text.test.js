@@ -82,6 +82,14 @@ const cases = [
     phrases: ['would a search engine show this URL to a person', 'no profile-detail page built from an ID']
   },
   {
+    rule: 'ruling 2: a terms dialog is answered to see the public search and for nothing wider',
+    file: 'skills/afaro-orchestrator/references/gates-and-modes.md',
+    phrases: [
+      'Nothing broader than viewing the public search is ever accepted',
+      'Stop and say which dialog it was and what it asked for'
+    ]
+  },
+  {
     rule: 'no stranger enters the repository, painted out or not',
     file: 'CONTRIBUTING.md',
     phrases: ['No stranger\'s name enters this repository, painted out or not']

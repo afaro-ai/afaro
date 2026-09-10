@@ -200,6 +200,35 @@ const cases = [
     }
   },
   {
+    // The same dialog answered after the submit gate. A consent dialog stands
+    // in front of the flow; one answered after the send has already been
+    // approved was not in front of anything.
+    dir: 'accept-terms-after-gate',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate' && s.reason === 'submit');
+      m.steps.splice(gate + 1, 0, {
+        type: 'accept_terms',
+        selector: { label: 'Decline' },
+        warnings: 'Fixture. No dialog exists.'
+      });
+    }
+  },
+  {
+    // A terms dialog standing between the front page and the results, which is
+    // where the three brokers that stop a scan on one put theirs. Here so the
+    // shape that passes is pinned as well as the two that fail.
+    dir: 'terms-before-search',
+    capture: true,
+    change: (m) => {
+      m.steps.splice(1, 0, {
+        type: 'accept_terms',
+        selector: { label: 'Reject all' },
+        warnings: 'Fixture. No dialog exists.'
+      });
+    }
+  },
+  {
     // A reason the page never offered. The capture shows the set, the manifest
     // lists it, and the value filled is not in it.
     dir: 'literal-outside-choices',
