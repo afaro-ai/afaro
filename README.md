@@ -1,8 +1,30 @@
+<img src="assets/afaro-logo-1280.png" alt="Afaro" width="420">
+
 # Afaro: agent skills for personal data removal
 
 Afaro is a local-first personal-data removal engine.
 
 It walks a person through removing their own listing from US people-search brokers. The person's data stays in a file on their own machine, and every submission is approved by them before it is sent. One person can also run it for a relative who has no account of their own, as their authorized agent, with a file per person and a signed authorization kept locally.
+
+## What it looks like
+
+Every image below is the smoke test, which is Afaro running against a fake people-search page served from this repository, with the example profile. No real broker, no real person, nothing sent anywhere. `docs/smoke-test.md` is the runbook, so anyone can reproduce these.
+
+<img src="assets/readme/smoke-gate-chat.png" alt="Afaro stopping at the submit gate, listing the two values it is about to send, and waiting for a yes" width="820">
+
+*The part that matters. The run stops at the submit gate, prints both values it is about to send, and waits. Nothing goes until a person answers. This is the smoke test against the local fake page, using the example profile.*
+
+<img src="assets/readme/smoke-1-search.png" alt="The fake directory page with three example listings and an empty removal form" width="660">
+
+*Before the run: the fake page's own results and its empty form. Smoke test, local page, example profile.*
+
+<img src="assets/readme/smoke-2-filled.png" alt="The same form filled from the example profile, stopped before the submit button is pressed" width="660">
+
+*The form filled from the profile, held here while the gate above waits. Still the smoke test, still the local page and the example profile.*
+
+<img src="assets/readme/smoke-3-submitted.png" alt="The fake page showing a request received panel with a reference beginning SMOKE" width="660">
+
+*After the yes. The fake page handles its own submission and says so; the reference begins `SMOKE`. Smoke test, local page, example profile, and nothing left the machine.*
 
 ## How it works
 
@@ -60,6 +82,7 @@ skills/                     the five skills
 docs/install.md             setup for a non-technical reader
 docs/smoke-test.md          the runtime check that comes before any broker
 docs/releases/              what shipped in each release, and what did not
+assets/                     the logo, and the smoke-test screenshots the README shows
 CONTRIBUTING.md             the authoring rules, the sweep, and how to propose a broker
 LICENSE                     MIT, and what it does not cover
 tests/                      validator fixtures, checks, and the smoke page
@@ -156,7 +179,7 @@ Everything those runs turned up went back into the schema, the skills, and the m
 
 ## License
 
-The skills, the schema, the validator, the manifests, and the documentation are MIT licensed. `LICENSE` has the terms.
+The skills, the schema, the validator, the manifests, the documentation, the logo, and the smoke-test screenshots under `assets/` are MIT licensed. `LICENSE` has the terms.
 
 The screenshots under `manifests/captures/` are a different thing and are not covered by that. They are images of third-party websites' public pages, and they are here for one reason: so a reader can check that each manifest matches the page it was built from. Whatever rights exist in those pages belong to the site operators, not to this project. The MIT license covers this repository's own work and does not purport to license anybody else's page content.
 
