@@ -24,7 +24,7 @@ Every image below is the smoke test, which is Afaro running against a fake peopl
 
 <img src="assets/readme/smoke-3-submitted.png" alt="The fake page showing a request received panel with a reference beginning SMOKE" width="660">
 
-*After the yes. The fake page handles its own submission and says so; the reference begins `SMOKE`. Smoke test, local page, example profile, and nothing left the machine.*
+*After the yes. The fake page handles its own submission and says so; the reference begins `SMOKE`, from a separate run of the same test; the fake page mints a new reference each time. Smoke test, local page, example profile, and nothing left the machine.*
 
 ## How it works
 
