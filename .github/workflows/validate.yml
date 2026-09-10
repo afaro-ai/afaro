@@ -40,6 +40,9 @@ jobs:
           fi
           echo "Fixtures are current."
 
+      - name: The README broker table matches the manifests
+        run: npm run brokers:check
+
       - name: The redaction sweep
         run: npm run check:names -- --allow-missing-list
 

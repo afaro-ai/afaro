@@ -94,7 +94,13 @@ Click the control with that visible label.
 
 **One click per gate, and no second attempt.** After a click that a gate approved, read the page. If it did not respond, stop and log it. Do not click again. A submit that produces no page change is the site refusing, not a click that missed, and a second click is a second submission of the same form. Three submits on one form is a retry however it is reached. A manifest cannot ask for a retry either: there is no field for it and the validator refuses one by name.
 
-**After a yes, read the page before acting on it.** A gate is a pause, and a person can act during a pause. Before the click a gate approved, check whether the page has already moved: if the button is gone, or the form has been replaced by a confirmation, the person did it themselves while answering. Log `submitted_by_person` and carry on from where the page actually is. Never repeat what has already been done.
+**After a yes, read the page before acting on it.** A gate is a pause, and a person can act during a pause. Before the click a gate approved, check whether the page has already moved.
+
+If the person finished it themselves, the button is gone or a confirmation has replaced the form. Log `submitted_by_person` and carry on from where the page actually is. Never repeat what has already been done.
+
+If the page has changed some other way, the yes no longer applies to what is on screen. Fields emptied, the page reloaded, a different listing showing: any of those means the form the person approved is not the form in front of you. **Refill and gate again.** Never refill and click.
+
+That is not caution for its own sake. A yes approves one specific filled form, the one whose values were printed at the gate. Refilling and clicking on the grounds that the values are the same substitutes the agent's judgment for the person's, on the one question the person is there to answer.
 
 Clicks before a submit gate move through the form. The click that sends comes after the gate. Brokers whose opt-out runs over several pages send something on each page, so a manifest may carry more than one submit gate, and each one approves the values filled since the previous one. The validator holds that shape per segment: once the last `fill_field` before a gate has run, no `click` and no `navigate` may appear until that gate has passed; nothing is filled after the last gate; and a manifest that is not `method: email` clicks something after every gate.
 

@@ -84,9 +84,15 @@ The reason to take the two human edges seriously: the first two values this proj
 ```
 npm install
 npm run validate        every manifest, against the schema and the provenance rules
-npm test                the validator's own self-checks, and the sweep's
+npm test                the validator's self-checks, the sweep's, and the skill-text checks
 npm run validate:smoke  the one manifest that is not a broker
+npm run brokers:table   rewrite the README's broker table from manifests/
+npm run brokers:check   fail if that table is out of date, which is what CI runs
 ```
+
+If you add or change a manifest, run `npm run brokers:table` in the same commit. The table in the README is generated, CI checks it, and nothing between its markers is edited by hand. The block under it about runs is the opposite: hand-written, unchecked, and not yours to update unless you made the run.
+
+The skill-text checks are literal on purpose. A few rules are about what happens on a page at run time and cannot be expressed in a schema, so the only place they live is the instructions a skill reads. The test looks for short distinctive phrases so a rewording that keeps a rule passes and one that loses it fails. If it fails and the rule genuinely moved, update the phrase in the same commit and say so.
 
 `npm run validate` derives the broker count from the directory. Nothing hardcodes a list of brokers, and nothing should.
 
