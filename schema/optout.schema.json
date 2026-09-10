@@ -408,8 +408,13 @@
         "type": { "const": "fill_field" },
         "selector": { "$ref": "#/$defs/selector" },
         "value_from": {
-          "description": "Profile field path. The orchestrator stops if the field is missing.",
+          "description": "Profile field path. The orchestrator stops if the field is missing. Two paths mean a contact detail rather than one of the person's own: contact_email is the address broker replies and confirmation links reach, and contact_phone is the number a broker will call or text. emails and phones are the person's own, used to match a listing. emails falls back to contact_email when the profile carries one; phones never falls back to contact_phone and contact_phone never falls back to phones, because a verification call going to the wrong handset is not a small mistake.",
           "$ref": "#/$defs/profile_field_path"
+        },
+        "phone_field": {
+          "description": "What the captured page says its phone box is for, where the page says. contact: a number the broker will call or text, which comes from contact_phone and from nowhere else. listing: the number as it stands on the listing being removed, which comes from phones. Leave it out when the captured page does not make the distinction, and say so in a note rather than guessing.",
+          "type": "string",
+          "enum": ["contact", "listing"]
         },
         "value_literal": {
           "description": "A fixed value the form needs, for example a reason code offered by the page itself. When the page offers a fixed set, list it in choices and this value has to be one of them.",

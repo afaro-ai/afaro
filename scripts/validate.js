@@ -499,6 +499,39 @@ function checkUseSearchBox(manifest) {
   return problems;
 }
 
+// A phone box that a broker will call is not the same box as one asking which
+// number is on the listing, and the difference decides whose handset rings. In
+// operator mode the person whose listing it is may not be the person who can
+// answer, so putting their own number in a verification field sends the call to
+// somebody who is not expecting it and cannot complete the step.
+//
+// Only a manifest whose captured page makes the distinction says which kind it
+// is. Where it says, this holds it to the matching profile field.
+function checkPhoneFields(manifest) {
+  const problems = [];
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+  const wants = { contact: 'contact_phone', listing: 'phones' };
+
+  steps.forEach((step, index) => {
+    if (!step || typeof step !== 'object' || step.type !== 'fill_field') return;
+    if (typeof step.phone_field !== 'string') return;
+
+    const expected = wants[step.phone_field];
+    if (!expected) return;
+
+    if (step.value_from !== expected) {
+      const said = step.value_from ? `from ${step.value_from}` : 'from something other than the profile';
+      problems.push(
+        step.phone_field === 'contact'
+          ? `step ${index} fills a number the broker will call ${said}, and a contact number comes from contact_phone`
+          : `step ${index} fills the number on the listing ${said}, and that comes from phones`
+      );
+    }
+  });
+
+  return problems;
+}
+
 // A page that offers a fixed set of reasons offers those and no others. When
 // the capture shows the set, the manifest lists it, and the value it fills has
 // to be one of them. This is the check that keeps a reason nobody was offered
@@ -691,6 +724,7 @@ function validateFile(validate, dir, fileName) {
   problems.push(...checkNoRetries(manifest));
   problems.push(...checkCombinedGate(manifest));
   problems.push(...checkUseSearchBox(manifest));
+  problems.push(...checkPhoneFields(manifest));
   problems.push(...checkListingValues(manifest));
   problems.push(...checkHandoff(manifest));
   problems.push(...checkRecheckWindow(manifest));

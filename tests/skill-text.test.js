@@ -32,6 +32,16 @@ const cases = [
     phrases: ['Refill and gate again', 'Never refill and click']
   },
   {
+    rule: 'a verification call goes to the number the operator can answer, never the one on the listing',
+    file: 'skills/afaro-orchestrator/SKILL.md',
+    phrases: ['verification calls and texts will go to that number', 'Never fall back to the number on the listing']
+  },
+  {
+    rule: 'contact_phone does not fall back to the person own numbers',
+    file: 'skills/afaro-orchestrator/references/step-types.md',
+    phrases: ['does not fall back to `phones`']
+  },
+  {
     rule: 'finding 16: the person may have acted during the pause',
     file: 'skills/afaro-orchestrator/references/step-types.md',
     phrases: ['submitted_by_person']

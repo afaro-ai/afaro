@@ -4,7 +4,10 @@
   "first_name": "Jane",
   "middle_name": "Quinn",
   "last_name": "Example",
-  "aliases": ["Jane Q Example", "Jane Sample"],
+  "aliases": [
+    "Jane Q Example",
+    "Jane Sample"
+  ],
   "date_of_birth": "1980-01-31",
   "state_of_residence": "CA",
   "current_address": {
@@ -23,11 +26,19 @@
       "postal_code": "89501"
     }
   ],
-  "phones": ["555-0100"],
-  "emails": ["jane.example@example.com"],
-  "relatives": ["John Example", "Mary Example"],
+  "phones": [
+    "555-0100"
+  ],
+  "emails": [
+    "jane.example@example.com"
+  ],
+  "relatives": [
+    "John Example",
+    "Mary Example"
+  ],
   "opt_out_reason": "Privacy concerns",
   "contact_email": "alex+jane@example.com",
+  "contact_phone": "555-0177",
   "authorized_agent": {
     "name": "Alex Example",
     "email": "alex+jane@example.com",

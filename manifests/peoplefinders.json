@@ -49,8 +49,9 @@
       "type": "fill_field",
       "selector": { "label": "Phone" },
       "value_from": "phones",
+      "phone_field": "listing",
       "format": "digits",
-      "note": "No required marker beside this label. The box takes digits and nothing else, and it says so in validation text beside itself when given a number with brackets or dashes in it, which a person's profile normally has. The profile keeps the number readable and this step strips it to digits on the way in. Read the field back afterwards and read the page beside it: if validation text is there, show it to the person and stop."
+      "note": "No required marker beside this label. It is the number on the record rather than one PeopleFinders will ring: the form's own instruction above it says the information entered is what they use to locate the record and remove it, and nothing on the page offers to call or text. The box takes digits and nothing else, and it says so in validation text beside itself when given a number with brackets or dashes in it, which a person's profile normally has. The profile keeps the number readable and this step strips it to digits on the way in. Read the field back afterwards and read the page beside it: if validation text is there, show it to the person and stop."
     },
     {
       "type": "fill_field",
