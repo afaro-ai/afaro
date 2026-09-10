@@ -27,6 +27,8 @@ Save captures as `manifests/captures/<id>-optout.jpg` or `.png`. Keep them reada
 
 If the page does not fit a screen, either view it zoomed out or capture it at two or three scroll positions and join them at those offsets in one visit. Say in the manifest's `notes` which you did. Same for hiding a fixed advertising container that sits across the form: allowed, and disclosed.
 
+**Crop to the claims, not to the tidy frame.** A frame that ends on a clean edge is worth nothing if a sentence the manifest cites falls outside it. Three manifests written in one pass each carried a claim their own capture refused: two said the page states things the frame had stopped just short of, and all three said the page states no relationship to any other site while the frame said in as many words that the data comes from elsewhere. So read every claim in the manifest against the image before you commit either one. A true claim the image cannot support is an unproven claim, and to a stranger it reads exactly like one copied from somewhere else.
+
 ### Provenance fields
 
 Every manifest carries three, and the validator refuses one that does not:
