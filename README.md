@@ -17,7 +17,7 @@ It walks a person through removing their own listing from US people-search broke
 | FastPeopleSearch | Form | Handed off: a link the broker emails | captcha, submit | 2026-09-09 |
 | Intelius | Form | Handed off: a link the broker emails | submit | 2026-09-09 |
 | MyLife | Form | Handed off: the rest of the flow is not captured | None (nothing is sent) | 2026-09-09 |
-| Nuwber | Search, then form | Handed off: a link the broker emails | submit | 2026-09-09 |
+| Nuwber | Search, then form | Handed off: a link the broker emails | submit | 2026-09-10 |
 | PeopleFinders | Form | Submitted | captcha, submit | 2026-09-09 |
 | Radaris | Search, then form | Handed off: the rest of the flow is not captured | None (nothing is sent) | 2026-09-09 |
 | Spokeo | Search, then form | Submitted, then a confirmation email | captcha, submit | 2026-09-08 |
