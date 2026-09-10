@@ -1,0 +1,65 @@
+{
+  "id": "peoplelooker",
+  "name": "PeopleLooker",
+  "home_url": "https://www.peoplelooker.com/",
+  "search_url_template": "https://www.peoplelooker.com/svc/optout/search/optouts",
+  "optout_url": "https://www.peoplelooker.com/svc/optout/search/optouts",
+  "method": "search_then_form",
+  "profile_fields_required": [
+    "first_name",
+    "last_name",
+    "state_of_residence"
+  ],
+  "steps": [
+    {
+      "type": "use_search_box",
+      "url": "https://www.peoplelooker.com/svc/optout/search/optouts",
+      "inputs": [
+        {
+          "selector": { "label": "First Name", "css": "#optout-form input[name=\"fname\"]" },
+          "value_from": "first_name"
+        },
+        {
+          "selector": { "label": "Last Name", "css": "#optout-form input[name=\"ln\"]" },
+          "value_from": "last_name"
+        }
+      ],
+      "submit": { "label": "Search" },
+      "note": "The search is on the opt-out page itself. The page says to start by searching for the record here, and the boxes carry no labels beside them: First Name and Last Name are the words inside the boxes. A third control beside them narrows by state and reads All on the capture; no step touches it, so the search runs across every state and the listing is picked by hand at the next step. What leaves the browser here is the search itself, the words a person would type into that site's own boxes."
+    },
+    {
+      "type": "find_listing",
+      "match_on": ["first_name", "last_name", "state_of_residence"],
+      "on_not_found": "stop",
+      "note": "The page says to select the record you would like to opt out. It also says only one record may be removed through the online process, so this step identifies one record and the manifest runs once. Where somebody has more than one, the page gives an email address instead, and that is the person's to write."
+    },
+    {
+      "type": "handoff",
+      "reason": "page_not_captured",
+      "prompt": "PeopleLooker has your search results. Pick the record you want removed and follow the rest yourself: the page says it then sends a verification email and finishes when you click the link in it, and that a second email confirms the record was opted out. It does not say where that address is asked for, so expect a box for it that nobody here has seen. None of those pages has been captured, so nothing here fills them in. Two things the page says that are worth knowing before you start. Only one record can be removed this way; if you find more than one, the page gives an email address to write to instead. And the page is plain that this reaches its own site only: your name may still show in the site's other searches, and it says your information may appear on other websites that it cannot do anything about. Tell me what the confirmation said.",
+      "note": "This is where the captures stop and the broker's flow does not. Nothing has been sent at this point; a search has been run and nothing else. The results page, the record selection, the email box, and both emails are described here from what the opt-out page states about them, and none of them has been seen. No step types an email address anywhere, which is why emails is not in profile_fields_required: the box that would take it is on a page nobody has captured."
+    }
+  ],
+  "verification": {
+    "method": "search",
+    "success_when": "A search of the site's own opt-out search for this name no longer returns the record that was opted out. The page says a record may be recreated later from a new source it cannot match to the old one, so a record found afterwards may be a new record rather than a failed removal, and it says the name may still appear in the site's other searches either way."
+  },
+  "recheck_after_days": 1,
+  "recheck_stated": true,
+  "additional_captures": [
+    {
+      "path": "captures/peoplelooker-optout-faq.jpg",
+      "of": "The FAQ further down the same page on the same visit, running from the Daniel's Law heading to the last line of the reappearance answer. It holds every answer this manifest cites: how the email address is used, that no membership is needed, that removal is never paid for, how long removal takes, how to check, that only one record may be removed online, and what may reappear",
+      "blanked": false
+    }
+  ],
+  "id_requirements": {
+    "required": false,
+    "kinds": [],
+    "note": "The page states that no membership is needed to opt out and that removal of your own record is never paid for, and both answers are on the FAQ capture. No notarised document or photo ID appears anywhere on it. The page also names a separate route by email for people covered by Daniel's Law who do not want to use the automated opt-out, and that route asks for a screenshot or link to the record, or a full name, date of birth, city, state, and email address. That is a different process from this one and no step here uses it."
+  },
+  "notes": "Written from the opt-out page captured on verified_on, with the FAQ further down the same page as a second capture. Finding the page took two goes and the manifest records the door rather than a guess: an /f/optout/search address returned a 404, and the address here is the one the site's own privacy policy links to, under both Opt Out and Do Not Sell or Share My Personal Information. It is a page a person is sent to by the site itself, which is the test the search-door rule sets. The Cloudflare check under the form read Verifying for several seconds and then cleared itself without anything being asked, and the capture was taken after it settled; that is why no captcha gate appears, and a check that asks on a later run is a bot wall that ends the broker. Four things the page states and this manifest depends on. The flow is search, select the record, receive a verification email, click the link in it, then receive a confirmation email. Removal shows in the site's results about 24 hours after that confirmation email, which is where recheck_after_days comes from; the clock the page describes starts at the confirmation email rather than at the search, and since this manifest ends on a handoff no clock starts here at all. Only one record may be removed through the online process, and people with more than one are given an email address. And a name may still appear in the site's other searches after a People Search record is removed. What the captures show and what they do not: the heading, the instruction to start by searching, both name boxes, the state control reading All, the Search button, the Cloudflare check, and the paragraph describing the flow are on the first frame, and every answer cited above is on the second; the css fallbacks and the form's own id were read from the page's markup on the same visit, and neither image holds a browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on them. This manifest stops at a handoff after the search, and that is the whole of it: the results page, the record selection, and the email box were not captured, because reaching them means searching for a real person and this pass did not do that. On syndication, what the page says and what it does not. It says the results are built from several different public and private databases and that data partners send it new records, so it does state that it draws on sources outside itself. It names none of them. It also says it can only remove records from its own site and that the information may appear on other websites, which is the opposite of a claim that removal here clears anywhere else. So there is no syndication note in the sense the rule means, not because the page is silent about where its data comes from, but because it names no site and describes no relationship under which one removal reaches another. And the fact that another opt-out page in this catalogue reads much the same is not this page saying anything at all.",
+  "source_url": "https://www.peoplelooker.com/svc/optout/search/optouts",
+  "verified_on": "2026-09-10",
+  "source_capture": "captures/peoplelooker-optout.jpg"
+}
