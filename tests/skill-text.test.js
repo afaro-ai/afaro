@@ -82,6 +82,16 @@ const cases = [
     phrases: ['would a search engine show this URL to a person', 'no profile-detail page built from an ID']
   },
   {
+    rule: 'finding 24: an unmarked phone box is asked about, not guessed at',
+    file: 'skills/afaro-orchestrator/SKILL.md',
+    phrases: ['Ask which number to use and never pick']
+  },
+  {
+    rule: 'finding 24, again where a manifest author reads it',
+    file: 'skills/afaro-orchestrator/references/step-types.md',
+    phrases: ['Ask which number to use and never pick']
+  },
+  {
     rule: 'ruling 2: a terms dialog is answered to see the public search and for nothing wider',
     file: 'skills/afaro-orchestrator/references/gates-and-modes.md',
     phrases: [

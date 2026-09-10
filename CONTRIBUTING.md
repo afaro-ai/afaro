@@ -127,6 +127,8 @@ Before writing a manifest for a real broker, check the runtime actually walks on
 4. Run `npm run check:names` with your list.
 5. Open a pull request with the two commits, and say in the body what the page states and what it does not.
 
+**A broker enters through its own opt-out page and no other door.** Seeing one named in an advertisement, or linked from another broker's results, or listed on somebody's roundup, tells you a name exists. It is a lead, not provenance, and it says nothing about what that site's opt-out page asks for. Open the page yourself, capture it, and write from that. A manifest that started as a sighting reads exactly like one that started as a page, which is why the rule is about where you went rather than how careful you were.
+
 Say what you could not capture. A manifest that stops at a `handoff` and says why is worth more than one that covers the whole flow by guessing at the half nobody has seen.
 
 Things that will send a manifest back: a selector whose label is not on the capture, a processing window that is not on the page, a step that would need a CAPTCHA solved or a bot wall worked around, and any value belonging to a real person anywhere in the diff.
