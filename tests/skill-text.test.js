@@ -72,6 +72,11 @@ const cases = [
     phrases: ['The first four are not passed by any mode']
   },
   {
+    rule: 'a scan is for the person running it or for someone who authorized them and is present',
+    file: 'skills/afaro-exposure-scan/references/search-conduct.md',
+    phrases: ['They have to be present while it runs', 'as their authorized agent']
+  },
+  {
     rule: 'the name-page carve-out keeps the endpoint ban',
     file: 'skills/afaro-exposure-scan/references/search-conduct.md',
     phrases: ['would a search engine show this URL to a person', 'no profile-detail page built from an ID']

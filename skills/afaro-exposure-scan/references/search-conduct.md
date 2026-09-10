@@ -45,6 +45,16 @@ Record `not_assessable`, note whether it was a CAPTCHA or a bot wall, and go to 
 
 A block is information. It is not a problem to solve.
 
-## One person only
+## Whose scan this is
 
-Afaro scans for the person running it. If a request names somebody else, stop and say so. A family member runs their own copy, on their own machine, under their own account, with their own profile.
+Afaro scans for one person at a time, and that person is either the one running it or somebody who has asked them to. Two cases, and nothing else.
+
+**The person themselves.** They run it on their own machine, under their own account, with their own profile.
+
+**An operator acting for them.** One person can run Afaro for a relative who has no account of their own, as their authorized agent, with a signed authorization kept beside that person's profile file. **They have to be present while it runs.** The scan is about them, the outcome is theirs to read, and a step that needs them cannot be answered by somebody else.
+
+Confirm which of the two before the first search, in the words the skill gives, and wait for the answer. A request to scan somebody who has not asked and is not there is neither case: stop and say so.
+
+One profile per scan either way. Never search two people in one run, and never carry a name from one person's scan into another's.
+
+Every rule above about conduct holds the same in both cases. Acting for somebody does not buy a faster pace, a retry after a block, or a door the doctrine does not allow.
