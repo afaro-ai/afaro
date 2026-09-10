@@ -57,9 +57,15 @@ Two profile rules apply when the value is resolved.
 
 `format` says how the value is written into the box when the box wants a shape the profile does not keep. `digits` strips everything that is not a digit, which is what a phone field that refuses brackets and dashes needs; `lowercase` lowers the case; `as_is` is the default and the same as leaving it out. The profile keeps the value the way a person writes it, and the step does the shaping, so a phone number stays readable in the one place a person looks at it. The read-back checks the shaped value, not the profile's. `digits` on a value taken from the listing is refused, because a URL with everything but its digits removed is not a URL.
 
-`phone_field` says which kind of phone box this is, and only appears where the captured page says. `contact` is a number the broker will ring or text, and it comes from `contact_phone`. `listing` is the number as it stands on the listing being removed, and it comes from `phones`. The validator holds both to their source. Where the page does not make the distinction, leave the marker out and say so in a note: a phone box on a removal form is not obviously one or the other, and guessing puts a stranger's call on somebody's handset or a wrong number on a removal request.
+`phone_field` says which kind of phone box this is, and only appears where the captured page says. `contact` is a number the broker will ring or text, and it comes from `contact_phone`. `listing` is the number as it stands on the listing being removed, and it comes from `phones`. The validator holds both to their source. Where the page does not make the distinction, leave the marker out and say so in a note: a phone box on a removal form is not obviously one or the other, and guessing puts a stranger's call on somebody's handset or a wrong number on a removal request. A missing marker is not a default. **Ask which number to use and never pick.** Say the page does not make it clear and what each answer would mean, and fill the one the person names.
 
 `choices` lists the options the captured page offers, word for word, and appears only when the capture shows them. When it is there, the value filled has to be one of them and the validator refuses anything else. When a page offers a set the capture did not show, the manifest names no value: match the profile's `opt_out_reason` against what the page shows at the time, and if nothing matches, stop and ask the person to choose. Never invent a reason a broker did not offer, and never pick one because it looks closest.
+
+`agent_value_literal` is for one control and one question: forms that ask whether the request comes from the person themselves or from someone acting for them. The answer is not the manifest's to give. `value_literal` holds the answer for the person, `agent_value_literal` holds the answer for an operator, both in the page's own words from `choices`, and the run picks between them on one test: does the profile carry an `authorized_agent` block. Nothing else decides it, and the person is told which answer went in.
+
+The agent answer never goes in `value_literal`. A manifest that writes it there tells every broker the request is an agent's, whoever is at the keyboard and whatever the profile says, and the validator refuses it by name. The check reads the answer's own words, so a page whose wording is unusual enough to trip it needs the note to say so rather than a workaround.
+
+Where choosing the agent answer opens fields the manifest does not describe, do not carry `agent_value_literal` at all. Two manifests are in exactly that position: the agent answer reveals agent name and email boxes that are on no capture, so both leave the field out and stop, and their notes say why. A capability that walks a run into an undescribed form is worse than the stop it replaces.
 
 `from_listing` takes the value from the listing the earlier `find_listing` step identified, not from the profile. `url` is that listing's address as the browser shows it, and further attributes of the result are added when a captured page asks for one. It exists because a broker that keys its opt-out to one listing asks for that URL and no profile holds it. The validator refuses a manifest that fills from the listing without a `find_listing` step before it. Never type a description of a value into a form: if the value is not known, stop.
 
@@ -77,7 +83,11 @@ The default is the most privacy-preserving choice on offer, always. Decline wher
 
 `warnings` says what else the dialog does. Read it out before clicking. One control on one of these dialogs opened a paid checkout in a new tab, so a control that costs money or signs someone up is named there and is never the one clicked.
 
-It comes first: before anything is filled and before the submit gate. The validator holds it there.
+**Nothing broader than viewing the public search is ever accepted.** A dialog that asks for an account, a payment method, an authorization to run a background check, or an agreement binding the person as a customer is a stop, whatever the manifest says. Say which dialog it was and what it asked for. The full rule is in `gates-and-modes.md`.
+
+It comes first: before anything is filled and before the submit gate. The validator holds it there. It may sit before the search, which is where a dialog standing between a front page and its results goes.
+
+What a manifest needs to carry one: the decline or minimal-consent control in `selector`, with the visible label the dialog shows, and the dialog on a capture. Most of these open with the page, so `source_capture` shows them; one reached later in a flow goes in `additional_captures` like any other. A dialog nobody has captured gets no step. Three brokers stop a scan on a terms popup today and none of them carries one, because guessing at a control on a dialog nobody has seen is how a tool clicks Accept All on somebody's behalf.
 
 ## use_search_box
 

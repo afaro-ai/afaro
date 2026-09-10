@@ -200,6 +200,90 @@ const cases = [
     }
   },
   {
+    // The same dialog answered after the submit gate. A consent dialog stands
+    // in front of the flow; one answered after the send has already been
+    // approved was not in front of anything.
+    dir: 'accept-terms-after-gate',
+    capture: true,
+    change: (m) => {
+      const gate = m.steps.findIndex((s) => s.type === 'human_gate' && s.reason === 'submit');
+      m.steps.splice(gate + 1, 0, {
+        type: 'accept_terms',
+        selector: { label: 'Decline' },
+        warnings: 'Fixture. No dialog exists.'
+      });
+    }
+  },
+  {
+    // A terms dialog standing between the front page and the results, which is
+    // where the three brokers that stop a scan on one put theirs. Here so the
+    // shape that passes is pinned as well as the two that fail.
+    dir: 'terms-before-search',
+    capture: true,
+    change: (m) => {
+      m.steps.splice(1, 0, {
+        type: 'accept_terms',
+        selector: { label: 'Reject all' },
+        warnings: 'Fixture. No dialog exists.'
+      });
+    }
+  },
+  {
+    // The agent answer written into the manifest. Whoever runs this profile,
+    // every broker is told the request comes from an agent, and the page then
+    // asks for agent details nobody has.
+    dir: 'agent-option-hardcoded',
+    capture: true,
+    change: (m) => {
+      const fill = m.steps.find((s) => s.type === 'fill_field' && s.value_from === 'emails');
+      delete fill.value_from;
+      fill.selector = { label: 'I am:' };
+      fill.choices = ['The subject of this request', 'An authorized agent of the subject of the request'];
+      fill.value_literal = 'An authorized agent of the subject of the request';
+    }
+  },
+  {
+    // The agent answer on its own. A profile with no authorized_agent block
+    // reaches this dropdown with nothing to put in it.
+    dir: 'agent-answer-without-self',
+    capture: true,
+    change: (m) => {
+      const fill = m.steps.find((s) => s.type === 'fill_field' && s.value_from === 'emails');
+      fill.selector = { label: 'I am:' };
+      fill.choices = ['The subject of this request', 'An authorized agent of the subject of the request'];
+      fill.agent_value_literal = 'An authorized agent of the subject of the request';
+    }
+  },
+  {
+    // An agent answer in words the page does not use. Both answers are the
+    // page's own, read off the capture, or the dropdown has no such option.
+    dir: 'agent-answer-outside-choices',
+    capture: true,
+    change: (m) => {
+      const fill = m.steps.find((s) => s.type === 'fill_field' && s.value_from === 'emails');
+      delete fill.value_from;
+      fill.selector = { label: 'I am:' };
+      fill.choices = ['The subject of this request', 'An authorized agent of the subject of the request'];
+      fill.value_literal = 'The subject of this request';
+      fill.agent_value_literal = 'Authorized agent';
+    }
+  },
+  {
+    // Both answers, each in the page's own words, with the run picking between
+    // them from the profile. Here so the shape that passes is pinned as well
+    // as the three that fail.
+    dir: 'agent-choice-both-answers',
+    capture: true,
+    change: (m) => {
+      const fill = m.steps.find((s) => s.type === 'fill_field' && s.value_from === 'emails');
+      delete fill.value_from;
+      fill.selector = { label: 'I am:' };
+      fill.choices = ['The subject of this request', 'An authorized agent of the subject of the request'];
+      fill.value_literal = 'The subject of this request';
+      fill.agent_value_literal = 'An authorized agent of the subject of the request';
+    }
+  },
+  {
     // A reason the page never offered. The capture shows the set, the manifest
     // lists it, and the value filled is not in it.
     dir: 'literal-outside-choices',

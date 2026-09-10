@@ -127,6 +127,42 @@ const cases = [
     expect: 'a consent dialog is answered before anything is filled'
   },
   {
+    name: 'a consent dialog answered after the submit gate fails',
+    dir: 'tests/fixtures/accept-terms-after-gate',
+    exitCode: 1,
+    expect: 'a consent dialog comes before the flow it stands in front of'
+  },
+  {
+    name: 'a consent dialog standing in front of the search passes',
+    dir: 'tests/fixtures/terms-before-search',
+    exitCode: 0,
+    expect: '1 manifest in tests/fixtures/terms-before-search, 1 valid, 0 failed.'
+  },
+  {
+    name: 'the authorized-agent answer written in as a fixed value fails',
+    dir: 'tests/fixtures/agent-option-hardcoded',
+    exitCode: 1,
+    expect: 'fills the authorized-agent answer as a fixed value'
+  },
+  {
+    name: 'an agent answer with no answer for the person themselves fails',
+    dir: 'tests/fixtures/agent-answer-without-self',
+    exitCode: 1,
+    expect: 'has no answer to give'
+  },
+  {
+    name: 'an agent answer in words the page does not use fails',
+    dir: 'tests/fixtures/agent-answer-outside-choices',
+    exitCode: 1,
+    expect: 'agent_value_literal is not one of the choices the captured page offers'
+  },
+  {
+    name: 'both answers in the page own words pass',
+    dir: 'tests/fixtures/agent-choice-both-answers',
+    exitCode: 0,
+    expect: '1 manifest in tests/fixtures/agent-choice-both-answers, 1 valid, 0 failed.'
+  },
+  {
     name: 'a reason the captured page does not offer fails',
     dir: 'tests/fixtures/literal-outside-choices',
     exitCode: 1,

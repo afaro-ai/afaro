@@ -536,6 +536,56 @@ function checkPhoneFields(manifest) {
 // the capture shows the set, the manifest lists it, and the value it fills has
 // to be one of them. This is the check that keeps a reason nobody was offered
 // out of a broker's form.
+// A form asking whether the request comes from the person or from someone
+// acting for them is asking a question about the profile, not about the
+// manifest. The answer is read at run time from whether an authorized_agent
+// block is there, so the manifest carries both answers and picks neither.
+//
+// The failure this stops is the quiet one. An agent option typed into
+// value_literal tells every broker the request is an agent's, whoever is at
+// the keyboard, and a page that then asks for agent details has been told
+// something about the person running it that nobody checked.
+const AGENT_ANSWER = /authorized agent/i;
+
+function checkAgentChoice(manifest) {
+  const problems = [];
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+
+  steps.forEach((step, index) => {
+    if (!step || typeof step !== 'object' || step.type !== 'fill_field') return;
+
+    if (typeof step.value_literal === 'string' && AGENT_ANSWER.test(step.value_literal)) {
+      problems.push(
+        `step ${index} fills the authorized-agent answer as a fixed value; that answer belongs in agent_value_literal, which is given only when the profile carries an authorized_agent block`
+      );
+    }
+
+    if (typeof step.agent_value_literal !== 'string') return;
+
+    if (typeof step.value_literal !== 'string') {
+      problems.push(
+        `step ${index} has agent_value_literal and no value_literal, so a profile with no authorized_agent block has no answer to give`
+      );
+    } else if (step.agent_value_literal === step.value_literal) {
+      problems.push(
+        `step ${index} gives the same answer either way, which is not the choice the page is offering`
+      );
+    }
+
+    if (!Array.isArray(step.choices)) {
+      problems.push(
+        `step ${index} has agent_value_literal without choices, and both answers have to be the page's own words`
+      );
+    } else if (!step.choices.includes(step.agent_value_literal)) {
+      problems.push(
+        `step ${index} agent_value_literal is not one of the choices the captured page offers`
+      );
+    }
+  });
+
+  return problems;
+}
+
 function checkChoices(manifest) {
   const problems = [];
   const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
@@ -720,6 +770,7 @@ function validateFile(validate, dir, fileName) {
   problems.push(...checkPhoneVerify(manifest));
   problems.push(...checkAcceptTerms(manifest));
   problems.push(...checkChoices(manifest));
+  problems.push(...checkAgentChoice(manifest));
   problems.push(...checkNamePage(manifest, dir));
   problems.push(...checkNoRetries(manifest));
   problems.push(...checkCombinedGate(manifest));

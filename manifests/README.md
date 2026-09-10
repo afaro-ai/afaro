@@ -54,6 +54,7 @@ A fact stated only on a page nobody has captured, such as a processing window pr
 - The click that places a verification call sits behind the `phone_verify` gate, never in front of it.
 - An `accept_terms` step comes before anything is filled and before the submit gate, because a consent dialog stands in front of the flow rather than inside it.
 - A `fill_field` that lists the `choices` the page offers fills one of them and nothing else.
+- The authorized-agent answer on a who-is-asking control lives in `agent_value_literal` and never in `value_literal`, because it is read from the profile at run time rather than asserted by the manifest.
 - Every capture named in `additional_captures` is on disk.
 
 ## Where a page stops short
