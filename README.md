@@ -10,10 +10,11 @@ It walks a person through removing their own listing from US people-search broke
 
 <!-- brokers:start -->
 
-10 brokers. Every cell below is read from that broker's manifest, so this table cannot say anything the catalogue does not.
+11 brokers. Every cell below is read from that broker's manifest, so this table cannot say anything the catalogue does not.
 
 | Broker | Opt-out method | Flow ends at | Gates you will see | Page last verified |
 |---|---|---|---|---|
+| BeenVerified | Search, then form | Handed off: the rest of the flow is not captured | None (nothing is sent) | 2026-09-10 |
 | FastBackgroundCheck | Form | Handed off: a link the broker emails | captcha, submit | 2026-09-10 |
 | FastPeopleSearch | Form | Handed off: a link the broker emails | captcha, submit | 2026-09-09 |
 | Intelius | Form | Handed off: a link the broker emails | submit | 2026-09-09 |
