@@ -17,10 +17,10 @@ It walks a person through removing their own listing from US people-search broke
 | BeenVerified | Search, then form | Handed off: the rest of the flow is not captured | None (nothing is sent) | 2026-09-10 |
 | FastBackgroundCheck | Form | Handed off: a link the broker emails | captcha, submit | 2026-09-10 |
 | FastPeopleSearch | Form | Handed off: a link the broker emails | captcha, submit | 2026-09-09 |
-| Intelius | Form | Handed off: a link the broker emails | submit | 2026-09-09 |
+| Intelius | Form | Handed off: a link the broker emails | submit | 2026-09-10 |
 | MyLife | Form | Handed off: the rest of the flow is not captured | None (nothing is sent) | 2026-09-09 |
 | Nuwber | Search, then form | Handed off: a link the broker emails | submit | 2026-09-10 |
-| PeopleFinders | Form | Submitted | captcha, submit | 2026-09-09 |
+| PeopleFinders | Form | Handed off: a link the broker emails | captcha, submit | 2026-09-10 |
 | PeopleLooker | Search, then form | Handed off: the rest of the flow is not captured | None (nothing is sent) | 2026-09-10 |
 | Radaris | Search, then form | Handed off: the rest of the flow is not captured | None (nothing is sent) | 2026-09-09 |
 | Spokeo | Search, then form | Submitted, then a confirmation email | captcha, submit | 2026-09-08 |
@@ -43,19 +43,22 @@ Being listed here means one thing: that broker's public opt-out page was capture
 
 **Last updated 2026-09-10.** If that date is old by the time you read it, treat the table as history rather than status.
 
-What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed. Five opt-outs filed across two family members:
+What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed. Opt-outs filed across four people's profiles over two days, plus two brokers reached by letter where a form would not take the request. The rows are the record; they are counted per broker rather than totalled, because a total is the one number here nothing can check:
 
 | Broker | What happened |
 |---|---|
-| FastPeopleSearch | Filed twice, 2026-09-09 and 2026-09-10, for two different people. Rechecks due 2026-09-12 and 2026-09-13. |
-| Intelius | Scanned only. Not run. |
-| MyLife | Scanned only. Not run. |
-| Nuwber | Scanned only. Not run. |
-| PeopleFinders | Stopped by the site's own error on 2026-09-09 and again on 2026-09-10. Nothing filed. |
-| Radaris | Scanned only. Not run. |
-| Spokeo | Filed 2026-09-09. Listing gone on a later scan. |
-| TruePeopleSearch | Filed 2026-09-10. Recheck due 2026-09-13. |
-| Whitepages | Filed 2026-09-09. Listing gone on a later scan. |
+| BeenVerified | The online form refused a shared email address. A written request went to their privacy team on 2026-09-10, covering PeopleLooker too. Awaiting a reply. |
+| FastBackgroundCheck | Filed once, 2026-09-10. Recheck due 2026-09-13. |
+| FastPeopleSearch | Filed four times, 2026-09-09 and 2026-09-10. Rechecks due 2026-09-12 and 2026-09-13. |
+| Intelius | Filed once, 2026-09-10, as an account suppression rather than a form. Their page states one suppression covers four sites, this one among them. Recheck due 2026-10-10. |
+| MyLife | Filed three times, 2026-09-10. The site states no window, so the rechecks use Afaro's 30-day default. |
+| Nuwber | Scanned only. Blocked by its own terms dialog. |
+| PeopleFinders | Six submissions failed across two days against a form that can never succeed, and a written request went to them on 2026-09-10 describing that. Once the working route was found, filed four times the same day. Rechecks due 2026-09-13. |
+| PeopleLooker | Same company and system as BeenVerified. Covered by that written request. |
+| Radaris | Scanned only. Blocked by a human-verification check. |
+| Spokeo | Filed three times, 2026-09-09 and 2026-09-10. Two listings gone on a later scan. One recheck due 2026-09-14. |
+| TruePeopleSearch | Filed three times. Rechecks due 2026-09-13. |
+| Whitepages | Filed three times. One listing gone on a later scan. Rechecks due 2026-09-11 and 2026-09-12. |
 
 ## What it looks like
 
@@ -133,6 +136,7 @@ manifests/                  one JSON file per broker, with captures/ alongside
 manifests/_smoke/           one manifest that drives a page in this repository
 profile.example.json        the shape of a profile, filled with placeholder values
 skills/                     the five skills
+docs/field-notes.md         what real runs turned up, newest first
 docs/install.md             setup for a non-technical reader
 docs/smoke-test.md          the runtime check that comes before any broker
 docs/releases/              what shipped in each release, and what did not
@@ -195,7 +199,7 @@ Three edges, worth knowing before trusting any of it.
 
 - **Tracked files and commit messages: the machine.** The sweep and the two hooks cover both, and continuous integration runs the tracked-file pass in its no-list mode.
 - **Pull request bodies: a person.** Nothing here reads them. A pull request body is written outside the repository and can repeat anything, so a read-only review of the body is a required step before a pull request is opened.
-- **Images: a person, always.** No sweep can read a screenshot. Every committed capture is opened and checked by eye, and every capture blanked from a real run is reviewed by a second read-only agent against the unblanked original. That review is required, not advisory.
+- **Images: a person, always.** No sweep can read a screenshot. Every committed capture is opened and checked by eye, and every capture blanked from a real run is reviewed by a second read-only agent against the unblanked original. That review is required by the authoring rules, and it is done by a person or a read-only agent. No check in this repository can enforce it, which is why it is written down rather than wired up.
 
 These three, and the rest of the authoring rules, are in `CONTRIBUTING.md`.
 
@@ -213,7 +217,7 @@ Copy `profile.example.json` into a folder of its own outside this repository and
 
 One person can run Afaro for a relative who has no Claude account or no email of their own. That is one profile file per person, a signed authorization from each of them kept beside their file, and a contact address and a contact number the operator controls. `docs/install.md` has the rules and the four optional profile fields it uses.
 
-During a run, your profile is part of the conversation with Claude, which means it passes through Anthropic's API. Afaro stores nothing and sends nothing anywhere else. `docs/install.md` says this in plain words for a first-time reader.
+During a run, your profile is part of the conversation with Claude, which means it passes through Anthropic's API. Afaro writes nothing outside the profile folder and sends nothing anywhere else. That is an instruction the skills follow rather than something a check proves, and the safety table above says which promises are which. `docs/install.md` says this in plain words for a first-time reader.
 
 ## Status
 
@@ -227,12 +231,12 @@ What this repository can show you, and you can check yourself:
 
 What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed:
 
-- As of 2026-09-10: five opt-outs filed end to end in guided mode, across two family members' profiles. Two of those listings are gone from the sites' own searches; the rest are filed with rechecks scheduled.
-- One broker stopped itself twice with nothing filed, both times because the site returned its own error, which is what it is supposed to do.
-- One broker could not be reached over HTTPS at all, across four attempts on two hostnames, and so has no manifest rather than a guessed one.
+- As of 2026-09-10: opt-outs filed end to end in guided mode across four people's profiles, on every broker in the table above except the two still blocked, plus two brokers reached by letter where a form would not take the request. Three listings are gone from the sites' own searches; the rest are filed with rechecks scheduled. The table gives it broker by broker.
+- Two brokers are still blocked by their own defences, a terms dialog and a human-verification check, and have no steps for them because nobody has captured them.
+- One broker could not be reached over HTTPS at all, across three passes, and so has no manifest rather than a guessed one.
 - The table above under **Brokers covered** carries the same runs broker by broker, with the date it was last updated.
 
-Everything those runs turned up went back into the schema, the skills, and the manifests, which is most of what this repository is.
+What those runs turned up is in **[docs/field-notes.md](docs/field-notes.md)**: brokers filed, bugs found in their own flows, routes that turned out to be closed, and what each one changed in the schema or the skills.
 
 `CONTRIBUTING.md` has the authoring rules if you want to add a broker.
 
