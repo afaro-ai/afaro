@@ -73,6 +73,8 @@ Most opt-outs run past their public page, and the second screen appears only aft
 
 If a capture cannot be fully blanked, leave it out and say so. A page nobody has captured is a `handoff`, not a guess.
 
+**Where that check cannot be performed, do not commit the capture at all.** A blanked run capture has to be checked against its unblanked original by a second reviewer, and for some flows that original can never be in this repository: a broker whose opt-out runs through an account puts the identity the account belongs to on every screen. A reviewer can say nothing legible survives; nobody without the original can say the blanking covered everything. A frame nobody can clear is worth less than a plain sentence saying the knowledge came from a run, so write the sentence and leave the image out.
+
 ## One click per gate
 
 A `human_gate` with reason `submit` is a real stop. After the click it approved, read the page. If nothing happened, stop and log it.
