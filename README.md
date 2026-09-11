@@ -43,19 +43,22 @@ Being listed here means one thing: that broker's public opt-out page was capture
 
 **Last updated 2026-09-10.** If that date is old by the time you read it, treat the table as history rather than status.
 
-What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed. Five opt-outs filed across two family members:
+What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed. Eighteen opt-outs filed across four people, plus two written requests:
 
 | Broker | What happened |
 |---|---|
-| FastPeopleSearch | Filed twice, 2026-09-09 and 2026-09-10, for two different people. Rechecks due 2026-09-12 and 2026-09-13. |
-| Intelius | Scanned only. Not run. |
-| MyLife | Scanned only. Not run. |
-| Nuwber | Scanned only. Not run. |
-| PeopleFinders | Stopped by the site's own error on 2026-09-09 and again on 2026-09-10. Nothing filed. |
-| Radaris | Scanned only. Not run. |
-| Spokeo | Filed 2026-09-09. Listing gone on a later scan. |
-| TruePeopleSearch | Filed 2026-09-10. Recheck due 2026-09-13. |
-| Whitepages | Filed 2026-09-09. Listing gone on a later scan. |
+| BeenVerified | The online form refused a shared email address. A written request went to their privacy team on 2026-09-10, covering PeopleLooker too. Awaiting a reply. |
+| FastBackgroundCheck | Filed once, 2026-09-10. Recheck due 2026-09-13. |
+| FastPeopleSearch | Filed four times, 2026-09-09 and 2026-09-10. Rechecks due 2026-09-12 and 2026-09-13. |
+| Intelius | Filed once, 2026-09-10, as an account suppression rather than a form. Their page states it covers three sister sites. Recheck due 2026-10-10. |
+| MyLife | Filed three times, 2026-09-10. The site states no window, so the rechecks use Afaro's 30-day default. |
+| Nuwber | Scanned only. Blocked by its own terms dialog. |
+| PeopleFinders | Six submissions failed across two days against a form that can never succeed. Once the working route was found, filed four times on 2026-09-10. Rechecks due 2026-09-13. |
+| PeopleLooker | Same company and system as BeenVerified. Covered by that written request. |
+| Radaris | Scanned only. Blocked by a human-verification check. |
+| Spokeo | Filed three times, 2026-09-09 and 2026-09-10. Two listings gone on a later scan. One recheck due 2026-09-14. |
+| TruePeopleSearch | Filed three times. Rechecks due 2026-09-13. |
+| Whitepages | Filed three times. One listing gone on a later scan. Rechecks due 2026-09-11 and 2026-09-12. |
 
 ## What it looks like
 
@@ -227,12 +230,12 @@ What this repository can show you, and you can check yourself:
 
 What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed:
 
-- As of 2026-09-10: five opt-outs filed end to end in guided mode, across two family members' profiles. Two of those listings are gone from the sites' own searches; the rest are filed with rechecks scheduled.
-- One broker stopped itself twice with nothing filed, both times because the site returned its own error, which is what it is supposed to do.
-- One broker could not be reached over HTTPS at all, across four attempts on two hostnames, and so has no manifest rather than a guessed one.
+- As of 2026-09-10: eighteen opt-outs filed end to end in guided mode, across four people's profiles, plus two written requests to brokers whose forms refused a shared email address. Three listings are gone from the sites' own searches; the rest are filed with rechecks scheduled.
+- Two brokers are still blocked by their own defences, a terms dialog and a human-verification check, and have no steps for them because nobody has captured them.
+- One broker could not be reached over HTTPS at all, across three passes, and so has no manifest rather than a guessed one.
 - The table above under **Brokers covered** carries the same runs broker by broker, with the date it was last updated.
 
-Everything those runs turned up went back into the schema, the skills, and the manifests, which is most of what this repository is.
+What those runs turned up is in **[docs/field-notes.md](docs/field-notes.md)**: brokers filed, bugs found in their own flows, routes that turned out to be closed, and what each one changed in the schema or the skills.
 
 `CONTRIBUTING.md` has the authoring rules if you want to add a broker.
 
