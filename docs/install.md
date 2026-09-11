@@ -30,7 +30,7 @@ This extension is what lets Claude click and type on a web page for you, in your
 
 **It asks again for every site.** Permission is granted per website, not once for the whole browser, so each broker's address has to be allowed before Claude can read anything there. The first time a run reaches a new broker you will get a prompt; allow it and the run carries on.
 
-This is worth knowing before your first scan rather than during it. On one real scan seven of nine brokers came back as "could not be assessed" for this reason alone. Nothing was blocking the tool: the sites were fine and the profile was fine, and the extension simply had no permission for those four addresses yet. If a scan reports a run of sites it could not assess, check this before you look for anything else.
+This is worth knowing before your first scan rather than during it. On one real scan seven of nine brokers came back as "could not be assessed", and four of those seven were this and nothing else. Nothing was blocking the tool on them: the sites were fine and the profile was fine, and the extension simply had no permission for those four addresses yet. The other three were real site defences, which is exactly the problem: from the outside the two look the same. If a scan reports a run of sites it could not assess, check this before you look for anything else.
 
 **Use a separate Chrome profile for Afaro, with autofill turned off.** In Chrome, open the profile menu at the top right, choose to add a profile, and in that new profile go to settings and switch off autofill for addresses and payment methods and the offer to save them.
 

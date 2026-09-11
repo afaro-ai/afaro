@@ -16,10 +16,11 @@ capture that a reviewer has not cleared.
 
 ## 2026-09-10, evening: twelve brokers, four people, and the limits of running it for somebody
 
-Eighteen opt-outs are now filed across four people in two days. The evening's
-filings ran against twelve manifests rather than nine, which is worth its own
-line: the local checkout was three brokers behind and two scans had already
-run against the old set before anyone noticed. Pull before a sitting, and
+Opt-outs are now filed for four people across two days, on every broker in
+the catalogue except the two still blocked. The evening's filings ran against
+twelve manifests rather than nine, which is worth its own line: the local
+checkout was three brokers behind and two scans had already run against the
+old set before anyone noticed. Pull before a sitting, and
 check the manifest count in the first scan's output.
 
 **Intelius is not a form.** It is a PeopleConnect account. The person proves
@@ -54,8 +55,9 @@ install guide now says so. Giving each person an address of their own is the
 single change that would unlock the most brokers in operator mode.
 
 **Two brokers reached by letter rather than by form** this week, both under a
-45-day statutory window. That is a category the catalogue can record but not
-drive, and it is the maintainer's to chase.
+45-day statutory window: one whose form refused a shared address, and one
+whose form was failing before its working route was found. That is a category
+the catalogue can record but not drive, and it is the maintainer's to chase.
 
 **Verification codes are a new kind of value to keep out.** Two run captures
 were held back: one showed a code beside an email address, one a code beside
@@ -124,7 +126,7 @@ reaches somebody who is sitting there.
 
 One broker states no processing window at all, so its recheck uses Afaro's
 own 30-day default, and the run says out loud that the 30 is Afaro's number
-and not the broker's.
+and not the broker's. By that evening a second broker had joined it.
 
 ---
 
@@ -135,15 +137,17 @@ name everybody calls them returned a different person entirely. That is live
 evidence for searching aliases and for matching on more than a name, and it
 is the kind of thing a catalogue cannot learn from a page.
 
-Seven brokers came back as not assessable in an earlier scan for a reason
-that was nobody's fault but the setup's: the browser extension is permitted
-per website, and four of those sites had never been allowed. Nothing was
-blocking the tool. The install guide now says this before the first scan,
-because a run of unassessable sites reads exactly like a run of site
-defences.
+Seven brokers came back as not assessable in an earlier scan, and four of
+those seven were nobody's fault but the setup's: the browser extension is
+permitted per website, and four of those sites had never been allowed.
+Nothing was blocking the tool on those four. The install guide now says this
+before the first scan, because a run of unassessable sites reads exactly
+like a run of site defences, and here more than half of one was.
 
-The three that genuinely were defended stayed defended: two behind terms
-dialogs and one behind a human-verification check. They still have no
+The three that genuinely were defended that morning stayed defended: two
+behind terms dialogs and one behind a human-verification check. One of the
+three came off that list the same evening, when its opt-out turned out to run
+through an account rather than through the search. They still have no
 manifest steps for those dialogs, because nobody has captured them.
 
 ---

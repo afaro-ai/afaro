@@ -18,7 +18,7 @@ An `accept_terms` step is not a gate either. It is a consent or terms dialog sta
 
 ## Terms and consent dialogs
 
-A terms popup is not a small thing in the way. Three brokers ended a real scan on one before a search had run, and an `accept_terms` step is how a manifest describes one.
+A terms popup is not a small thing in the way. Brokers have ended a real scan on one before a search had run, and an `accept_terms` step is how a manifest describes one.
 
 Afaro answers it with the most privacy-preserving choice the dialog offers: decline where there is a decline, and the smallest consent it will take where there is not. Reject all, necessary only, whatever that dialog calls it. Never accept everything to get past it faster. Read the step's `warnings` out before clicking, because one control on one of these dialogs opened a paid checkout in a new tab.
 
@@ -26,7 +26,7 @@ Afaro answers it with the most privacy-preserving choice the dialog offers: decl
 
 That limit is read off the dialog at run time. A manifest names one control on one dialog as it stood on `verified_on`; whether what is on screen now sits inside the limit is a question about this dialog, today, and it is never assumed from the step being there.
 
-An `accept_terms` step comes before anything is filled and before the submit gate, and the validator holds it there. It may come before the search, which is where these three sit: the dialog stands between the front page and any results, so the step is answered and then the search runs.
+An `accept_terms` step comes before anything is filled and before the submit gate, and the validator holds it there. It may come before the search, which is where these dialogs sit: between the front page and any results, so the step is answered and then the search runs.
 
 ## More than one submit gate
 
