@@ -9,30 +9,29 @@
     "first_name",
     "middle_name",
     "last_name",
-    "emails",
-    "phones",
-    "date_of_birth",
-    "current_address.line1",
-    "current_address.city",
-    "current_address.state"
+    "emails"
   ],
   "steps": [
     {
       "type": "navigate",
       "url": "https://www.peoplefinders.com/opt-out",
-      "note": "The form asks for the person's details rather than a listing, so no search comes first. The site's own search box sits in the header of this same page and carries no address of its own in the page's markup, so search_url_template is the page holding the box and a scan types into it the way a person would."
+      "note": "This address opens a choice, not a form. A Right to Opt-out card with a Next button sits at the top; below an OR rule is a Free Identity Monitoring offer with its own Learn More button, and nothing here ever touches that. Further down the same page is a Record Suppression Form, and that one is a trap: see notes."
+    },
+    {
+      "type": "click",
+      "selector": { "label": "Next", "css": "button.opt-out-button" },
+      "note": "The door. It replaces the choice card with the short form the rest of these steps fill. Nothing has been sent at this point. The Learn More button below the OR rule carries the same css class, so the visible label is what tells them apart, and a run that cannot find Next by its text stops rather than pressing the other one."
     },
     {
       "type": "fill_field",
       "selector": { "label": "First Name" },
-      "value_from": "first_name",
-      "note": "The page asks for names without special characters and gives its own example of a suffix written without a comma or a full stop. Type the name as the profile holds it, and if it carries a full stop or a hyphen, stop and ask rather than editing it silently."
+      "value_from": "first_name"
     },
     {
       "type": "fill_field",
       "selector": { "label": "Middle Name" },
       "value_from": "middle_name",
-      "note": "No required marker beside this label."
+      "note": "The boxes on this short form carry no labels beside them; the words inside them are their labels. None of the four is marked required on the page."
     },
     {
       "type": "fill_field",
@@ -43,94 +42,72 @@
       "type": "fill_field",
       "selector": { "label": "Email" },
       "value_from": "emails",
-      "note": "No required marker beside this label. The word opt-out sitting in the box on the capture is the field's own placeholder text, not a value anyone typed and not anything a browser put there. An earlier version of this manifest said otherwise on both counts and was wrong."
+      "note": "The page says the link to the removal form is sent to this address, so it has to be an inbox the person can open."
     },
     {
       "type": "fill_field",
-      "selector": { "label": "Phone" },
-      "value_from": "phones",
-      "phone_field": "listing",
-      "format": "digits",
-      "note": "No required marker beside this label. It is the number on the record rather than one PeopleFinders will ring: the form's own instruction above it says the information entered is what they use to locate the record and remove it, and nothing on the page offers to call or text. The box takes digits and nothing else, and it says so in validation text beside itself when given a number with brackets or dashes in it, which a person's profile normally has. The profile keeps the number readable and this step strips it to digits on the way in. Read the field back afterwards and read the page beside it: if validation text is there, show it to the person and stop."
-    },
-    {
-      "type": "fill_field",
-      "selector": { "label": "Month" },
-      "value_from": "date_of_birth",
-      "note": "The first of three Date of Birth controls, a dropdown reading Month on the capture. Its list was not captured, so no value is named here: open it and choose the month of the profile's date of birth as that list spells it. The page says a made-up date of birth only hinders the request, so if the profile has no date of birth, leave all three empty rather than inventing one."
-    },
-    {
-      "type": "fill_field",
-      "selector": { "label": "DD" },
-      "value_from": "date_of_birth",
-      "note": "The day of the profile's date of birth, two digits, and nothing else."
-    },
-    {
-      "type": "fill_field",
-      "selector": { "label": "YYYY" },
-      "value_from": "date_of_birth",
-      "note": "The year of the profile's date of birth, four digits, and nothing else."
-    },
-    {
-      "type": "fill_field",
-      "selector": { "label": "Street Address" },
-      "value_from": "current_address.line1"
-    },
-    {
-      "type": "fill_field",
-      "selector": { "label": "City" },
-      "value_from": "current_address.city"
-    },
-    {
-      "type": "fill_field",
-      "selector": { "label": "State/Region" },
-      "value_from": "current_address.state",
-      "note": "A plain box on the capture, with no list attached to it, so what the profile holds is what goes in."
+      "selector": { "label": "I am:" },
+      "value_literal": "The subject of the request",
+      "choices": [
+        "The subject of the request",
+        "An agent authorized to act on behalf of the subject of the request"
+      ],
+      "note": "A dropdown reading The subject of the request on the capture, whose two answers were read from that page's own markup on verified_on. It carries no agent_value_literal. The page's own note says an authorized agent's address receives the link and that confirmation then goes to both addresses, so the agent answer may need nothing extra, but nobody has selected it and captured what follows, and who is asking is not a thing to find out by trying it on a live form."
     },
     {
       "type": "human_gate",
       "reason": "captcha",
-      "prompt": "PeopleFinders puts a reCAPTCHA box reading I'm not a robot above the Submit button. It is yours to tick, and the next question folds into this one because the token it issues expires quickly.",
-      "note": "Handed over, never worked around. Nothing here solves it. The submit gate immediately after this one carries gate_mode combined, so the person is asked once rather than twice and the token is still good when the form goes."
+      "prompt": "PeopleFinders puts a reCAPTCHA under this form. Tick it yourself, then say when it is done.",
+      "note": "Handed over, never worked around. Nothing here solves it."
     },
     {
       "type": "human_gate",
       "reason": "submit",
       "gate_mode": "combined",
-      "prompt": "One question, because PeopleFinders' robot check stops being valid if this is asked in two parts. Tick the reCAPTCHA box that reads I'm not a robot. Then read the values on the form: the page says none of them can be changed once Submit is pressed. One box below them is still unticked, and it certifies that you are the person the information is about, or an agent authorized to act for them, and that what is on the form is accurate. When the robot check is ticked and the values are right, say yes, and I will tick that box and press Submit once.",
-      "note": "gate_mode is combined because the reCAPTCHA token expired inside the window between two separate gates on 2026-09-09, so a correct two-gate flow submitted with a dead token."
+      "prompt": "The name and email are filled in. One box is still unticked, and it reads: I authorize PeopleFinders to send communications relating to my privacy request to the email address(es) provided, and it certifies that you are the subject of the request or an agent authorized to act for them. Check the values, then say yes and I will tick that box and send the request.",
+      "note": "Combined with the captcha gate before it, because the token this page issues can expire while the values are being read."
     },
     {
       "type": "click",
-      "selector": { "label": "Please review the information above to ensure it is accurate." },
-      "note": "The certification checkbox, ticked only after the gate above, because what it certifies is the person's to say."
+      "selector": { "label": "I authorize PeopleFinders to send communications relating to my privacy request to the email address(es) provided." },
+      "note": "Ticked only after the gate above, because the certification is the person's to make."
     },
     {
       "type": "click",
-      "selector": { "label": "Submit" },
-      "note": "Once. On 2026-09-09 a run clicked this three times before stopping itself, because the page did not appear to respond and the site then returned its own server error. A submit that produces no page change is the site refusing. Read the page after the click, and if nothing moved, stop and log it rather than clicking again."
+      "selector": { "label": "Send Request" }
+    },
+    {
+      "type": "handoff",
+      "reason": "requires_email_link",
+      "prompt": "PeopleFinders is sending a link to that address, and the form behind it is the one that actually removes the record. Open it yourself and fill it in: it arrives with the name and email already filled and asks for a phone number, a date of birth, a street address, a city, and a state. Two things to know before you open it. The link works once, so open it when you have a few minutes rather than to see what it looks like; opening it a second time expires it and you have to ask for a new one. And the page says a link left more than 24 hours has to be requested again. The State/Region box on that form looks like a plain text box and is really a dropdown, so pick from the list rather than typing. When you reach the confirmation page, tell me what it said.",
+      "note": "This is where the manifest stops and the broker's flow does not. Nothing has been removed at this point; a link has been asked for. The form behind the link is not automated and will not be: its address is single-use and carries the key in the URL. What it asks for is recorded here from the runs of 2026-09-10 rather than from a capture in this repository, and it is described as what a person was asked rather than as what a page says."
     }
   ],
   "verification": {
     "method": "search",
-    "success_when": "PeopleFinders' own search no longer returns a record for this name and city. The page says the record is located from the information given and removed from their system."
+    "success_when": "PeopleFinders' own search no longer returns a record for this name and city. The page is blunt that this is not permanent: it says the data is not removed from its original source, that it may still appear on other websites, and that new public records arrive regularly so the information may appear again, which is why it recommends refreshing the request periodically."
   },
   "recheck_after_days": 3,
   "recheck_stated": true,
   "additional_captures": [
     {
-      "path": "captures/peoplefinders-optout-top.jpg",
-      "of": "The top of the same page, holding the heading, the Right to Opt-out panel and its Next button, the site's search box, and the cookie banner, captured in the same visit",
+      "path": "captures/peoplefinders-next-form.jpg",
+      "of": "The short form behind the Next button, on the same visit, with every box empty. It carries the four directions this flow is written from, the 24-hour condition on the emailed link, and the 3 days this manifest's recheck window comes from",
+      "blanked": false
+    },
+    {
+      "path": "captures/peoplefinders-lower-form.jpg",
+      "of": "The Record Suppression Form at the bottom of the same page, on the same visit, with every box empty. Committed as evidence for a negative: it is the form six submissions failed against and the one no step here touches",
       "blanked": false
     }
   ],
   "id_requirements": {
     "required": false,
     "kinds": [],
-    "note": "No account, payment, notarised document, or photo ID appears on the form. The page states in its own words that both routes it offers are free and that no trial or payment is required."
+    "note": "No account, payment, notarised document, or photo ID appears on either form. The choice page states in its own words that both routes it offers are free and that no trial or payment is required."
   },
-  "notes": "Written from the opt-out page captured on verified_on, in two images of one page. Five things the page states and a run depends on. The record is located from the information given and removed from PeopleFinders' system within 3 days, which is where recheck_after_days comes from. Omitting information or giving inaccurate information, a made-up date of birth among the examples, only hinders the request. Names go in without special characters such as full stops and hyphens. Information entered is not used for any purpose other than processing the removal. And a record they could not identify from the original request may reappear if new data reaches them, which is the page's own reason for filling in everything asked. Nothing on the form can be changed after Submit is pressed, which the submit gate says out loud. The page offers a second route beside the form, a Right to Opt-out panel with a Next button, and a Free Identity Monitoring product; neither is described here, because the form is the route that files a removal and the other two were not followed. What the captures show and what they do not: every label, the certification text, the reCAPTCHA, and the Submit button are on the first image, and the heading, the search box, and the cookie banner are on the second. No selector here carries a css fallback: the form sits outside any form element in that page's markup and the boxes have no names to fall back to. The Month dropdown was shut, so its list is not named. The Email box on the first image holds the word opt-out, which is neither a value anyone typed nor anything the page's own text asks for; an image cannot say where it came from, and an autofill icon sits in the First Name box on the same capture. A small icon of that kind appears inside one field on this capture and on three others in this directory. It is a browser extension's own control rather than anything the broker drew, and it holds no value. The images hold no browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on them. The cookie banner offers only Accept, so it was not answered, and it is hidden in the first image because it is pinned to the bottom of the window and would otherwise lie across the form. Small icons appear inside two of the boxes on the first image. They are a browser extension's own controls rather than anything the broker drew, and they hold no value. Three things come from a guided run on 2026-09-09 rather than from a capture, and are written here for that reason. The run stopped with nothing filed: the site returned its own server error after the form went, and the clicks the tool made did not appear to fire the button, which is why the submit step now says once and why one click per gate is a rule rather than a preference. The reCAPTCHA token expired between two separate gates, which is why the submit gate is combined. And the site offers a phone line as a way to ask for removal by talking to somebody, which the person calls themselves; the number is not on either capture, so it is not written here.",
+  "notes": "Written from three frames captured on verified_on, all reachable without sending anything. The route changed and the old manifest was filling the wrong form, which is worth stating plainly because the failure was silent. There are two forms on /opt-out. The Record Suppression Form at the bottom of the page is the form the emailed link opens, rendered without the one-time key that link carries, so submitting it directly can never succeed: it returns the site's own server error and greys out its Submit button. Six submissions across two days failed that way, two of them typed by hand, and it read as an outage rather than a closed door. It was not an outage. Do not fill the lower form. The working route is the Next button at the top and it is the only one this manifest uses. The flow the page states in four numbered directions: name and email and a captcha here, a link by email, the removal form behind that link, then a confirmation page and a confirmation email, with 3 days to removal. That last figure is where recheck_after_days comes from and it is on the capture. The link is single-use; opening it a second time expires it and a new one has to be requested, which was learned by doing it rather than from any page, and the page separately says a link left more than 24 hours needs requesting again. One detail from the lower form's own markup, recorded because it will bite whoever automates the emailed form later: State/Region is a select with 55 options carrying a class called text-input, so it renders like a plain box and a run that types into it is typing into a dropdown. What the captures show and what they do not: the choice card and its Next button, the monitoring offer nothing touches, every box and label on the short form, the authorize sentence, the reCAPTCHA, the Send Request button, and the four directions are all on the frames; the css fallback on the Next step and the dropdown's two answers were read from the page's markup on the same visit, and no image holds a browser address bar, so home_url, source_url, and optout_url record addresses that were open rather than anything legible on them. Two things were done to the pages before they were captured, and neither adds or removes anything the broker wrote: the cookie banner was hidden on two frames, and each page was viewed zoomed out so its section fits one frame. One box on the lower form had been filled by the browser's own autofill before anybody typed. It was cleared before the shutter, and it is the reason a run reads a field back after writing it rather than trusting that an empty box was empty. The emailed form itself, the email-sent page, the expired-link page and the confirmation page are not in this repository. They exist only inside a real run, and the versions in the maintainer's draft folder were painted by another tool and have not been checked by this project's reviewer. A note is not a commit.",
   "source_url": "https://www.peoplefinders.com/opt-out",
-  "verified_on": "2026-09-09",
-  "source_capture": "captures/peoplefinders-optout.jpg"
+  "verified_on": "2026-09-10",
+  "source_capture": "captures/peoplefinders-optout-choice.jpg"
 }
