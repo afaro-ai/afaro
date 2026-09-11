@@ -5,7 +5,9 @@
   "search_url_template": "https://www.intelius.com/",
   "optout_url": "https://www.intelius.com/opt-out/",
   "method": "form",
-  "profile_fields_required": ["emails"],
+  "profile_fields_required": [
+    "emails"
+  ],
   "steps": [
     {
       "type": "navigate",
@@ -14,7 +16,9 @@
     },
     {
       "type": "fill_field",
-      "selector": { "label": "Email Address" },
+      "selector": {
+        "label": "Email Address"
+      },
       "value_from": "emails",
       "note": "The one box in Step 1. The page says a verification email with a link to carry on is sent to it, so it has to be an inbox the person can open, and it says the address is used only to facilitate and process the request."
     },
@@ -25,18 +29,22 @@
     },
     {
       "type": "click",
-      "selector": { "label": "I agree to the Terms of Use and Privacy Policy, and consent to receive transactional emails regarding my use of the Suppression Tool." },
+      "selector": {
+        "label": "I agree to the Terms of Use and Privacy Policy, and consent to receive transactional emails regarding my use of the Suppression Tool."
+      },
       "note": "Ticked only after the gate above, because agreeing to terms is the person's to do."
     },
     {
       "type": "click",
-      "selector": { "label": "Continue" }
+      "selector": {
+        "label": "Continue"
+      }
     },
     {
       "type": "handoff",
       "reason": "requires_email_link",
-      "prompt": "A verification email with a link is on its way to that address. Everything after Step 1 sits behind that link and none of it was captured, so open the link and carry on in the browser yourself. Tell me what each screen asked for and say when the suppression is in place.",
-      "note": "This is where the manifest stops and the flow does not. Nothing has been suppressed at this point; an address has been given and a link asked for."
+      "prompt": "A verification email with a link is on its way to that address. Everything after Step 1 sits behind that link, so open it and carry on in the browser yourself. What you are heading for is a screen called Control: it shows the identity the site has matched to that address, and a Desired Behavior dropdown. Setting that to Suppressed and pressing Save is the thing that actually suppresses the report. Read what the screen says the report is currently set to before you change anything, because an account that already exists is not a suppression: on the screen captured here the identity already carried a date of birth and the report was still set to displayed. One suppression covers four sites, which the page names. Tell me what each screen asked for and say when Save has gone through.",
+      "note": "This is where the manifest stops and the flow does not. Nothing has been suppressed at this point; an address has been given and a link asked for. The Control screen is captured and described here from that capture, but no step reaches it: it sits behind a link sent to a verified address, and nothing in this schema can say that a flow resumes in a later sitting from a link only the person can open. See notes."
     }
   ],
   "verification": {
@@ -47,18 +55,23 @@
   "recheck_stated": false,
   "additional_captures": [
     {
-      "path": "captures/intelius-optout-scope.jpg",
-      "of": "The part of the same page saying what the suppression tool does, what it does not reach, and that it is free, captured in the same visit",
+      "path": "captures/intelius-suppression-coverage.jpg",
+      "of": "The page's own answers to what the suppression tool does and what it costs, on the same visit, with the fine print under them in the same frame. It is where the four covered sites are named and where the limits on that coverage are stated",
       "blanked": false
+    },
+    {
+      "path": "captures/intelius-suppression-control.jpg",
+      "of": "The Control screen, from a real run on 2026-09-10 rather than a fresh visit, because nobody reaches it without a verified email address. One solid box covers the whole identity block: record id, name, date of birth, and two aliases. What is left is the sentence saying the report is currently configured as displayed, and the Desired Behavior control that changes it",
+      "blanked": true
     }
   ],
   "id_requirements": {
     "required": false,
     "kinds": [],
-    "note": "Step 1 asks for an email address and nothing else, and the page states the tool is free. What the screens behind the emailed link ask for is not known, because they were not captured."
+    "note": "Step 1 asks for an email address and nothing else, and the page states the tool is free. What it does require is control of an email address the record already carries, proved by clicking a link sent to it. That is a different kind of requirement from a document and is not an id_requirement as this schema means the term. The page also names a separate route by email for judges, law enforcement officers and other legally protected people, which asks for a full name, date of birth, city and state of residence, phone number and email address. That is a different process from this one and no step here uses it."
   },
-  "notes": "Written from the page Intelius' opt-out address led to on verified_on, in two images of that page. It states no processing window anywhere on it, so recheck_after_days is null with recheck_stated false and the wait is the orchestrator's own. Exposure cannot be assessed from this broker's search: a scan on 2026-09-09 found every search route into a report-selling funnel with no free result list, which is not_assessable rather than not_found. That is recorded from the scan and not from a capture. The fix is a name-directory page, and there is no name_page block here because the directory path has not been captured; a pattern noticed in a live search is a lead, not provenance. Four things it does state and a run depends on. Step 1 takes an email address and sends back a verification email with a link to carry on. The address is used only to facilitate and process the request. The tool is free. And it names the limits of what it does: it manages the display of the background report a name search generates on the sites it lists, Intelius among them, and it says in its own words that the name may still turn up in phone, address, or email reports searched by those criteria, that information from other sources is unaffected, and that data held about a person as a user of those sites is dealt with on those sites instead. The page also carries a separate route for judges, law enforcement officers, and other legally protected people, which is by email rather than through this form and is not described here. What the captures show and what they do not: the heading, Step 1, the field label, the checkbox text, the privacy line, and the Continue button are on the first image, and the scope and cost paragraphs are on the second. JavaScript could not be run on this host, so nothing was read from its markup and no selector here carries a css fallback. The images hold no browser address bar, so optout_url records the address that was typed and source_url the address it redirected to. home_url and search_url_template are the brand's own front page, which the second image names in the list of sites the tool covers. One thing on the first image is not the broker's: a small icon inside the email box, which is a browser extension's own control and holds no value.",
+  "notes": "Written from three frames: two of the suppression page captured fresh on verified_on, and the Control screen from a real run with its identity block under a solid box. Intelius' own opt-out address redirects to a PeopleConnect Suppression Center on another host, and that is the page every step here describes. What this broker actually is, because the old manifest called it a form and it is not one. It is an account. The person proves control of an email address the record already carries, follows a link, and arrives at a screen called Control whose Desired Behavior dropdown sets the background report to suppressed. No form is filled with a name or an address anywhere in it. Step 1 is the only part a manifest can drive, and this one drives exactly that and stops. An existing account is not a suppression. On the captured Control screen the identity already held a date of birth under an old address and the report was still set to displayed, so somebody who opened an account in the past and assumes they are covered is not. That is why the handoff asks the person to read what the report is set to before changing anything. SYNDICATION NOTE, and this catalogue's first. The page states in its own words, under the heading asking what the suppression tool does, that it manages the display of the background report on all people search sites in the PeopleConnect family including TruthFinder.com, InstantCheckmate.com, Intelius.com and USSearch.com. One suppression therefore covers four sites. That sentence is legible on captures/intelius-suppression-coverage.jpg, which is the only reason this note exists; no relationship is recorded anywhere in this catalogue on any other basis. The same frame carries the limits, and they belong in the same breath as the claim. The tool covers the Public Data a name search generates and not the User Data those sites hold about their own customers. It does not reach other PeopleConnect sites, and the page names Classmates.com as one it does not reach. It does not affect the third-party sources the data came from. And a name may still surface through phone, address, or email searches, or on registered sex offender lists. A four-site coverage claim without those limits beside it would be the broker's marketing rather than its terms. What the schema cannot say here, recorded rather than worked around. There is no way to describe a broker whose opt-out is an account: no step type for proving control of an address, none for a session that resumes from an emailed link in a later sitting, and no way to say that a setting rather than a submission is the act that matters. method is form because that is the closest value the enum offers and there is no honest one. The suppression itself is therefore a handoff, described from a capture but not driven. Inventing a step type from one broker would be guessing at a category from a single example, so the gap is written down here and in step-types.md and left open. It states no processing window anywhere, so recheck_after_days is null with recheck_stated false and the wait is the orchestrator's own. Exposure cannot be assessed from this broker's search: a scan on 2026-09-09 found every search route into a report-selling funnel with no free result list, which is not_assessable rather than not_found. That is recorded from the scan and not from a capture. The fix is a name-directory page, and there is no name_page block here because the directory path has not been captured; a pattern noticed in a live search is a lead, not provenance. What the captures show and what they do not: Step 1's heading, its field label, the consent sentence, the privacy line and the Continue button are on the first frame; the coverage and cost answers and the fine print are on the second; the displayed sentence and the Desired Behavior control are on the third. Selectors carry no css fallbacks, because this host's markup was not read. No image holds a browser address bar, so optout_url records the address that was typed and source_url the address it redirected to. home_url and search_url_template are the brand's own front page, which the second frame names in the list of covered sites. Two captures from that run are not here and will not be. Steps 7 and 8 show a verification code and an email address, and neither is repo material in any form.",
   "source_url": "https://suppression.peopleconnect.us/login",
-  "verified_on": "2026-09-09",
-  "source_capture": "captures/intelius-optout.jpg"
+  "verified_on": "2026-09-10",
+  "source_capture": "captures/intelius-suppression-login.jpg"
 }
