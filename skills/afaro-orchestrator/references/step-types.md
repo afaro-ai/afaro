@@ -89,6 +89,14 @@ It comes first: before anything is filled and before the submit gate. The valida
 
 What a manifest needs to carry one: the decline or minimal-consent control in `selector`, with the visible label the dialog shows, and the dialog on a capture. Most of these open with the page, so `source_capture` shows them; one reached later in a flow goes in `additional_captures` like any other. A dialog nobody has captured gets no step. Three brokers stop a scan on a terms popup today and none of them carries one, because guessing at a control on a dialog nobody has seen is how a tool clicks Accept All on somebody's behalf.
 
+### What these ten cannot describe
+
+One broker in the catalogue does not fit any of them, and it is written down here rather than papered over.
+
+Intelius' opt-out is not a form. It is an account: the person proves control of an email address the record already carries, follows a link, and reaches a screen whose dropdown sets the report to suppressed. Nothing is ever filled in with a name. Three things are missing to say that. There is no step for proving control of an address, no way to say a flow resumes in a later sitting from a link only the person can open, and no way to say that a setting rather than a submission is the act that matters. Its `method` is `form` because the enum offers nothing more honest.
+
+So that manifest drives the one form it has and hands off, and the screen behind the link is described from a capture rather than reached. One broker is not enough to invent a step type from: a category built from a single example is a guess about the next one. The gap stays open until a second broker shows the same shape.
+
 ## use_search_box
 
 Fields: `inputs`, optional `url`, optional `submit`, optional `note`.

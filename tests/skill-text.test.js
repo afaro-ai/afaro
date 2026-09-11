@@ -82,6 +82,14 @@ const cases = [
     phrases: ['would a search engine show this URL to a person', 'no profile-detail page built from an ID']
   },
   {
+    rule: 'finding 28: an operator contact number cannot answer a phone-verification gate',
+    file: 'skills/afaro-orchestrator/SKILL.md',
+    phrases: [
+      "the operator's `contact_phone` is not an answer here and is never offered as one",
+      'they need to be holding it'
+    ]
+  },
+  {
     rule: 'finding 24: an unmarked phone box is asked about, not guessed at',
     file: 'skills/afaro-orchestrator/SKILL.md',
     phrases: ['Ask which number to use and never pick']

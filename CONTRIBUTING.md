@@ -41,7 +41,18 @@ Every manifest carries three, and the validator refuses one that does not:
 
 Two more carry the same weight where they apply. `additional_captures` lists further pages the manifest was written from, each with a description and a `blanked` flag saying whether values were painted out of it. All three of those are required, and the validator refuses an entry missing any of them. `name_page` records a broker's own name-directory page, and it takes two captures: the site's A-to-Z bar, which lists letters and names nobody, and the person's own name page from a real run, blanked like any run capture. The pattern goes in with its slugs as placeholders, read off that page's address. A capture of a directory letter page is not one of the two and never will be, because those pages list strangers by the hundred and blanking a list that long is not something a reviewer can check. A pattern you noticed in a search is a lead; until a broker has both captures its block stays absent.
 
+**A verification code or a one-time link never enters this repository**, blanked or otherwise. They sit in the same list as names, addresses, phone numbers and email addresses, and they are worse in one way: a code on a screenshot looks like furniture rather than like somebody's data, so it survives a blanking pass that catches every name. Two captures from real runs were held back for this, one showing a code beside an email address and one showing a code beside the operator's number. A single-use link is the same thing written as a URL. If a screen you need carries one, the honest options are to crop it out or to leave the screen uncaptured and say so.
+
 **No stranger's name enters this repository, painted out or not.** That is the harder half of the rule and the one worth remembering: the blanking procedure exists for the person whose run it is, not as a way to admit other people's data by covering it up.
+
+### Which side of the form a value comes from
+
+A profile holds two kinds of value and the difference decides what a step may read.
+
+- **What brokers list the person under.** `phones`, `prior_addresses`, `aliases`, an old `current_address`. These match a listing. They are frequently out of date, and that is the point: a listing is out of date too.
+- **What the person can actually answer.** `contact_email` and `contact_phone`. These reach somebody who is sitting there.
+
+They are often not the same, and for anyone who has moved they are usually not. A step that fills a contact box from the listing side sends a code to a handset nobody is holding; a step that matches a listing from the contact side finds nothing. The validator holds a marked field to its source, and the next section is about the box where that marker is easiest to leave off.
 
 ### The two phone boxes
 
@@ -128,6 +139,8 @@ Before writing a manifest for a real broker, check the runtime actually walks on
 3. Write the manifest from the image. Run `npm run validate`.
 4. Run `npm run check:names` with your list.
 5. Open a pull request with the two commits, and say in the body what the page states and what it does not.
+
+**Try every control on the page before you record a broker as having no route.** Not only the form: the buttons above it, the links beside it, anything that changes what the page shows. One broker in this catalogue was written off as a closed circle after six submissions failed across two days, and the working route was a button at the top of the same page. The form that kept failing was the right form rendered without a key that arrives by email, so it could never have worked, and nothing on the page said so. A broker that looks broken and a broker whose door is somewhere else look identical from the form.
 
 **A broker enters through its own opt-out page and no other door.** Seeing one named in an advertisement, or linked from another broker's results, or listed on somebody's roundup, tells you a name exists. It is a lead, not provenance, and it says nothing about what that site's opt-out page asks for. Open the page yourself, capture it, and write from that. A manifest that started as a sighting reads exactly like one that started as a page, which is why the rule is about where you went rather than how careful you were.
 
