@@ -98,6 +98,15 @@
       "description": "False when the captured page states no processing window. recheck_after_days is then null and the orchestrator falls back to its own default, saying the broker stated none. Absent or true means the number is the broker's own. Where the page that states it is not among the captures, because it appears only after a real submission, the notes say where it was read and that no capture exists yet.",
       "type": "boolean"
     },
+    "one_request_per_email": {
+      "description": "True when this broker takes one request per email address and refuses an address already used on it, so a profile's addresses are a budget here. Set only where a captured page states it or a run recorded the refusal, and one_request_per_email_note says which. Absent means false: nothing has shown it, which is not the same as the broker allowing reuse. The orchestrator reads the profile's email_use block before an address is given to a broker carrying this flag.",
+      "type": "boolean"
+    },
+    "one_request_per_email_note": {
+      "description": "Where the evidence for one_request_per_email comes from: the capture that states it, or the date of the run on which the broker refused an address it had already taken. The validator refuses the flag without this note.",
+      "type": "string",
+      "minLength": 1
+    },
     "name_page": {
       "description": "A broker's own public name-directory landing page: a static page keyed by name, and sometimes by state or city, that the site publishes for search engines and public linking. Where one exists it is a cheaper and steadier door than the search box, and search-conduct.md carves it out of the result-URL ban under four conditions. It takes two captures and neither substitutes for the other: the site's own A-to-Z bar, which lists letters and names nobody, and the person's own name page from a real run, blanked like any run capture. A capture of a directory letter page is not one of them and never will be: those pages list strangers, and blanking a thousand names is not something anybody can check. Until a broker has both captures the block stays absent, and a pattern seen in a live search is a lead rather than provenance.",
       "type": "object",

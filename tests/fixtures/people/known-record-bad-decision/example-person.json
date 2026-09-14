@@ -56,7 +56,7 @@
       "broker": "nuwber",
       "description": "Listed as Jane Sample at the Reno address, with John Example as a relative and a birth year that is wrong",
       "reviewed_on": "2026-09-14",
-      "decision": "mine_left",
+      "decision": "ignore",
       "reason": "Mine, with a wrong birth year. Left because this broker takes one request per address and the spare addresses are worth more elsewhere."
     },
     {

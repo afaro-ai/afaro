@@ -545,6 +545,26 @@ const cases = [
         m.steps[m.steps.length - 1]
       ];
     }
+  },
+  {
+    // A broker marked as taking one request per email address, with nothing
+    // saying what showed it. The flag decides which of a person's addresses a
+    // run will offer, so it is a claim about the broker and needs a source.
+    dir: 'email-budget-without-note',
+    capture: true,
+    change: (m) => {
+      m.one_request_per_email = true;
+    }
+  },
+  {
+    // The same flag with the refusal it rests on. Here so the shape that
+    // passes is pinned as well as the one that fails.
+    dir: 'email-budget-with-note',
+    capture: true,
+    change: (m) => {
+      m.one_request_per_email = true;
+      m.one_request_per_email_note = 'Fixture. A run on 2026-09-14 recorded the page refusing an address it had already taken.';
+    }
   }
 ];
 
@@ -567,10 +587,65 @@ for (const testCase of cases) {
   }
 }
 
+// Profile fixtures are variations of profile.example.json, the same way the
+// manifest fixtures are variations of the valid manifest. They sit under
+// people/ and are named example-person.json, because the ignore rules and CI
+// both refuse any file whose name starts with profile.
+const PERSON = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'profile.example.json'), 'utf8'));
+
+const personCases = [
+  {
+    dir: 'valid',
+    change: () => {}
+  },
+  {
+    // A decision the block does not know. A scan reads the word to decide
+    // whether to raise the record again, so a word it cannot read raises it.
+    dir: 'known-record-bad-decision',
+    change: (p) => { p.known_records[0].decision = 'ignore'; }
+  },
+  {
+    // A decision about no record in particular. Without an address or a
+    // description there is nothing to recognise at the next scan.
+    dir: 'known-record-without-record',
+    change: (p) => {
+      delete p.known_records[0].record_url;
+      delete p.known_records[0].description;
+    }
+  },
+  {
+    // A personal value carried into the block. The entries are closed so that
+    // a record's details stay in the fields that already hold them.
+    dir: 'known-record-extra-value',
+    change: (p) => { p.known_records[0].date_of_birth = p.date_of_birth; }
+  },
+  {
+    // An address marked spent that the profile does not hold, which protects
+    // nothing and hides a typo in the one that was.
+    dir: 'email-use-unheld-address',
+    change: (p) => { p.email_use[0].email = 'someone.else@example.com'; }
+  },
+  {
+    // A broker id with no manifest behind it. No run would ever read the entry.
+    dir: 'email-use-unknown-broker',
+    change: (p) => { p.email_use[0].broker = 'no-such-broker'; }
+  }
+];
+
+for (const personCase of personCases) {
+  const dir = path.join(FIXTURES, 'people', personCase.dir);
+  fs.mkdirSync(dir, { recursive: true });
+  const person = JSON.parse(JSON.stringify(PERSON));
+  personCase.change(person);
+  fs.writeFileSync(path.join(dir, 'example-person.json'), `${JSON.stringify(person, null, 2)}\n`);
+}
+
 fs.mkdirSync(path.join(FIXTURES, 'valid', 'captures'), { recursive: true });
 fs.writeFileSync(path.join(FIXTURES, 'valid', 'captures', 'example-broker-optout.png'), PNG);
 
 fs.mkdirSync(path.join(FIXTURES, 'empty'), { recursive: true });
 fs.writeFileSync(path.join(FIXTURES, 'empty', '.gitkeep'), '');
 
-console.log(`${cases.length + 2} fixture directories rebuilt from tests/fixtures/valid.`);
+console.log(
+  `${cases.length + 2} fixture directories rebuilt from tests/fixtures/valid, and ${personCases.length} from profile.example.json.`
+);

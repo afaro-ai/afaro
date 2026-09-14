@@ -287,19 +287,81 @@ const cases = [
     dir: 'manifests/_smoke',
     exitCode: 0,
     expect: '1 manifest in manifests/_smoke, 1 valid, 0 failed.'
+  },
+  {
+    name: 'a broker marked one request per email with nothing saying what showed it fails',
+    dir: 'tests/fixtures/email-budget-without-note',
+    exitCode: 1,
+    expect: 'one_request_per_email is true with no one_request_per_email_note'
+  },
+  {
+    name: 'the same flag with its note passes',
+    dir: 'tests/fixtures/email-budget-with-note',
+    exitCode: 0,
+    expect: '1 manifest in tests/fixtures/email-budget-with-note, 1 valid, 0 failed.'
+  },
+  {
+    name: 'the example profile passes',
+    args: ['--profile', 'profile.example.json'],
+    exitCode: 0,
+    expect: 'The profile is valid.'
+  },
+  {
+    name: 'a profile fixture built from the example passes',
+    args: ['--profile', 'tests/fixtures/people/valid/example-person.json'],
+    exitCode: 0,
+    expect: 'The profile is valid.'
+  },
+  {
+    name: 'a known record with a decision outside the three fails',
+    args: ['--profile', 'tests/fixtures/people/known-record-bad-decision/example-person.json'],
+    exitCode: 1,
+    expect: '/known_records/0/decision must be equal to one of the allowed values'
+  },
+  {
+    name: 'a known record with neither an address nor a description fails',
+    args: ['--profile', 'tests/fixtures/people/known-record-without-record/example-person.json'],
+    exitCode: 1,
+    expect: '/known_records/0 must match a schema in anyOf'
+  },
+  {
+    name: 'a known record carrying a personal value of its own fails',
+    args: ['--profile', 'tests/fixtures/people/known-record-extra-value/example-person.json'],
+    exitCode: 1,
+    expect: '/known_records/0 must NOT have additional properties'
+  },
+  {
+    name: 'an address marked spent that the profile does not hold fails',
+    args: ['--profile', 'tests/fixtures/people/email-use-unheld-address/example-person.json'],
+    exitCode: 1,
+    expect: 'email_use[0] records an address this profile does not hold'
+  },
+  {
+    name: 'an address marked spent at a broker with no manifest fails',
+    args: ['--profile', 'tests/fixtures/people/email-use-unknown-broker/example-person.json'],
+    exitCode: 1,
+    expect: 'email_use[0].broker names no manifest in the manifests directory'
+  },
+  {
+    name: 'a profile failure never prints a value from the profile',
+    args: ['--profile', 'tests/fixtures/people/email-use-unheld-address/example-person.json'],
+    exitCode: 1,
+    rejects: 'someone.else@example.com',
+    expect: 'The profile has 1 problem.'
   }
 ];
 
 let failures = 0;
 
 for (const testCase of cases) {
-  const result = spawnSync(process.execPath, [VALIDATOR, '--dir', testCase.dir], {
+  const args = testCase.args || ['--dir', testCase.dir];
+  const result = spawnSync(process.execPath, [VALIDATOR, ...args], {
     cwd: REPO_ROOT,
     encoding: 'utf8'
   });
   const output = `${result.stdout}${result.stderr}`;
   const codeOk = result.status === testCase.exitCode;
-  const textOk = output.includes(testCase.expect);
+  const textOk = output.includes(testCase.expect) && !(testCase.rejects && output.includes(testCase.rejects));
 
   if (codeOk && textOk) {
     console.log(`ok    ${testCase.name}`);
@@ -308,6 +370,9 @@ for (const testCase of cases) {
     console.error(`FAIL  ${testCase.name}`);
     if (!codeOk) console.error(`      expected exit ${testCase.exitCode}, got ${result.status}`);
     if (!textOk) console.error(`      expected output to contain: ${testCase.expect}`);
+    if (testCase.rejects && output.includes(testCase.rejects)) {
+      console.error('      and not to contain the value it printed');
+    }
     console.error(output.split('\n').map((line) => `      | ${line}`).join('\n'));
   }
 }
