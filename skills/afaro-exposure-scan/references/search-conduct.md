@@ -45,6 +45,18 @@ Record `not_assessable`, note whether it was a CAPTCHA or a bot wall, and go to 
 
 A block is information. It is not a problem to solve.
 
+## Near matches
+
+A near match is a record that is close to the person and not plainly them. The scan used to treat a wrong birth year as ruling one out. A real scan showed the reverse, and this is the guidance now.
+
+**Brokers splice people.** A record is assembled from fragments, and fragments belonging to different people end up on one record. So a record can carry a real relative under a wrong name, a real address from years ago that the profile does not list, and a wrong birth year, and still be the person. On that scan three near matches came up, and the person judged all three their own.
+
+- **Relatives and addresses are evidence for.** A relative the person recognises, even under a name that is slightly off, and an address they once lived at, even one missing from the profile, both point at them. Say which ones matched.
+- **A birth year is weak evidence against.** A year or two off is common on records that are the person's own. Say it, and do not let it settle anything by itself.
+- **The person decides.** Show what matches first and what does not second, and ask. Never call a near match `found` for them, and never leave one out of the report for them.
+
+Their decision goes in the profile's `known_records` with their reason, so the next scan reports it rather than raising the same record again. An address or a relative the record showed that the profile lacks is the person's to add to the profile if they want it searched. The scan does not add it.
+
 ## Whose scan this is
 
 Afaro scans for one person at a time, and that person is either the one running it or somebody who has asked them to. Two cases, and nothing else.
