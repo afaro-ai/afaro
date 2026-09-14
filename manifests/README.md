@@ -56,6 +56,7 @@ A fact stated only on a page nobody has captured, such as a processing window pr
 - A `fill_field` that lists the `choices` the page offers fills one of them and nothing else.
 - The authorized-agent answer on a who-is-asking control lives in `agent_value_literal` and never in `value_literal`, because it is read from the profile at run time rather than asserted by the manifest.
 - Every capture named in `additional_captures` is on disk.
+- A `one_request_per_email` flag set to true carries a `one_request_per_email_note` naming the capture or the recorded refusal that shows it.
 
 ## Where a page stops short
 
@@ -65,6 +66,10 @@ A capture only proves what a page shows. Two things record where the page ran ou
 - **The broker's flow goes further than its public page showed.** The manifest ends on a `handoff` step carrying a `reason`: `page_not_captured`, `requires_listing_url`, or `requires_email_link`. The outcome for that broker is `handed off at step N`, never submitted, and no recheck clock starts until the person says they finished. A handoff is terminal: one per manifest, nothing after it.
 
 Both exist so the README's claims stay true when a broker does not fit. Neither is a way to describe a flow nobody has seen.
+
+## Records, not brokers
+
+A broker holds one record per name-and-address combination, and one request clears one record. A form that asks for details rather than a listing's address clears only the record its details match, so every manifest for such a form says so in one sentence in its `notes`, beginning `RECORDS, NOT BROKERS`. A person reading it before a run then knows that a former name or a prior city needs a request of its own.
 
 ## Captures
 
