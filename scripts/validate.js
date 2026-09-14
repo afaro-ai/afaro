@@ -15,7 +15,7 @@
 //   node scripts/validate.js --dir some/dir  validates another directory
 //   node scripts/validate.js --quiet         only prints failures and the summary
 //   node scripts/validate.js --profile <p>   checks one person's profile against
-//                                            schema/profile.schema.json, with
+//                                            schema/person.schema.json, with
 //                                            manifests/ (or --dir) as the brokers
 //                                            its blocks may name
 
@@ -26,7 +26,7 @@ const addFormats = require('ajv-formats');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SCHEMA_PATH = path.join(REPO_ROOT, 'schema', 'optout.schema.json');
-const PROFILE_SCHEMA_PATH = path.join(REPO_ROOT, 'schema', 'profile.schema.json');
+const PROFILE_SCHEMA_PATH = path.join(REPO_ROOT, 'schema', 'person.schema.json');
 const PROVENANCE_FIELDS = ['source_url', 'verified_on', 'source_capture'];
 
 function parseArgs(argv) {

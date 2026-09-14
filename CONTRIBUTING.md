@@ -122,7 +122,7 @@ npm install
 npm run validate        every manifest, against the schema and the provenance rules
 npm test                the validator's self-checks, the sweep's, and the skill-text checks
 npm run validate:smoke  the one manifest that is not a broker
-npm run validate:profile the example profile, against schema/profile.schema.json
+npm run validate:profile the example profile, against schema/person.schema.json
 npm run brokers:table   rewrite the README's broker table from manifests/
 npm run brokers:check   fail if that table is out of date, which is what CI runs
 ```

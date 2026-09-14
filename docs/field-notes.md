@@ -16,18 +16,18 @@ capture that a reviewer has not cleared.
 
 ## 2026-09-14: the first rechecks, and records rather than brokers
 
-The first round of rechecks ran four days late, one person at a time, each
-after clearing the cache and searching fresh under every name that person
-uses, read against age, middle name, city and relatives. Fourteen of the
-fifteen that were due came back removed. For one person, two brokers' own
-result counts were one lower than at filing, which is the kind of evidence a
+The first round of rechecks ran up to three days late, one person at a time,
+each after clearing the cache and searching fresh under both names in that
+person's profile, read against age, middle name, city and relatives. Fourteen
+of the fifteen that were due came back removed. For two people, two brokers'
+own result counts were one lower than at filing, which is the kind of evidence a
 recheck wants: not only the card gone, but the number it was counted in gone
 down by one.
 
 **The fifteenth was a split, not a failure.** A PeopleFinders request filed
 under one person's current name and current city cleared exactly that record.
-A second record for the same person, under a former name in a city they had
-left, with the relatives from that side of the family, was still up. The
+A second record for the same person, under a former name at a prior address,
+was still up. The
 request had never named it. A form that asks for details rather than a
 listing's address matches one record and clears that one.
 
@@ -38,7 +38,7 @@ current name says nothing about a former one. The same evening a scan under
 the former name turned up what the first round had missed, and requests went
 to seven brokers that night, five of which had reported that person clean.
 Nuwber was one of the seven, filed for the first time by anyone, twice. Its
-terms dialog had stopped every scan since the first one; this run got past it,
+terms dialog had stopped every scan since 2026-09-10; this run got past it,
 most likely by the person answering it by hand. Nobody captured the dialog, so
 the manifest still has no step for it.
 
@@ -48,9 +48,9 @@ record it targets and which profile values match it. Every manifest for a
 details-based form says in one sentence that a request clears only the record
 its details match. And a profile has to carry every former name and every
 prior city, because the scan can only look for what the profile names. One
-request that night went in with the current surname on a former-name record,
-and the person caught it at the gate. Saying the target record out loud first
-is for exactly that.
+start form that night was filled with the current surname for a former-name
+record; the run stopped on it and the person corrected it before anything was
+sent. Saying the target record out loud first is for exactly that.
 
 **Finding 33: an ad card is not a listing.** On FastPeopleSearch and
 FastBackgroundCheck, a person whose free results were gone still had a
@@ -79,10 +79,9 @@ has `known_records`, and a scan reports a record listed there with its
 decision.
 
 **Finding 37: brokers splice people.** All three of those near matches were
-the person's own records carrying stale or spliced data. One fused a sibling's
-first name with a parent's middle name into a relative who does not exist, one
-carried a childhood address the profile did not list, and one had the birth
-year wrong. The scan's guidance had it backwards. Relatives and addresses are
+the person's own records carrying stale or spliced data. One carried a relative's
+name assembled from two people, one an old address the profile did not list,
+and one a wrong birth year. The scan's guidance had it backwards. Relatives and addresses are
 evidence for, a birth year is weak evidence against, and the person decides.
 
 Also learned from that night's forms. The emailed forms behind
@@ -92,9 +91,9 @@ required, and one marks it optional and means it. None of those forms is
 captured, so none of their phone boxes is marked. MyLife's form sits in a
 frame the browser tool cannot read, which the orchestrator now fills by
 keyboard and reads back off the page, stopping when it cannot. And Spokeo's
-emailed link has now landed three times on an empty opt-out page with no
-confirmation text. The first two of those verified removed, so an empty page
-there is not a failed request.
+emailed link landed on an empty opt-out page with no confirmation text, which
+that run's record says two earlier runs saw too. Both of those verified
+removed, so an empty page there is not a failed request.
 
 ---
 

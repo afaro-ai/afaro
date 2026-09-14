@@ -43,11 +43,11 @@ Being listed here means one thing: that broker's public opt-out page was capture
 
 **Last updated 2026-09-14.** If that date is old by the time you read it, treat the table as history rather than status.
 
-What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed. Opt-outs filed across four people's profiles on 2026-09-09, 2026-09-10 and 2026-09-14, plus two brokers reached by letter where a form would not take the request.
+What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed. Opt-outs filed across four people's profiles between 2026-09-09 and 2026-09-11 and on 2026-09-14, plus two brokers reached by letter where a form would not take the request.
 
-**The first rechecks, 2026-09-14.** They ran four days late, one person at a time, each after clearing the cache and searching fresh under every name that person uses. Fourteen of the fifteen that were due came back removed: two for one person, six for another, five for a third, and one for the fourth. For one person, Spokeo's and Whitepages' own result counts were each one lower than at filing. The fifteenth is a split, not a failure: the PeopleFinders record that request matched is gone, and a second record for the same person, under a former name in another city, was never filed against. Every listing found removed is checked again on 2026-10-14, because every one of those pages says records come back as new data arrives.
+**The first rechecks, 2026-09-14.** They ran up to three days late, one person at a time, each after clearing the cache and searching fresh under both names in that person's profile. Fourteen of the fifteen that were due came back removed. For two people, Spokeo's and Whitepages' own result counts were each one lower than at filing. The fifteenth is a split, not a failure: the PeopleFinders record that request matched is gone, and a second record for the same person, under a former name in another city, was never filed against. Every listing found removed is checked again on 2026-10-14, because every one of those pages says records come back as new data arrives.
 
-**A broker holds one record per name-and-address combination, and one request clears one record.** So the rows below count requests, and somebody who has moved or changed their name can need more than one on the same broker. That evening a scan under the fourth person's former name turned up records on brokers the earlier round had called clean, and requests went to seven brokers that night, five of which had reported that person clean under their current name. Nuwber was one of the seven, filed for the first time by anyone. Those requests are recorded as filed, not verified: their rechecks fall due 2026-09-16 and 2026-09-17, and MyLife's on 2026-10-14.
+**A broker holds one record per name-and-address combination, and one request clears one record.** So the rows below count requests, and somebody who has moved or changed their name can need more than one on the same broker. That evening a scan under the same person's former name turned up records on brokers the earlier round had called clean, and requests went to seven brokers that night, five of which had reported that person clean under their current name. Nuwber was one of the seven, filed for the first time by anyone. Those requests are recorded as filed, not verified: their rechecks fall due 2026-09-16 and 2026-09-17, and MyLife's on 2026-10-14.
 
 The rows are the record. They are counted per broker rather than totalled, because a total is the one number here nothing can check:
 
@@ -56,15 +56,15 @@ The rows are the record. They are counted per broker rather than totalled, becau
 | BeenVerified | The online form refused a shared email address on 2026-09-10, and a written request went to their privacy team that day, covering PeopleLooker too. Its deadline is about 2026-10-25. A second person's online request on 2026-09-14 did not go through either, and a letter for it is drafted and not yet sent. |
 | FastBackgroundCheck | Filed once, 2026-09-10, and removed at the 2026-09-14 recheck. Filed once more on 2026-09-14, for a record under a former name. |
 | FastPeopleSearch | Filed four times, 2026-09-09 and 2026-09-10, and all four removed at the 2026-09-14 rechecks. Filed once more on 2026-09-14, for a record under a former name. |
-| Intelius | Filed once, 2026-09-10, as an account suppression rather than a form. Their page states one suppression covers four sites, this one among them. Recheck due 2026-10-11. A card for a second person, judged theirs despite a wrong birth year, was left alone on purpose on 2026-09-14: this suppression binds an address to one date of birth for good. |
-| MyLife | Filed three times, 2026-09-10. The site states no window, so the rechecks use Afaro's 30-day default and fall due 2026-10-10 and 2026-10-11. Filed once more on 2026-09-14, for a record under a former name, due 2026-10-14. |
-| Nuwber | Filed for the first time by anyone on 2026-09-14, twice, for two records under one person's former name. Its terms dialog had stopped every scan since 2026-09-09. This run got past it, most likely by the person answering it by hand, and the manifest still has no step for the dialog because nobody has captured it. A third record was judged theirs and left alone on purpose, because each request here needs an email address the site has not had before. |
+| Intelius | Filed once, on the night of 2026-09-10 into 2026-09-11, as an account suppression rather than a form. Their page states one suppression covers four sites, this one among them. Recheck due 2026-10-11. A card for a second person, judged theirs despite a wrong birth year, was left alone on purpose on 2026-09-14: this suppression binds an address to one date of birth for good. |
+| MyLife | Filed three times, 2026-09-10 and 2026-09-11. The site states no window, so the rechecks use Afaro's 30-day default and fall due 2026-10-10 and 2026-10-11. Filed once more on 2026-09-14, for a record under a former name, due 2026-10-14. |
+| Nuwber | Filed for the first time by anyone on 2026-09-14, twice, for two records under one person's former name. Its terms dialog had stopped every scan since 2026-09-10. This run got past it, most likely by the person answering it by hand, and the manifest still has no step for the dialog because nobody has captured it. A third record was judged theirs and left alone on purpose, because each request here needs an email address the site has not had before. |
 | PeopleFinders | Six submissions failed across two days against a form that can never succeed, and a written request went to them on 2026-09-10 describing that. Once the working route was found, filed four times the same day. At the 2026-09-14 rechecks three were removed and the fourth was the split described above. The second record in that split was filed the same evening. |
 | PeopleLooker | Same company and system as BeenVerified. Covered by that written request. A record for a second person, judged theirs despite a wrong birth date, is named in the drafted letter. |
 | Radaris | Scanned only. Blocked by a human-verification check. |
-| Spokeo | Filed three times, 2026-09-09 and 2026-09-10. The first was gone on a later scan, and the other two were removed at the 2026-09-14 rechecks. Filed once more on 2026-09-14, for a record under a former name. |
+| Spokeo | Filed three times, 2026-09-09 to 2026-09-11. The first was gone on a later scan, and the other two were removed at the 2026-09-14 rechecks. Filed once more on 2026-09-14, for a record under a former name. |
 | TruePeopleSearch | Filed twice, 2026-09-10, and both removed at the 2026-09-14 rechecks. Filed once more on 2026-09-14, for a record under a former name. |
-| Whitepages | Filed three times, 2026-09-09 and 2026-09-10. The first was gone on a later scan, and the other two were removed at the 2026-09-14 rechecks. |
+| Whitepages | Filed three times, 2026-09-09 to 2026-09-11. The first was gone on a later scan, and the other two were removed at the 2026-09-14 rechecks. |
 
 ## What it looks like
 
@@ -133,7 +133,7 @@ Two of the six rest on an instruction alone: no invented value, and what a run l
 
 ```
 schema/optout.schema.json   the manifest schema, JSON Schema 2020-12
-schema/profile.schema.json  the profile schema, which a person can check their own file against
+schema/person.schema.json   the profile schema, which a person can check their own file against
 scripts/validate.js         the validator, run by CI on pull requests and on main
 scripts/check-names.js      the redaction sweep, run against a list kept outside the repo
 scripts/brokers-table.js    regenerates the broker table above from manifests/
@@ -166,7 +166,7 @@ npm run validate:profile
 
 `npm run validate` reads the `.json` files sitting directly in `manifests/`, one per broker, checks each against the schema, checks its provenance fields, and checks that its capture file is present. It does not descend into subdirectories, so the one manifest in `manifests/_smoke/` is checked by `npm run validate:smoke` instead. It reports a count derived from the directory and makes no network requests.
 
-`npm run validate:profile` checks `profile.example.json` against `schema/profile.schema.json`. Pointed at your own file, `node scripts/validate.js --profile <path>` does the same on your own machine, and a failure names the block and the entry by number without printing any value from the file, or the file's name.
+`npm run validate:profile` checks `profile.example.json` against `schema/person.schema.json`. Pointed at your own file, `node scripts/validate.js --profile <path>` does the same on your own machine, and a failure names the block and the entry by number without printing any value from the file, or the file's name.
 
 `npm test` runs three suites: the validator's own checks, the redaction sweep's, and a literal check that a handful of run-time rules are still written in the skill text. That last one exists because those rules cannot be enforced by a schema, so nothing else would notice them being softened away.
 
@@ -244,7 +244,7 @@ What this repository can show you, and you can check yourself:
 
 What the maintainer says, which this repository cannot show you, because run logs are local by design and never committed:
 
-- As of 2026-09-14: opt-outs filed in guided mode across four people's profiles on eleven of the twelve brokers in the table above, all but Radaris. Two of the eleven, BeenVerified and PeopleLooker, went by letter because their online form would not take the request. The table gives it broker by broker.
+- As of 2026-09-14: opt-outs filed in guided mode across four people's profiles on eleven of the twelve brokers in the table above, all but Radaris. Two of the eleven went by letter: BeenVerified, whose online form refused a shared address, and PeopleLooker, covered by the same letter. The table gives it broker by broker.
 - Every filing rechecked once its window had passed has come back removed, fourteen of fifteen on 2026-09-14 with the fifteenth clearing the record it named, and that holds per record rather than per broker: a broker can hold a second record under a former name or a prior city, and a removal of the first says nothing about it.
 - One broker is still blocked by its own defence, a human-verification check, and has no steps for it because nobody has captured it. Nuwber's terms dialog did not stop a run on 2026-09-14, and it still has no step for the same reason.
 - One broker could not be reached over HTTPS at all, across three passes, and so has no manifest rather than a guessed one.
