@@ -57,8 +57,7 @@ FastBackgroundCheck, a person whose free results were gone still had a
 paid-report card beside them, sold by two of the sites the Intelius
 suppression page names as covered. Those are another company's
 advertisements, not the brokers' own records, and what clears them is that
-company's suppression. That person cannot file it yet, because it needs an
-email address of their own.
+company's suppression.
 
 **Finding 35: email addresses are a budget.** Nuwber takes one request per
 address and refuses an address it has had before, and filing two records there
