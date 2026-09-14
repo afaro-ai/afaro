@@ -54,6 +54,16 @@ A profile holds two kinds of value and the difference decides what a step may re
 
 They are often not the same, and for anyone who has moved they are usually not. A step that fills a contact box from the listing side sends a code to a handset nobody is holding; a step that matches a listing from the contact side finds nothing. The validator holds a marked field to its source, and the next section is about the box where that marker is easiest to leave off.
 
+### One record per request
+
+A broker holds one record per name-and-address combination, and a request clears one. A form that asks for details rather than a listing's address clears only the record its details match, so its manifest says so in one sentence in `notes`, beginning `RECORDS, NOT BROKERS`.
+
+The same fact bounds what a profile has to hold. The scan can only look for what the profile names, so a profile must carry every former name in `aliases` and every prior city in `prior_addresses`. The reason is a real one: five brokers had reported one person clean under their current name while each held a record under a former name nobody had searched.
+
+### Addresses a broker takes once
+
+Some brokers take one request per email address and refuse an address they have already had. Mark those with `one_request_per_email: true`, and only where a captured page states it or a run recorded the refusal; `one_request_per_email_note` says which, by capture or by the date of the run. The validator refuses the flag without the note. A broker nobody has seen refuse an address stays unmarked, which means nothing has shown it, not that reuse is allowed.
+
 ### The two phone boxes
 
 A phone box on a broker's form is one of two things, and the difference decides whose handset rings.
@@ -112,6 +122,7 @@ npm install
 npm run validate        every manifest, against the schema and the provenance rules
 npm test                the validator's self-checks, the sweep's, and the skill-text checks
 npm run validate:smoke  the one manifest that is not a broker
+npm run validate:profile the example profile, against schema/profile.schema.json
 npm run brokers:table   rewrite the README's broker table from manifests/
 npm run brokers:check   fail if that table is out of date, which is what CI runs
 ```
