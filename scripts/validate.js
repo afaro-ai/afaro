@@ -14,6 +14,10 @@
 //   node scripts/validate.js                 validates manifests/
 //   node scripts/validate.js --dir some/dir  validates another directory
 //   node scripts/validate.js --quiet         only prints failures and the summary
+//   node scripts/validate.js --profile <p>   checks one person's profile against
+//                                            schema/person.schema.json, with
+//                                            manifests/ (or --dir) as the brokers
+//                                            its blocks may name
 
 const fs = require('fs');
 const path = require('path');
@@ -22,15 +26,21 @@ const addFormats = require('ajv-formats');
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 const SCHEMA_PATH = path.join(REPO_ROOT, 'schema', 'optout.schema.json');
+const PROFILE_SCHEMA_PATH = path.join(REPO_ROOT, 'schema', 'person.schema.json');
 const PROVENANCE_FIELDS = ['source_url', 'verified_on', 'source_capture'];
 
 function parseArgs(argv) {
-  const args = { dir: path.join(REPO_ROOT, 'manifests'), quiet: false };
+  const args = { dir: path.join(REPO_ROOT, 'manifests'), quiet: false, profile: null };
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--dir') {
       const value = argv[i + 1];
       if (!value) throw new Error('--dir needs a path');
       args.dir = path.resolve(process.cwd(), value);
+      i += 1;
+    } else if (argv[i] === '--profile') {
+      const value = argv[i + 1];
+      if (!value) throw new Error('--profile needs a path');
+      args.profile = path.resolve(process.cwd(), value);
       i += 1;
     } else if (argv[i] === '--quiet') {
       args.quiet = true;
@@ -55,8 +65,8 @@ function listManifests(dir) {
     .sort();
 }
 
-function loadValidator() {
-  const schema = JSON.parse(fs.readFileSync(SCHEMA_PATH, 'utf8'));
+function loadValidator(schemaPath = SCHEMA_PATH) {
+  const schema = JSON.parse(fs.readFileSync(schemaPath, 'utf8'));
   const ajv = new Ajv({ allErrors: true, strict: true });
   addFormats(ajv);
   return ajv.compile(schema);
@@ -712,6 +722,24 @@ function checkRecheckWindow(manifest) {
   return problems;
 }
 
+// Some brokers take one request per email address and refuse an address they
+// have already taken, which makes a profile's addresses a budget there. The
+// flag is a claim about the broker like any other, so it carries a note naming
+// the capture or the recorded refusal it rests on.
+function checkEmailBudget(manifest) {
+  const problems = [];
+  if (manifest.one_request_per_email !== true) return problems;
+
+  const note = manifest.one_request_per_email_note;
+  if (typeof note !== 'string' || note.trim() === '') {
+    problems.push(
+      'one_request_per_email is true with no one_request_per_email_note saying which capture or recorded refusal shows it'
+    );
+  }
+
+  return problems;
+}
+
 // The orchestrator checks profile_fields_required before it starts a broker, so
 // that list has to name every field the steps go on to read. A field the steps
 // use but the list omits turns into a stop halfway through a form.
@@ -780,8 +808,117 @@ function validateFile(validate, dir, fileName) {
   problems.push(...checkHandoff(manifest));
   problems.push(...checkRecheckWindow(manifest));
   problems.push(...checkProfileFields(manifest));
+  problems.push(...checkEmailBudget(manifest));
   problems.push(...checkLoopback(manifest, dir));
   return problems;
+}
+
+function localToday() {
+  const now = new Date();
+  return [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, '0'),
+    String(now.getDate()).padStart(2, '0')
+  ].join('-');
+}
+
+// A profile is checked on the machine it lives on and nowhere else. Nothing
+// here prints a value from it, and not its file name either, which is often a
+// person's name: a failure names the block and the entry by number, the same
+// way the redaction sweep names a list entry.
+function checkProfile(profile, manifestDir) {
+  const problems = [];
+  const today = localToday();
+
+  // The budget is about addresses a run could actually offer. An entry for an
+  // address the profile does not hold can never be matched, so it protects
+  // nothing and hides a typo.
+  const held = new Set(
+    [
+      ...(Array.isArray(profile.emails) ? profile.emails : []),
+      profile.contact_email,
+      profile.authorized_agent && profile.authorized_agent.email
+    ].filter((value) => typeof value === 'string' && value !== '')
+  );
+
+  // A broker id that names no manifest is an entry no run will ever read,
+  // which for email_use means an address offered again where it was spent.
+  const brokers = new Set(
+    listManifests(manifestDir)
+      .filter((name) => !name.startsWith('_'))
+      .map((name) => name.replace(/\.json$/, ''))
+  );
+
+  const blocks = [
+    ['email_use', 'used_on'],
+    ['known_records', 'reviewed_on']
+  ];
+  for (const [block, dateField] of blocks) {
+    const entries = Array.isArray(profile[block]) ? profile[block] : [];
+    entries.forEach((entry, index) => {
+      if (!entry || typeof entry !== 'object') return;
+      if (typeof entry.broker === 'string' && !brokers.has(entry.broker)) {
+        problems.push(`${block}[${index}].broker names no manifest in the manifests directory`);
+      }
+      const date = entry[dateField];
+      if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date) && date > today) {
+        problems.push(`${block}[${index}].${dateField} is in the future`);
+      }
+      if (block === 'email_use' && typeof entry.email === 'string' && !held.has(entry.email)) {
+        problems.push(
+          `email_use[${index}] records an address this profile does not hold, so no run could ever be offered it`
+        );
+      }
+    });
+  }
+
+  return problems;
+}
+
+function validateProfile(args) {
+  let validate;
+  try {
+    validate = loadValidator(PROFILE_SCHEMA_PATH);
+  } catch (error) {
+    console.error(`afaro validate: ${error.message}`);
+    return 2;
+  }
+
+  // Never the parser's own message: it quotes the file's text back.
+  let profile;
+  try {
+    profile = JSON.parse(fs.readFileSync(args.profile, 'utf8'));
+  } catch (error) {
+    console.error('FAIL  profile');
+    console.error('      could not be read as JSON');
+    console.log('\nThe profile has 1 problem.');
+    return 1;
+  }
+
+  const problems = [];
+  if (!validate(profile)) {
+    for (const error of validate.errors) {
+      problems.push(describeSchemaError(error));
+    }
+  }
+  try {
+    problems.push(...checkProfile(profile, args.dir));
+  } catch (error) {
+    console.error(`afaro validate: ${error.message}`);
+    return 2;
+  }
+
+  if (problems.length === 0) {
+    if (!args.quiet) console.log('ok    profile');
+    console.log('\nThe profile is valid.');
+    return 0;
+  }
+  console.error('FAIL  profile');
+  for (const problem of problems) {
+    console.error(`      ${problem}`);
+  }
+  console.log(`\nThe profile has ${problems.length} problem${problems.length === 1 ? '' : 's'}.`);
+  return 1;
 }
 
 function main() {
@@ -791,6 +928,10 @@ function main() {
   } catch (error) {
     console.error(`afaro validate: ${error.message}`);
     process.exit(2);
+  }
+
+  if (args.profile) {
+    process.exit(validateProfile(args));
   }
 
   let validate;

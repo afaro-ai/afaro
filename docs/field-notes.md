@@ -14,6 +14,88 @@ capture that a reviewer has not cleared.
 
 ---
 
+## 2026-09-14: the first rechecks, and records rather than brokers
+
+The first round of rechecks ran up to three days late, one person at a time,
+each after clearing the cache and searching fresh under both names in that
+person's profile, read against age, middle name, city and relatives. Fourteen
+of the fifteen that were due came back removed. For two people, two brokers'
+own result counts were one lower than at filing, which is the kind of evidence a
+recheck wants: not only the card gone, but the number it was counted in gone
+down by one.
+
+**The fifteenth was a split, not a failure.** A PeopleFinders request filed
+under one person's current name and current city cleared exactly that record.
+A second record for the same person, under a former name at a prior address,
+was still up. The
+request had never named it. A form that asks for details rather than a
+listing's address matches one record and clears that one.
+
+**Records, not brokers.** That is finding 34, and it changes the unit
+everything is counted in. A broker holds one record per name-and-address
+combination, and one request clears one record, so a clean result under the
+current name says nothing about a former one. The same evening a scan under
+the former name turned up what the first round had missed, and requests went
+to seven brokers that night, five of which had reported that person clean.
+Nuwber was one of the seven, filed for the first time by anyone, twice. Its
+terms dialog had stopped every scan since 2026-09-10; this run got past it,
+most likely by the person answering it by hand. Nobody captured the dialog, so
+the manifest still has no step for it.
+
+What changed: the scan reports one row per record, with the name that found
+it. The orchestrator runs once per record, and says before each request which
+record it targets and which profile values match it. Every manifest for a
+details-based form says in one sentence that a request clears only the record
+its details match. And a profile has to carry every former name and every
+prior city, because the scan can only look for what the profile names. One
+start form that night was filled with the current surname for a former-name
+record; the run stopped on it and the person corrected it before anything was
+sent. Saying the target record out loud first is for exactly that.
+
+**Finding 33: an ad card is not a listing.** On FastPeopleSearch and
+FastBackgroundCheck, a person whose free results were gone still had a
+paid-report card beside them, sold by two of the sites the Intelius
+suppression page names as covered. Those are another company's
+advertisements, not the brokers' own records, and what clears them is that
+company's suppression.
+
+**Finding 35: email addresses are a budget.** Nuwber takes one request per
+address and refuses an address it has had before, and filing two records there
+used up three of one person's addresses. BeenVerified had refused a shared
+address the week before, and the suppression behind Intelius binds an address
+to one date of birth for good. Manifests now carry `one_request_per_email`
+where a capture or a recorded refusal shows it, with a note saying which, and
+the profile carries `email_use`, which the orchestrator reads before offering
+an address and adds to after spending one. When every address is spent at a
+broker, the run stops and says so. It never picks which spare to spend.
+
+**Finding 36: a decision about a record belongs in the profile.** Three near
+matches came up, and the person judged all three their own. One went into a
+letter, and two were left alone on purpose, because clearing them would spend
+addresses worth more elsewhere. With nowhere to write that down, the next scan
+raises the same three and the same decision gets argued again. The profile now
+has `known_records`, and a scan reports a record listed there with its
+decision.
+
+**Finding 37: brokers splice people.** All three of those near matches were
+the person's own records carrying stale or spliced data. One carried a relative's
+name assembled from two people, one an old address the profile did not list,
+and one a wrong birth year. The scan's guidance had it backwards. Relatives and addresses are
+evidence for, a birth year is weak evidence against, and the person decides.
+
+Also learned from that night's forms. The emailed forms behind
+FastPeopleSearch, TruePeopleSearch and FastBackgroundCheck disagree about the
+phone box: two refuse to submit without a number while marking nothing
+required, and one marks it optional and means it. None of those forms is
+captured, so none of their phone boxes is marked. MyLife's form sits in a
+frame the browser tool cannot read, which the orchestrator now fills by
+keyboard and reads back off the page, stopping when it cannot. And Spokeo's
+emailed link landed on an empty opt-out page with no confirmation text, which
+that run's record says two earlier runs saw too. Both of those verified
+removed, so an empty page there is not a failed request.
+
+---
+
 ## 2026-09-10, evening: twelve brokers, four people, and the limits of running it for somebody
 
 Opt-outs are now filed for four people across two days, on every broker in

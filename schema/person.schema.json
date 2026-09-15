@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/afaro-ai/afaro/schema/person.schema.json",
+  "title": "Afaro data removal person profile",
+  "description": "The shape of one person's profile. A real profile lives outside this repository and never enters it; this schema is here so a person can check their own file locally with `node scripts/validate.js --profile <path>`, and so the example profile is checked in CI. Fields not named here are allowed and read by no skill. The two blocks a run writes back into the profile, email_use and known_records, are closed: each entry holds exactly the fields named, because anything else in them would be a personal value with no rule about where it goes.",
+  "type": "object",
+  "required": ["mode", "full_name"],
+  "properties": {
+    "mode": {
+      "description": "guided is the only mode implemented. supervised is defined and not enabled, and a run that reads it stops.",
+      "type": "string",
+      "enum": ["guided", "supervised"]
+    },
+    "full_name": { "type": "string", "minLength": 1 },
+    "first_name": { "type": "string" },
+    "middle_name": { "type": "string" },
+    "last_name": { "type": "string" },
+    "aliases": {
+      "description": "Every other name the person has gone by, including a former or maiden name and a short name. The scan searches each one, and a broker can hold a separate record under each, so a name left out here is a record nobody looks for.",
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "date_of_birth": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "state_of_residence": { "type": "string" },
+    "current_address": { "$ref": "#/$defs/address" },
+    "prior_addresses": {
+      "description": "Every address, and at least every city, the person has lived at before. Brokers keep records at old addresses, and a request filed with the current one clears only the record that matches it.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/address" }
+    },
+    "phones": {
+      "description": "The numbers on the person's listings. These match a listing and are never rung.",
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "emails": {
+      "type": "array",
+      "items": { "type": "string", "format": "email" }
+    },
+    "relatives": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "opt_out_reason": { "type": "string", "minLength": 1 },
+    "contact_email": { "type": "string", "format": "email" },
+    "contact_phone": { "type": "string", "minLength": 1 },
+    "authorized_agent": {
+      "type": "object",
+      "required": ["name", "email", "authorization_ref"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "email": { "type": "string", "format": "email" },
+        "authorization_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "email_use": {
+      "description": "Which address has been spent at which broker. Some brokers take one request per address and refuse one already used, and their manifests carry one_request_per_email. The orchestrator appends an entry after a request gives an address to a broker with that flag, or to one that refused an address as already used, and reads this block before giving an address to a broker with that flag: an address listed here for that broker is not offered again, and when every address the profile holds is listed for it, the run stops and says so. It never picks which spare address to spend.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["email", "broker", "used_on"],
+        "properties": {
+          "email": {
+            "description": "One of the addresses this profile holds in emails, contact_email or authorized_agent.email. The validator refuses any other.",
+            "type": "string",
+            "format": "email"
+          },
+          "broker": { "$ref": "#/$defs/broker_id" },
+          "used_on": { "$ref": "#/$defs/date" }
+        }
+      }
+    },
+    "known_records": {
+      "description": "Records at brokers that the person has already looked at and decided about, so a later scan reports the decision rather than raising the record again as a near match. mine_left: the person's own record, deliberately not filed against, for the reason given. mine_filed: the person's own record, filed against. not_me: somebody else. Nothing in this block leaves the profile. A run log may carry the decision word and nothing else from it.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["broker", "reviewed_on", "decision", "reason"],
+        "anyOf": [
+          { "properties": { "record_url": true }, "required": ["record_url"] },
+          { "properties": { "description": true }, "required": ["description"] }
+        ],
+        "properties": {
+          "broker": { "$ref": "#/$defs/broker_id" },
+          "record_url": {
+            "description": "The broker's own address for the record, where it shows one. The strongest way to recognise the record again.",
+            "type": "string",
+            "pattern": "^https://"
+          },
+          "description": {
+            "description": "What tells the record apart when the broker shows no address for it, written with values this profile already holds and nothing more.",
+            "type": "string",
+            "minLength": 1
+          },
+          "reviewed_on": { "$ref": "#/$defs/date" },
+          "decision": {
+            "type": "string",
+            "enum": ["mine_left", "mine_filed", "not_me"]
+          },
+          "reason": {
+            "description": "Why, in a sentence, so the decision is not argued again at the next scan.",
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "address": {
+      "type": "object",
+      "properties": {
+        "line1": { "type": "string" },
+        "line2": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "postal_code": { "type": "string" }
+      }
+    },
+    "broker_id": {
+      "description": "A manifest id. The validator refuses one that names no manifest.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    }
+  }
+}

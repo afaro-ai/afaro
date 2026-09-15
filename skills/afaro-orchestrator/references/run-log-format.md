@@ -60,6 +60,26 @@ timestamp	broker_id	step	outcome
 # the page had already moved when the yes came back
 ```
 
+**Which record.** A broker can hold several records for one person, so a request names the record it is for by number and by the profile field paths that match it, never by what those fields hold.
+
+```
+2026-09-14T10:20:05	example-broker	record:2	ok
+# record 2 of 2 on this broker, matched on aliases[0] and prior_addresses[0]
+```
+
+**A spent address.** After a request gives an address to a broker that takes one request per address, the profile's `email_use` gets an entry and the log gets a line. The address goes in the profile and never in the log.
+
+```
+2026-09-14T10:24:40	example-broker	email_use:append	ok
+```
+
+**A record the person already decided about.** The decision word is the only thing from `known_records` a log may carry.
+
+```
+2026-09-14T10:12:40	example-broker	known_record	skipped
+# mine_left
+```
+
 ## What a run looks like
 
 ```
@@ -74,7 +94,7 @@ timestamp	broker_id	step	outcome
 
 ## What never appears in a log
 
-No name, alias, address, phone number, email address, date of birth, relative, or listing URL. No form values of any kind. No screenshots.
+No name, alias, address, phone number, email address, date of birth, relative, or listing URL. No form values of any kind. No screenshots. No address from `email_use`, and nothing from `known_records` but a decision word.
 
 When a step needs to record which field was involved, record the field path and not its value:
 

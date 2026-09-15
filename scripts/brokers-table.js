@@ -90,10 +90,22 @@ function gates(manifest) {
   return order.map((label) => (counts.get(label) > 1 ? `${label} ×${counts.get(label)}` : label)).join(', ');
 }
 
+// How far the manifest carries the flow, which is what a reader choosing where
+// to start needs first: brokers it takes through to a sent request, then those
+// it hands off partway, then those it cannot automate. The order comes from the
+// same fields as the cells, so no broker is placed by hand.
+function completeness(manifest) {
+  if (manifest.method === 'manual') return 2;
+  const steps = Array.isArray(manifest.steps) ? manifest.steps : [];
+  const last = steps[steps.length - 1];
+  if (last && last.type === 'handoff') return 1;
+  return 0;
+}
+
 function buildTable(manifests) {
   const rows = manifests
     .slice()
-    .sort((a, b) => String(a.name).localeCompare(String(b.name)))
+    .sort((a, b) => completeness(a) - completeness(b) || String(a.name).localeCompare(String(b.name)))
     .map((m) =>
       `| ${m.name} | ${METHOD[m.method] || m.method} | ${endsAt(m)} | ${gates(m)} | ${m.verified_on} |`
     );
@@ -104,7 +116,7 @@ function buildTable(manifests) {
   return [
     START,
     '',
-    `${count} ${noun}. Every cell below is read from that broker's manifest, so this table cannot say anything the catalogue does not.`,
+    `${count} ${noun}, sorted by how far each manifest carries the flow: through to a sent request first, then handed off partway, then manual, alphabetical within each group. Every cell below is read from that broker's manifest, so this table cannot say anything the catalogue does not.`,
     '',
     '| Broker | Opt-out method | Flow ends at | Gates you will see | Page last verified |',
     '|---|---|---|---|---|',

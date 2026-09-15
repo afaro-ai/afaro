@@ -33,7 +33,7 @@ A search can return the same person more than once. Two result cards can also be
 3. Log the reduction on its own line, `find_listing:dedupe`, with the counts on a following `#` line. Counts are not profile values.
 4. Say how many distinct listings there are and run the broker's steps once per listing, asking the person before each one. Nothing is filed for a listing they did not agree to.
 
-A person can hold several listings on one broker and each is opted out on its own. Never merge them into a single request, and never run the second one without asking.
+A person can hold several listings on one broker and each is opted out on its own. Never merge them into a single request, and never run the second one without asking. Each listing is a record. A record held under another name or at another address on the same broker does not turn up in this reduction: it turns up by searching that name, which is the exposure scan's job.
 
 ## fill_field
 
@@ -49,9 +49,12 @@ The reason is not theoretical. On the first live run Chrome had already filled t
 
 `value_from` is a profile field path. `value_literal` is a fixed value the page itself offers, such as a reason code in a dropdown.
 
+**A form that asks for details rather than a listing's address clears only the record its details match.** Its name and address boxes take the target record's values: for a record held under a former name or at a prior address, that is the alias and the prior address from the profile, not the current ones, and the orchestrator says which before the first fill. Never fill one record's request with another record's details.
+
 Two profile rules apply when the value is resolved.
 
 - `emails` resolves to `contact_email` when the profile has one, and to the first entry of `emails` otherwise. In operator mode the contact address is the operator's, so broker replies and confirmation links reach the person who is doing the work.
+- On a broker whose manifest carries `one_request_per_email`, the address is not resolved that way on its own. The profile's `email_use` is read first, an address already spent at this broker is never offered, the person picks among the rest, and the run stops if none is left. The run never picks the spare address itself.
 - `contact_phone` is the number a broker will ring or text. It does not fall back to `phones` and `phones` does not fall back to it. If a step needs it and the profile has none, stop and ask for one. A confirmation link arriving in the wrong inbox can be forwarded; a verification call ringing an unattended handset cannot, and the code expires while nobody answers.
 - `opt_out_reason` is the person's standing answer to a broker that asks why. It is optional, and a manifest that reads it names it in `profile_fields_required` like any other field.
 
@@ -72,6 +75,8 @@ Where choosing the agent answer opens fields the manifest does not describe, do 
 A value taken from the listing never appears in a run log, the same as a profile value. Log the step and the outcome, never the URL.
 
 If the field cannot be found, stop. Do not fill the nearest similar field.
+
+A box inside a frame the browser tool cannot read is still a box on the page. Fill it by keyboard, clicking into it where the page shows it, and read the value back off the page itself. If the value cannot be read back that way, the fill is unproven and the run stops there, with the form handed to the person.
 
 ## accept_terms
 
@@ -122,6 +127,8 @@ Clicks before a submit gate move through the form. The click that sends comes af
 Fields: `expect_from`, `timeout_minutes`, optional `note`.
 
 The broker says it sends a confirmation email. Tell the person who it comes from and what to do with it. They open their own mail and click the link. Afaro does not touch their mailbox in this step.
+
+The link can open a page that shows nothing: the opt-out form again, empty, with no confirmation text. That is not a failed request, and the form is never filled again because it came back empty. Where the manifest's notes record this, the confirmation is the broker's own message that the request was received, and the recheck clock starts from it.
 
 ## read_email_confirm
 

@@ -108,6 +108,62 @@ const cases = [
     ]
   },
   {
+    rule: 'finding 34: the scan reports records, not brokers, under every name',
+    file: 'skills/afaro-exposure-scan/SKILL.md',
+    phrases: ['one row per distinct listing', 'a different record under another is two rows']
+  },
+  {
+    rule: 'finding 34: the orchestrator runs once per record and never crosses two records',
+    file: 'skills/afaro-orchestrator/SKILL.md',
+    phrases: [
+      'once per distinct record',
+      'Say which record this request targets',
+      "Never fill a request for one record with another record's details"
+    ]
+  },
+  {
+    rule: 'finding 34, where a manifest author reads it',
+    file: 'skills/afaro-orchestrator/references/step-types.md',
+    phrases: ['clears only the record its details match']
+  },
+  {
+    rule: 'finding 35: addresses are a budget, and the run asks rather than picks',
+    file: 'skills/afaro-orchestrator/SKILL.md',
+    phrases: [
+      'The run never chooses which spare address to spend; it asks',
+      'stop this broker and say so rather than trying one'
+    ]
+  },
+  {
+    rule: 'finding 36: a record the person already decided about is not raised again',
+    file: 'skills/afaro-exposure-scan/SKILL.md',
+    phrases: ['is not raised again as a near match']
+  },
+  {
+    rule: 'finding 36: the orchestrator skips records the person left or ruled out',
+    file: 'skills/afaro-orchestrator/SKILL.md',
+    phrases: ['marks `mine_left` or `not_me` unless the person says otherwise in this run']
+  },
+  {
+    rule: 'finding 37: brokers splice people, and the person decides',
+    file: 'skills/afaro-exposure-scan/references/search-conduct.md',
+    phrases: [
+      'Relatives and addresses are evidence for',
+      'A birth year is weak evidence against',
+      'The person decides'
+    ]
+  },
+  {
+    rule: 'a form in a frame the tool cannot read is still read back',
+    file: 'skills/afaro-orchestrator/SKILL.md',
+    phrases: ['Fill by keyboard', 'the fill is unproven']
+  },
+  {
+    rule: 'an empty page after an emailed link is not a reason to send again',
+    file: 'skills/afaro-orchestrator/SKILL.md',
+    phrases: ['never a reason to fill the form again']
+  },
+  {
     rule: 'no stranger enters the repository, painted out or not',
     file: 'CONTRIBUTING.md',
     phrases: ['No stranger\'s name enters this repository, painted out or not']

@@ -13,7 +13,8 @@
     "hooks:install": "git config core.hooksPath .githooks",
     "test": "node tests/validate.test.js && node tests/check-names.test.js && node tests/skill-text.test.js",
     "smoke": "node scripts/serve-smoke.js",
-    "validate:smoke": "node scripts/validate.js --dir manifests/_smoke"
+    "validate:smoke": "node scripts/validate.js --dir manifests/_smoke",
+    "validate:profile": "node scripts/validate.js --profile profile.example.json"
   },
   "devDependencies": {
     "ajv": "8.17.1",
